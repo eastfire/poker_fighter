@@ -1,0 +1,26 @@
+{
+    "project_type": "javascript",
+
+    "debugMode" : 1,
+    "showFPS" : false,
+    "frameRate" : 30,
+    "id" : "gameCanvas",
+    "renderMode" : 1,
+    "engineDir":"frameworks/cocos2d-html5",
+
+    "modules" : ["cocos2d", "ccui"],
+
+    "jsList" : [
+        "src/libs/underscore-min.js",
+        "src/libs/backbone-min.js",
+        "src/libs/firebase.js",
+        "src/libs/utils.js",
+        "src/libs/cocos-utils.js",
+        "src/resource.js",
+        "src/game-common.js",
+        "src/pattern.js",
+        "src/poker-card.js",
+        "src/player.js",
+        "src/app.js"
+    ]
+}
