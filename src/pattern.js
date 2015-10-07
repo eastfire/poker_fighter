@@ -87,3 +87,87 @@ var Pattern4Model = PatternModel.extend({
         });
     }
 });
+
+var Pattern5Model = PatternModel.extend({
+    generateList:function(){
+        var time = 0;
+        return _.map([0,1,2,3,4,5],function(i){
+            time += 0.5;
+            return {
+                time: time,
+                start : {
+                    x: cc.winSize.width+dimens.card_size.width,
+                    y: 150 + 40 * i
+                },
+                end : {
+                    x: -dimens.card_size.width,
+                    y: 350 - 40 * i
+                },
+                moveTime: 3
+            }
+        });
+    }
+});
+
+var Pattern6Model = PatternModel.extend({
+    generateList:function(){
+        var time = 0;
+        return _.map([0,1,2,3,4,5],function(i){
+            time += 0.5;
+            return {
+                time: time,
+                start : {
+                    x: cc.winSize.width+dimens.card_size.width,
+                    y: 350 - 40 * i
+                },
+                end : {
+                    x: -dimens.card_size.width,
+                    y: 150 + 40 * i
+                },
+                moveTime: 3
+            }
+        });
+    }
+});
+
+var Pattern7Model = PatternModel.extend({
+    generateList:function(){
+        var time = 0;
+        return _.map([0,1,2,3,4,5],function(i){
+            time += 0.5;
+            return {
+                time: time,
+                start : {
+                    x: -dimens.card_size.width,
+                    y: 350 - 40 * i
+                },
+                end : {
+                    x: cc.winSize.width+dimens.card_size.width,
+                    y: 150 + 40 * i
+                },
+                moveTime: 3
+            }
+        });
+    }
+});
+
+var Pattern8Model = PatternModel.extend({
+    generateList:function(){
+        var time = 0;
+        return _.map([0,1,2,3,4,5],function(i){
+            time += 0.5;
+            return {
+                time: time,
+                start : {
+                    x: -dimens.card_size.width,
+                    y: 150 + 40 * i
+                },
+                end : {
+                    x: cc.winSize.width+dimens.card_size.width,
+                    y: 350 - 40 * i
+                },
+                moveTime: 3
+            }
+        });
+    }
+});

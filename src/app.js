@@ -1,3 +1,4 @@
+var GENERATE_CARD_INTERVAL = 5;
 
 var MainLayer = cc.LayerColor.extend({
     sprite:null,
@@ -294,6 +295,7 @@ var MainLayer = cc.LayerColor.extend({
     },
     startNewRound:function(){
         this.model.set("status", "game");
+        this.model.generateCardCountDown = 0;
         this.handTypeLabel1.setVisible(false);
         this.handTypeLabel2.setVisible(false);
         this.winLoseLabel1.setVisible(false);
@@ -322,9 +324,12 @@ var MainLayer = cc.LayerColor.extend({
         var self = this;
         if ( this.schedulePerSec == null ) {
             this.schedulePerSec = function () {
-                if ( self.model.totalTime % 5 == 0 ) {
+                if ( self.model.get("status") != "game" ) return;
+                if ( self.model.generateCardCountDown <= 0 ) {
                     self.generateCards.call(self);
+                    self.model.generateCardCountDown = GENERATE_CARD_INTERVAL;
                 }
+                self.model.generateCardCountDown--;
                 self.model.totalTime++;
 
                 self.model.countDown--;
@@ -408,6 +413,7 @@ var GameModel = Backbone.Model.extend({
     initialize:function(){
         this.maxCountDown = 60;
         this.countDown = this.maxCountDown;
+        this.generateCardCountDown = 0;
         this.set("betRate", 1);
         this.set("status", "ready");
         this.totalTime = 0;
@@ -427,7 +433,11 @@ var GameModel = Backbone.Model.extend({
             new PatternModel(),
             new Pattern2Model(),
             new Pattern3Model(),
-            new Pattern4Model()
+            new Pattern4Model(),
+            new Pattern5Model(),
+            new Pattern6Model(),
+            new Pattern7Model(),
+            new Pattern8Model()
         ];
     },
     newDeck:function(){
