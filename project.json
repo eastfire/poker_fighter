@@ -3,12 +3,12 @@
 
     "debugMode" : 1,
     "showFPS" : false,
-    "frameRate" : 30,
+    "frameRate" : 60,
     "id" : "gameCanvas",
-    "renderMode" : 1,
+    "renderMode" : 0,
     "engineDir":"frameworks/cocos2d-html5",
 
-    "modules" : ["cocos2d", "ccui"],
+    "modules" : [ "audio","ccui", "menus"],
 
     "jsList" : [
         "src/libs/underscore-min.js",

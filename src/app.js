@@ -221,7 +221,7 @@ var MainLayer = cc.LayerColor.extend({
 
         this.winLoseLabel1.setVisible(true);
         this.winLoseLabel2.setVisible(true);
-        var money = this.model.get("betRate") * player1Feature.rate * player2Feature.rate;
+        var money = this.model.get("betRate") * (player1Feature.rate + player2Feature.rate);
         if ( player1Feature.power > player2Feature.power ) {
             this.winLoseLabel1.setString("WIN");
             this.winLoseLabel2.setString("LOSE");
