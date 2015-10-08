@@ -155,31 +155,31 @@ var PlayerModel = Backbone.Model.extend({
         if ( this.isFlushStraight(cards) ) {
             power = 10000 + cards[0].get("number") * 10 + (10 - cards[0].get("suit"));
             type = "同花顺";
-            rate = 100;
+            rate = 50;
         } else if ( theCard = this.is4ofAKind(cards) ) {
             power = 9000 + theCard.get("number") * 10 + (10 - theCard.get("suit"));
             type = "四条";
-            rate = 80;
+            rate = 40;
         } else if ( theCard = this.isFullHouse(cards) ) {
             power = 8000 + theCard.get("number") * 10 + (10 - theCard.get("suit"));
             type = "满堂红";
-            rate = 60;
+            rate = 30;
         } else if ( this.isFlush(cards) ) {
             power = 7000 + cards[0].get("number") * 10 + (10 - cards[0].get("suit"));
             type = "同花";
-            rate = 50;
+            rate = 20;
         } else if ( this.isStraight(cards) ) {
             power = 6000 + cards[0].get("number") * 10 + (10 - cards[0].get("suit"));
             type = "顺子";
-            rate = 40;
+            rate = 15;
         } else if ( theCard = this.is3ofAKind(cards) ) {
             power = 5000 + theCard.get("number") * 10 + (10 -theCard.get("suit"));
             type = "三条";
-            rate = 20;
+            rate = 10;
         } else if ( theCard = this.is2Pair(cards) ) {
             power = 4000 + theCard.get("number") * 10 + (10 -theCard.get("suit"));
             type = "两对";
-            rate = 5;
+            rate = 4;
         } else if ( theCard = this.isPair(cards) ) {
             power = 3000 + theCard.get("number") * 10 + (10 -theCard.get("suit"));
             type = "一对";
@@ -252,16 +252,18 @@ var PlayerSprite = cc.Sprite.extend({
         }
         this.addChild(moneySprite);
 
-        this.moneyLabel = new ccui.Text(this.model.get("money"), "Arial", 40 );
-        this.moneyLabel.enableOutline(colors.tableLabelOutline, 2);
-        this.moneyLabel.setTextColor(colors.tableLabel);
+        this.moneyLabel = new cc.LabelTTF(this.model.get("money"), "Arial", 40 );
+//        this.moneyLabel.enableOutline(colors.tableLabelOutline, 2);
+//        this.moneyLabel.setTextColor(colors.tableLabel);
         if ( this.model.get("position") == PLAYER_POSITION_DOWN ) {
             this.moneyLabel.attr({
+                color: colors.tableLabel,
                 x: 45,
                 y: 25
             });
         } else {
             this.moneyLabel.attr({
+                color: colors.tableLabel,
                 x: 405,
                 y: 775,
                 rotation: 180

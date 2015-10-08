@@ -2,13 +2,13 @@
     "project_type": "javascript",
 
     "debugMode" : 1,
-    "showFPS" : true,
+    "showFPS" : false,
     "frameRate" : 30,
     "id" : "gameCanvas",
     "renderMode" : 0,
     "engineDir":"frameworks/cocos2d-html5",
 
-    "modules" : [ "audio","ccui", "menus"],
+    "modules" : [ "audio","menus"],
 
     "jsList" : [
         "src/libs/underscore-min.js",
