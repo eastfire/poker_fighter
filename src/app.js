@@ -343,6 +343,7 @@ var MainLayer = cc.LayerColor.extend({
     },
     generateCards:function(){
         var pattern = this.model.getPattern();
+        var isOriginMirror = _.sample([0,1]);
         var mirrorType = _.sample([0,1]);
         var list = pattern.get("list");
         _.each(list, function(entry){
@@ -351,7 +352,7 @@ var MainLayer = cc.LayerColor.extend({
 
             var sprite = new PokerCardSprite({model: cardModel});
             sprite.attr({
-                x: entry.start.x,
+                x: isOriginMirror ? cc.winSize.width - entry.start.x : entry.start.x,
                 y: entry.start.y
             });
             if (sprite.y >= cc.winSize.height / 2) sprite.rotation = 180;
@@ -360,7 +361,7 @@ var MainLayer = cc.LayerColor.extend({
             if ( cardModel.get("number") === 14 ) moveTime /= 2;
             sprite.runAction(new cc.sequence(
                 new cc.delayTime(entry.time),
-                new cc.moveTo(moveTime, entry.end.x, entry.end.y ),
+                new cc.moveTo(moveTime, isOriginMirror ? cc.winSize.width - entry.end.x : entry.end.x, entry.end.y ),
                 new cc.callFunc(function(){
                     gameModel.destroyCard(cardModel);
                 },this)
@@ -430,14 +431,12 @@ var GameModel = Backbone.Model.extend({
         });
 
         this.patternPool = [
-            new PatternModel(),
-            new Pattern2Model(),
-            new Pattern3Model(),
-            new Pattern4Model(),
+//            new PatternModel(),
+//            new Pattern2Model(),
+//            new Pattern3Model(),
+//            new Pattern4Model(),
             new Pattern5Model(),
-            new Pattern6Model(),
-            new Pattern7Model(),
-            new Pattern8Model()
+            new Pattern6Model()
         ];
     },
     newDeck:function(){

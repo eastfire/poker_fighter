@@ -33,12 +33,12 @@ var Pattern2Model = PatternModel.extend({
             return {
                 time: time,
                 start : {
-                    x: cc.winSize.width+dimens.card_size.width,
-                    y: 150 + 40 * i
+                    x: -dimens.card_size.width,
+                    y: 350 - 40 * i
                 },
                 end : {
-                    x: -dimens.card_size.width,
-                    y: 150 + 40 * i
+                    x: cc.winSize.width+dimens.card_size.width,
+                    y: 350 - 40 * i
                 },
                 moveTime: 2.5
             }
@@ -59,9 +59,9 @@ var Pattern3Model = PatternModel.extend({
                 },
                 end : {
                     x: cc.winSize.width+dimens.card_size.width,
-                    y: 350 - 40 * i
+                    y: 150 + 40 * i
                 },
-                moveTime: 2.5
+                moveTime: 3
             }
         });
     }
@@ -75,14 +75,14 @@ var Pattern4Model = PatternModel.extend({
             return {
                 time: time,
                 start : {
+                    x: -dimens.card_size.width,
+                    y: 150 + 40 * i
+                },
+                end : {
                     x: cc.winSize.width+dimens.card_size.width,
                     y: 350 - 40 * i
                 },
-                end : {
-                    x: -dimens.card_size.width,
-                    y: 350 - 40 * i
-                },
-                moveTime: 2.5
+                moveTime: 3
             }
         });
     }
@@ -91,83 +91,67 @@ var Pattern4Model = PatternModel.extend({
 var Pattern5Model = PatternModel.extend({
     generateList:function(){
         var time = 0;
-        return _.map([0,1,2,3,4,5],function(i){
-            time += 0.5;
-            return {
-                time: time,
+        var ret = [];
+        for ( var i = 0; i < 3; i++ ) {
+            ret.push({
+                time : i*0.5,
                 start : {
-                    x: cc.winSize.width+dimens.card_size.width,
-                    y: 150 + 40 * i
+                    x: -dimens.card_size.width,
+                    y: 150 + 30 * i
                 },
                 end : {
-                    x: -dimens.card_size.width,
-                    y: 350 - 40 * i
+                    x: cc.winSize.width+dimens.card_size.width,
+                    y: 150 + 30 * i
                 },
-                moveTime: 3
-            }
-        });
+                moveTime: 2.5
+            });
+            ret.push({
+                time : i*0.5,
+                start : {
+                    x: -dimens.card_size.width,
+                    y: 350 - 30 * i
+                },
+                end : {
+                    x: cc.winSize.width+dimens.card_size.width,
+                    y: 350 - 30 * i
+                },
+                moveTime: 2.5
+            });
+        }
+        return ret;
     }
 });
 
 var Pattern6Model = PatternModel.extend({
     generateList:function(){
         var time = 0;
-        return _.map([0,1,2,3,4,5],function(i){
-            time += 0.5;
-            return {
-                time: time,
-                start : {
-                    x: cc.winSize.width+dimens.card_size.width,
-                    y: 350 - 40 * i
-                },
-                end : {
-                    x: -dimens.card_size.width,
-                    y: 150 + 40 * i
-                },
-                moveTime: 3
-            }
-        });
-    }
-});
-
-var Pattern7Model = PatternModel.extend({
-    generateList:function(){
-        var time = 0;
-        return _.map([0,1,2,3,4,5],function(i){
-            time += 0.5;
-            return {
-                time: time,
+        var ret = [];
+        for ( var i = 0; i < 3; i++ ) {
+            ret.push({
+                time : i*0.5,
                 start : {
                     x: -dimens.card_size.width,
-                    y: 350 - 40 * i
+                    y: 150 + 30 * (2-i)
                 },
                 end : {
                     x: cc.winSize.width+dimens.card_size.width,
-                    y: 150 + 40 * i
+                    y: 150 + 30 * (2-i)
                 },
-                moveTime: 3
-            }
-        });
-    }
-});
-
-var Pattern8Model = PatternModel.extend({
-    generateList:function(){
-        var time = 0;
-        return _.map([0,1,2,3,4,5],function(i){
-            time += 0.5;
-            return {
-                time: time,
+                moveTime: 2.5
+            });
+            ret.push({
+                time : i*0.5,
                 start : {
                     x: -dimens.card_size.width,
-                    y: 150 + 40 * i
+                    y: 350 - 30 * (2-i)
                 },
                 end : {
                     x: cc.winSize.width+dimens.card_size.width,
-                    y: 350 - 40 * i
+                    y: 350 - 30 * (2-i)
                 },
-                moveTime: 3
-            }
-        });
+                moveTime: 2.5
+            });
+        }
+        return ret;
     }
 });

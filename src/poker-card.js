@@ -56,6 +56,12 @@ var PokerCardSprite = cc.Sprite.extend({
                 //Check the click area
                 if (cc.rectContainsPoint(rect, locationInNode)) {
                     target.stopAllActions();
+                    target.speedX = 0;
+                    if ( target.y >= cc.winSize.height/2 ) {
+                        target.speedY = 1;
+                    } else {
+                        target.speedY = -1;
+                    }
                     return true;
                 }
                 return false;
