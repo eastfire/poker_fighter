@@ -356,7 +356,6 @@ var PlayerSprite = cc.Sprite.extend({
                 if ( this.model.get("position") == PLAYER_POSITION_UP ) {
                     realY = cc.winSize.height - realY;
                     realX = cc.winSize.width - realX;
-                    cardAngle = cardAngle + 180;
                 }
             } else {
                 angle = 0;

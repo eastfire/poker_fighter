@@ -7,72 +7,72 @@
             <key>card-back.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{608,2},{50,80}}</string>
+                <string>{{2,84},{57,80}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{50,80}}</string>
+                <string>{{0,0},{57,80}}</string>
                 <key>sourceSize</key>
-                <string>{50,80}</string>
+                <string>{57,80}</string>
             </dict>
             <key>card-club.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{54,84},{50,80}}</string>
+                <string>{{61,84},{57,80}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{50,80}}</string>
+                <string>{{0,0},{57,80}}</string>
                 <key>sourceSize</key>
-                <string>{50,80}</string>
+                <string>{57,80}</string>
             </dict>
             <key>card-diamond.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{712,2},{50,80}}</string>
+                <string>{{719,2},{57,80}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{50,80}}</string>
+                <string>{{0,0},{57,80}}</string>
                 <key>sourceSize</key>
-                <string>{50,80}</string>
+                <string>{57,80}</string>
             </dict>
             <key>card-heart.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{660,2},{50,80}}</string>
+                <string>{{660,2},{57,80}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{50,80}}</string>
+                <string>{{0,0},{57,80}}</string>
                 <key>sourceSize</key>
-                <string>{50,80}</string>
+                <string>{57,80}</string>
             </dict>
             <key>card-spade.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{764,2},{50,80}}</string>
+                <string>{{778,2},{57,80}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{50,80}}</string>
+                <string>{{0,0},{57,80}}</string>
                 <key>sourceSize</key>
-                <string>{50,80}</string>
+                <string>{57,80}</string>
             </dict>
             <key>fight.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{258,84},{301,300}}</string>
+                <string>{{272,84},{301,300}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -85,7 +85,7 @@
             <key>money.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{106,84},{150,92}}</string>
+                <string>{{120,84},{150,92}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -306,7 +306,7 @@
             <key>ready.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{561,84},{301,300}}</string>
+                <string>{{575,84},{301,300}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -358,7 +358,7 @@
             <key>token-red.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{2,84},{50,50}}</string>
+                <string>{{608,2},{50,50}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -376,9 +376,9 @@
             <key>realTextureFileName</key>
             <string>game.png</string>
             <key>size</key>
-            <string>{864,488}</string>
+            <string>{878,488}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:35ff669d7ed6cc736bccb453537e453b:580baf0104bbe1302fac6966eab2bbb7:b2cae276934292945ac49b6ea6cfb4fe$</string>
+            <string>$TexturePacker:SmartUpdate:609a8a746dc62bd165f1c188d4fc61be:b3fe53d114df4aafbdc3189d3550430c:b2cae276934292945ac49b6ea6cfb4fe$</string>
             <key>textureFileName</key>
             <string>game.png</string>
         </dict>

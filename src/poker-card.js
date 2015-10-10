@@ -34,13 +34,23 @@ var PokerCardSprite = cc.Sprite.extend({
         this.model = options.model;
         this.reverse = options.reverse;
 
+        this.setName(this.model.cid);
+
         this.numberSprite = new cc.Sprite();
         this.numberSprite.attr({
-            x: 25,
-            y: 55
+            x: dimens.card_number_position.x,
+            y: dimens.card_number_position.y
         });
-        this.setName(this.model.cid);
         this.addChild(this.numberSprite, 0);
+
+        this.numberDownSprite = new cc.Sprite();
+        this.numberDownSprite.attr({
+            x: dimens.card_size.width - dimens.card_number_position.x,
+            y: dimens.card_size.height - dimens.card_number_position.y,
+            rotation: 180
+        });
+        this.addChild(this.numberDownSprite, 0);
+
 
         var self = this;
         this.listener = cc.EventListener.create({
@@ -77,12 +87,6 @@ var PokerCardSprite = cc.Sprite.extend({
                 self.y += delta.y;
                 self.speedX = delta.x;
                 self.speedY = delta.y;
-                var midY = cc.winSize.height/2;
-                if ( self.rotation === 0 && self.y >= midY ) {
-                    target.runAction(new cc.rotateTo(times.rotateDirection, 180));
-                } else if ( self.rotation === 180 && self.y < midY ) {
-                    target.runAction(new cc.rotateTo(times.rotateDirection, 0));
-                }
             },
             //Process the touch end event
             onTouchEnded: function (touch, event) {
@@ -98,7 +102,6 @@ var PokerCardSprite = cc.Sprite.extend({
                     return;
                 }
 
-                var midY = cc.winSize.height/2;
                 var player1Y = dimens.player1Y;
                 var player2Y = dimens.player2Y;
 
@@ -107,72 +110,30 @@ var PokerCardSprite = cc.Sprite.extend({
 
                 var actionArray = []
                 if ( self.speedY > 0 ) {
-                    if ( target.y < midY ) {
-                        var pointX = self.getCrossPointX.call(self, midY);
-                        var time = Math.sqrt((target.x - pointX) * (target.x - pointX) + (target.y - midY) * (target.y - midY)) / speed;
-                        actionArray.push(new cc.moveTo(time, pointX, midY));
-
-                        var pointX2 = self.getCrossPointX.call(self, player2Y);
-                        var time2 = Math.sqrt((pointX2 - pointX) * (pointX2 - pointX) + (player2Y - midY) * (player2Y - midY)) / speed;
-                        actionArray.push(new cc.spawn(new cc.rotateTo(times.rotateDirection, 180),
-                            new cc.moveTo(time2, pointX2, player2Y)));
-                        if (pointX2 > -dimens.card_size.width / 2 && pointX2 < cc.winSize.width + dimens.card_size.width / 2) {
-                            actionArray.push(new cc.callFunc(function () {
-                                target.playerTakeCard.call(target, gameModel.player2);
-                            }, self));
-                        } else {
-                            actionArray.push(new cc.callFunc(function () {
-                                gameModel.destroyCard(target.model);
-                            }, self));
-                        }
+                    var pointX2 = self.getCrossPointX.call(self, player2Y);
+                    var time = Math.sqrt((target.x - pointX2) * (target.x - pointX2) + (target.y - player2Y) * (target.y - player2Y)) / speed;
+                    actionArray.push(new cc.moveTo(time, pointX2, player2Y));
+                    if (pointX2 > -dimens.card_size.width / 2 && pointX2 < cc.winSize.width + dimens.card_size.width / 2) {
+                        actionArray.push(new cc.callFunc(function () {
+                            target.playerTakeCard.call(target, gameModel.player2);
+                        }, self));
                     } else {
-                        var pointX2 = self.getCrossPointX.call(self, player2Y);
-                        var time = Math.sqrt((target.x - pointX2) * (target.x - pointX2) + (target.y - player2Y) * (target.y - player2Y)) / speed;
-                        actionArray.push(new cc.moveTo(time, pointX2, player2Y));
-
-                        if (pointX2 > -dimens.card_size.width / 2 && pointX2 < cc.winSize.width + dimens.card_size.width / 2) {
-                            actionArray.push(new cc.callFunc(function () {
-                                target.playerTakeCard.call(target, gameModel.player2);
-                            }, self));
-                        } else {
-                            actionArray.push(new cc.callFunc(function () {
-                                gameModel.destroyCard(target.model);
-                            }, self));
-                        }
+                        actionArray.push(new cc.callFunc(function () {
+                            gameModel.destroyCard(target.model);
+                        }, self));
                     }
                 } else if ( self.speedY < 0 ) {
-                    if ( target.y > midY ) {
-                        var pointX = self.getCrossPointX.call(self, midY);
-                        var time = Math.sqrt((target.x - pointX) * (target.x - pointX) + (target.y - midY) * (target.y - midY)) / speed;
-                        actionArray.push(new cc.moveTo(time, pointX, midY));
-
-                        var pointX2 = self.getCrossPointX.call(self, player1Y);
-                        var time2 = Math.sqrt((pointX2 - pointX) * (pointX2 - pointX) + (player1Y - midY) * (player1Y - midY)) / speed;
-                        actionArray.push(new cc.spawn(new cc.rotateTo(times.rotateDirection, 0),
-                            new cc.moveTo(time2, pointX2, player1Y)));
-                        if (pointX2 > -dimens.card_size.width / 2 && pointX2 < cc.winSize.width + dimens.card_size.width / 2) {
-                            actionArray.push(new cc.callFunc(function () {
-                                target.playerTakeCard.call(target, gameModel.player1);
-                            }, self));
-                        } else {
-                            actionArray.push(new cc.callFunc(function () {
-                                gameModel.destroyCard(target.model);
-                            }, self));
-                        }
+                    var pointX2 = self.getCrossPointX.call(self, player1Y);
+                    var time = Math.sqrt((target.x - pointX2) * (target.x - pointX2) + (target.y - player1Y) * (target.y - player1Y)) / speed;
+                    actionArray.push(new cc.moveTo(time, pointX2, player1Y));
+                    if (pointX2 > -dimens.card_size.width / 2 && pointX2 < cc.winSize.width + dimens.card_size.width / 2) {
+                        actionArray.push(new cc.callFunc(function () {
+                            target.playerTakeCard.call(target, gameModel.player1);
+                        }, self));
                     } else {
-                        var pointX2 = self.getCrossPointX.call(self, player1Y);
-                        var time = Math.sqrt((target.x - pointX2) * (target.x - pointX2) + (target.y - player1Y) * (target.y - player1Y)) / speed;
-                        actionArray.push(new cc.moveTo(time, pointX2, player1Y));
-
-                        if (pointX2 > -dimens.card_size.width / 2 && pointX2 < cc.winSize.width + dimens.card_size.width / 2) {
-                            actionArray.push(new cc.callFunc(function () {
-                                target.playerTakeCard.call(target, gameModel.player1);
-                            }, self));
-                        } else {
-                            actionArray.push(new cc.callFunc(function () {
-                                gameModel.destroyCard(target.model);
-                            }, self));
-                        }
+                        actionArray.push(new cc.callFunc(function () {
+                            gameModel.destroyCard(target.model);
+                        }, self));
                     }
                 } else if ( self.speedY == 0 ) {
                     if ( self.speedX < 0 ) {
@@ -211,6 +172,7 @@ var PokerCardSprite = cc.Sprite.extend({
     render:function(){
         this.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame("card-"+SUIT_ARRAY[this.model.get("suit")]+".png"));
         this.numberSprite.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame("number-"+this.model.get("number")+".png"));
+        this.numberDownSprite.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame("number-"+this.model.get("number")+".png"));
     },
     onEnter:function(){
         this._super();
@@ -238,6 +200,7 @@ var PokerCardSprite = cc.Sprite.extend({
         return new cc.sequence( new cc.scaleTo(times.flip/2, 0, oldScaleY), new cc.callFunc(function(){
             this.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame("card-"+SUIT_ARRAY[this.model.get("suit")]+".png"));
             this.numberSprite.setVisible(true);
+            this.numberDownSprite.setVisible(true);
         },this), new cc.scaleTo(times.flip/2,oldScaleX,oldScaleY));
     },
     getFlipToBackSequence:function(){
@@ -246,6 +209,7 @@ var PokerCardSprite = cc.Sprite.extend({
         return new cc.sequence( new cc.scaleTo(times.flip/2, 0, oldScaleY), new cc.callFunc(function(){
             this.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame("card-back.png"));
             this.numberSprite.setVisible(false);
+            this.numberDownSprite.setVisible(false);
         },this), new cc.scaleTo(times.flip/2,oldScaleX,oldScaleY));
     }
 });

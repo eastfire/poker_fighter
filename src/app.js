@@ -45,7 +45,7 @@ var MainLayer = cc.LayerColor.extend({
         this.betRateLabel1.attr({
             color: colors.tableLabel,
             x: cc.winSize.width,
-            y: cc.winSize.height/2-15,
+            y: cc.winSize.height/2-18,
             anchorX: 1
         });
         this.addChild(this.betRateLabel1, 0);
@@ -55,7 +55,7 @@ var MainLayer = cc.LayerColor.extend({
         this.betRateLabel2.attr({
             color: colors.tableLabel,
             x: cc.winSize.width,
-            y: cc.winSize.height/2+15,
+            y: cc.winSize.height/2+18,
             rotation: 180,
             anchorX: 0
         });
@@ -391,7 +391,6 @@ var MainLayer = cc.LayerColor.extend({
                 x: isOriginMirror ? cc.winSize.width - entry.start.x : entry.start.x,
                 y: entry.start.y
             });
-            if (sprite.y >= cc.winSize.height / 2) sprite.rotation = 180;
             this.addChild(sprite);
             var moveTime = entry.moveTime;
             if ( cardModel.get("number") === 14 ) moveTime /= 2;
@@ -422,7 +421,7 @@ var MainLayer = cc.LayerColor.extend({
                 endX = cc.winSize.width - entry.end.x;
                 endY = cc.winSize.height - entry.end.y;
             }
-            if (mirrorSprite.y >= cc.winSize.height / 2) mirrorSprite.rotation = 180;
+
             this.addChild(mirrorSprite);
             var moveTime = entry.moveTime;
             if ( mirrorCardModel.get("number") === 14 ) moveTime /= 2;
