@@ -13,14 +13,15 @@
     "jsList" : [
         "src/libs/underscore-min.js",
         "src/libs/backbone-min.js",
-        "src/libs/firebase.js",
         "src/libs/utils.js",
-        "src/libs/cocos-utils.js",
         "src/resource.js",
         "src/game-common.js",
         "src/pattern.js",
         "src/poker-card.js",
+        "src/skill.js",
+        "src/skill-select.js",
         "src/player.js",
+        "src/intro.js",
         "src/app.js"
     ]
 }

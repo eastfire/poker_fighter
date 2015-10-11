@@ -44,9 +44,10 @@ var MainLayer = cc.LayerColor.extend({
 //        this.betRateLabel1.setTextColor(colors.tableLabel);
         this.betRateLabel1.attr({
             color: colors.tableLabel,
-            x: cc.winSize.width,
-            y: cc.winSize.height/2-18,
-            anchorX: 1
+            x: cc.winSize.width/2,
+            y: cc.winSize.height/2,
+            //anchorX: 1,
+            anchorY: 1
         });
         this.addChild(this.betRateLabel1, 0);
         this.betRateLabel2 = new cc.LabelTTF("", "Arial", 30);//ccui.Text("", "Arial", 30 );
@@ -54,10 +55,11 @@ var MainLayer = cc.LayerColor.extend({
 //        this.betRateLabel2.setTextColor(colors.tableLabel);
         this.betRateLabel2.attr({
             color: colors.tableLabel,
-            x: cc.winSize.width,
-            y: cc.winSize.height/2+18,
+            x: cc.winSize.width/2,
+            y: cc.winSize.height/2,
             rotation: 180,
-            anchorX: 0
+            //anchorX: 0,
+            anchorY: 1
         });
         this.addChild(this.betRateLabel2, 0);
 
@@ -231,9 +233,9 @@ var MainLayer = cc.LayerColor.extend({
         var player1Feature = this.player1.getFeature();
         var player2Feature = this.player2.getFeature();
         this.handTypeLabel1.setVisible(true);
-        this.handTypeLabel1.setString( player1Feature.type );
+        this.handTypeLabel1.setString( texts.handTypeDisplayName[player1Feature.type] );
         this.handTypeLabel2.setVisible(true);
-        this.handTypeLabel2.setString( player2Feature.type );
+        this.handTypeLabel2.setString( texts.handTypeDisplayName[player2Feature.type] );
 
         this.winLoseLabel1.setVisible(true);
         this.winLoseLabel2.setVisible(true);
@@ -242,14 +244,22 @@ var MainLayer = cc.LayerColor.extend({
             this.winLoseLabel1.setString("WIN");
             this.winLoseLabel2.setString("LOSE");
             this.giveMoney(money, this.player2Sprite, this.player1Sprite);
+            cc.audioEngine.playEffect(res[player1Feature.type], false);
         } else {
             this.winLoseLabel1.setString("LOSE");
             this.winLoseLabel2.setString("WIN");
             this.giveMoney(money, this.player1Sprite, this.player2Sprite);
+            cc.audioEngine.playEffect(res[player2Feature.type], false);
         }
         this.scheduleOnce(function(){
             this.model.set("betRate", this.model.get("betRate") + 1);
-            this.startNewRound();
+            if ( this.player1.get("money") <= 0 ) {
+                this.gameOver();
+            } else if ( this.player2.get("money") <= 0 ) {
+                this.gameOver();
+            } else {
+                this.startNewRound();
+            }
         }, times.compare)
     },
     giveMoney:function(money, fromPlayerSprite, toPlayerSprite ){
@@ -442,6 +452,38 @@ var MainLayer = cc.LayerColor.extend({
             this.sound = 0.5;
         }
         cc.audioEngine.setEffectsVolume(this.sound);
+    },
+    gameOver:function(){
+        cc.audioEngine.playEffect(res.game_over_mp3, false);
+        this.betRateLabel1.setString("Game Over");
+        this.betRateLabel2.setString("Game Over");
+
+        this.betRateLabel1.runAction(new cc.spawn(new cc.moveTo(times.gameOver, cc.winSize.width/2, cc.winSize.height/2),
+        new cc.scaleTo(times.gameOver, 2,2)));
+        this.betRateLabel2.runAction(new cc.spawn(new cc.moveTo(times.gameOver, cc.winSize.width/2, cc.winSize.height/2),
+            new cc.scaleTo(times.gameOver, 2,2)));
+        this.handTypeLabel1.setVisible(false);
+        this.handTypeLabel2.setVisible(false);
+
+        this.player1Sprite.moneyLabel.runAction(new cc.spawn(new cc.moveTo(times.gameOver, cc.winSize.width/2, cc.winSize.height/2 - 250),
+            new cc.scaleTo(times.gameOver, 2,2)));
+        this.player2Sprite.moneyLabel.runAction(new cc.spawn(new cc.moveTo(times.gameOver, cc.winSize.width/2, cc.winSize.height/2 + 250),
+            new cc.scaleTo(times.gameOver, 2,2)));
+
+        cc.eventManager.addListener(cc.EventListener.create({
+            event: cc.EventListener.TOUCH_ONE_BY_ONE,
+            swallowTouches: true,
+            onTouchBegan: function (touch, event) {
+                return true;
+            },
+            //Trigger when moving touch
+            onTouchMoved: function (touch, event) {
+            },
+            //Process the touch end event
+            onTouchEnded: function (touch, event) {
+                cc.director.runScene(new IntroScene());
+            }
+        }), this);
     }
 });
 

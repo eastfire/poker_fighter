@@ -154,43 +154,43 @@ var PlayerModel = Backbone.Model.extend({
         var power, type, theCard, rate;
         if ( this.isFlushStraight(cards) ) {
             power = 10000 + cards[0].get("number") * 10 + (10 - cards[0].get("suit"));
-            type = "同花顺";
+            type = "flush-straight"
             rate = 50;
         } else if ( theCard = this.is4ofAKind(cards) ) {
             power = 9000 + theCard.get("number") * 10 + (10 - theCard.get("suit"));
-            type = "四条";
+            type = "four-of-a-kind";
             rate = 40;
         } else if ( theCard = this.isFullHouse(cards) ) {
             power = 8000 + theCard.get("number") * 10 + (10 - theCard.get("suit"));
-            type = "满堂红";
+            type = "full-house";
             rate = 30;
         } else if ( this.isFlush(cards) ) {
             power = 7000 + cards[0].get("number") * 10 + (10 - cards[0].get("suit"));
-            type = "同花";
+            type = "flush";
             rate = 20;
         } else if ( this.isStraight(cards) ) {
             power = 6000 + cards[0].get("number") * 10 + (10 - cards[0].get("suit"));
-            type = "顺子";
+            type = "straight";
             rate = 15;
         } else if ( theCard = this.is3ofAKind(cards) ) {
             power = 5000 + theCard.get("number") * 10 + (10 -theCard.get("suit"));
-            type = "三条";
+            type = "three-of-a-kind";
             rate = 10;
         } else if ( theCard = this.is2Pair(cards) ) {
             power = 4000 + theCard.get("number") * 10 + (10 -theCard.get("suit"));
-            type = "两对";
+            type = "two-pair";
             rate = 4;
         } else if ( theCard = this.isPair(cards) ) {
             power = 3000 + theCard.get("number") * 10 + (10 -theCard.get("suit"));
-            type = "一对";
+            type = "one-pair";
             rate = 2;
         } else if ( cards[0].get("number") > 0 ) {
             power = 2000 + cards[0].get("number") * 10 + (10 -cards[0].get("suit"));
-            type = "散牌";
+            type = "high-card";
             rate = 1;
         } else {
             power = 0;
-            type = "没牌";
+            type = "no-card";
             rate = 1;
         }
         return {

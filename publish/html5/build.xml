@@ -117,14 +117,15 @@
             <sources dir="${basedir}">
                 <file name="src/libs/underscore-min.js"/>
                 <file name="src/libs/backbone-min.js"/>
-                <file name="src/libs/firebase.js"/>
                 <file name="src/libs/utils.js"/>
-                <file name="src/libs/cocos-utils.js"/>
                 <file name="src/resource.js"/>
                 <file name="src/game-common.js"/>
                 <file name="src/pattern.js"/>
                 <file name="src/poker-card.js"/>
+                <file name="src/skill.js"/>
+                <file name="src/skill-select.js"/>
                 <file name="src/player.js"/>
+                <file name="src/intro.js"/>
                 <file name="src/app.js"/>
                 <file name="main.js"/>
 

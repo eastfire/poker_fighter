@@ -6,7 +6,17 @@ var res = {
     fight_mp3: "res/fight.mp3",
     countdown3_mp3: "res/countdown-3.mp3",
     countdown2_mp3: "res/countdown-2.mp3",
-    countdown1_mp3: "res/countdown-1.mp3"
+    countdown1_mp3: "res/countdown-1.mp3",
+    game_over_mp3: "res/game-over.mp3",
+    "flush-straight": "res/flush-straight.mp3",
+    "four-of-a-kind": "res/four-of-a-kind.mp3",
+    "full-house": "res/full-house.mp3",
+    "flush": "res/flush.mp3",
+    "straight": "res/straight.mp3",
+    "three-of-a-kind": "res/three-of-a-kind.mp3",
+    "two-pair": "res/two-pair.mp3",
+    "one-pair": "res/one-pair.mp3",
+    "high-card": "res/high-card.mp3"
 };
 
 var g_resources = [];
@@ -15,7 +25,18 @@ for (var i in res) {
 }
 
 var texts = {
-
+    handTypeDisplayName : {
+        "flush-straight":"同花顺",
+        "four-of-a-kind":"四条",
+        "full-house":"满堂红",
+        "flush":"同花",
+        "straight":"顺子",
+        "three-of-a-kind":"三条",
+        "two-pair":"两对",
+        "one-pair":"一对",
+        "high-card":"散牌",
+        "no-card":"没牌"
+    }
 };
 
 var colors = {
@@ -31,7 +52,8 @@ var times = {
     takeCard: 0.3,
     rotateDirection: 0.1,
     compare: 3.5,
-    giveMoney: 0.4
+    giveMoney: 0.4,
+    gameOver: 0.9
 };
 
 var dimens = {
