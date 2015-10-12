@@ -26,7 +26,7 @@ for (var i in res) {
 
 var texts = {
     handTypeDisplayName : {
-        "flush-straight":"同花顺",
+        "straight-flush":"同花顺",
         "four-of-a-kind":"四条",
         "full-house":"满堂红",
         "flush":"同花",
