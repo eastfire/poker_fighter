@@ -387,6 +387,15 @@ var MainLayer = cc.LayerColor.extend({
         }
         this.schedule(this.schedulePerSec, 1);
     },
+    speedAdjust:function(moveTime, player){
+        if ( player.get("speedUp") ) {
+            moveTime /= 2;
+        }
+        if ( player.get("speedDown") ) {
+            moveTime *= 2;
+        }
+        return moveTime;
+    },
     generateCards:function(){
         var pattern = this.model.getPattern();
         var isOriginMirror = _.sample([0,1]);
@@ -404,6 +413,11 @@ var MainLayer = cc.LayerColor.extend({
             this.addChild(sprite);
             var moveTime = entry.moveTime;
             if ( cardModel.get("number") === 14 ) moveTime /= 2;
+            if ( sprite.y > cc.winSize.height/2 ) {
+                moveTime = this.speedAdjust(moveTime, gameModel.player2);
+            } else {
+                moveTime = this.speedAdjust(moveTime, gameModel.player1);
+            }
             sprite.runAction(new cc.sequence(
                 new cc.delayTime(entry.time),
                 new cc.moveTo(moveTime, isOriginMirror ? cc.winSize.width - entry.end.x : entry.end.x, entry.end.y ),
@@ -435,6 +449,11 @@ var MainLayer = cc.LayerColor.extend({
             this.addChild(mirrorSprite);
             var moveTime = entry.moveTime;
             if ( mirrorCardModel.get("number") === 14 ) moveTime /= 2;
+            if ( mirrorSprite.y > cc.winSize.height/2 ) {
+                moveTime = this.speedAdjust(moveTime, gameModel.player2);
+            } else {
+                moveTime = this.speedAdjust(moveTime, gameModel.player1);
+            }
             mirrorSprite.runAction(new cc.sequence(
                 new cc.delayTime(entry.time),
                 new cc.moveTo(moveTime, endX, endY ),

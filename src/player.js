@@ -45,7 +45,9 @@ var PlayerModel = Backbone.Model.extend({
     defaults:function(){
         return {
             money : 1000,
-            hands: []
+            hands: [],
+            speedDown: 0,
+            speedUp: 0
         }
     },
     addHand:function(cardModel){
