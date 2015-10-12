@@ -8,7 +8,7 @@ var res = {
     countdown2_mp3: "res/countdown-2.mp3",
     countdown1_mp3: "res/countdown-1.mp3",
     game_over_mp3: "res/game-over.mp3",
-    "flush-straight": "res/flush-straight.mp3",
+    "straight-flush": "res/straight-flush.mp3",
     "four-of-a-kind": "res/four-of-a-kind.mp3",
     "full-house": "res/full-house.mp3",
     "flush": "res/flush.mp3",

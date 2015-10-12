@@ -154,7 +154,7 @@ var PlayerModel = Backbone.Model.extend({
         var power, type, theCard, rate;
         if ( this.isFlushStraight(cards) ) {
             power = 10000 + cards[0].get("number") * 10 + (10 - cards[0].get("suit"));
-            type = "flush-straight"
+            type = "straight-flush"
             rate = 50;
         } else if ( theCard = this.is4ofAKind(cards) ) {
             power = 9000 + theCard.get("number") * 10 + (10 - theCard.get("suit"));
