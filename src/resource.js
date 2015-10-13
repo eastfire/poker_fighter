@@ -58,12 +58,12 @@ var times = {
 
 var dimens = {
     card_size: {
-        width: 57,
-        height: 80
+        width: 50,
+        height: 70
     },
     card_number_position:{
-        x: 38,
-        y: 65
+        x: 34,
+        y: 56
     },
     player1Y : 95,
     player2Y : 705,
@@ -82,6 +82,6 @@ var dimens = {
         y: 380
     },
 
-    hand_line_card_padding : -5,
+    hand_line_card_padding : 0,
     hand_line_width: 450
 };
