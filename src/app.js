@@ -21,12 +21,18 @@ var MainLayer = cc.LayerColor.extend({
             model : this.player2
         }));
 
+        var bound = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("player-bound.png"));
+        bound.attr({
+            x: cc.winSize.width/2,
+            y: cc.winSize.height/2
+        });
+        this.addChild(bound);
 
         var pauseItem = new cc.MenuItemImage(
             cc.spriteFrameCache.getSpriteFrame("pause-default.png"),
             cc.spriteFrameCache.getSpriteFrame("pause-press.png"),
             function () {
-
+                cc.director.pushScene(new PauseMenuScene());
             }, this);
         pauseItem.attr({
             x: 0,
@@ -489,6 +495,8 @@ var MainLayer = cc.LayerColor.extend({
         this.player2Sprite.moneyLabel.runAction(new cc.spawn(new cc.moveTo(times.gameOver, cc.winSize.width/2, cc.winSize.height/2 + 250),
             new cc.scaleTo(times.gameOver, 2,2)));
 
+        gameModel.off();
+        gameModel = null;
         cc.eventManager.addListener(cc.EventListener.create({
             event: cc.EventListener.TOUCH_ONE_BY_ONE,
             swallowTouches: true,
@@ -587,6 +595,60 @@ var GameModel = Backbone.Model.extend({
         return _.sample( this.patternPool );
     }
 })
+
+var PauseMenuLayer = cc.LayerColor.extend({
+    ctor:function(){
+        this._super(colors.table);
+
+        var resumeItem = new cc.MenuItemImage(
+            cc.spriteFrameCache.getSpriteFrame("resume-default.png"),
+            cc.spriteFrameCache.getSpriteFrame("resume-press.png"),
+            function () {
+                cc.director.popScene();
+            }, this);
+        resumeItem.attr({
+            x: cc.winSize.width/2,
+            y: cc.winSize.height/2 - 250
+        });
+
+        var restartItem = new cc.MenuItemImage(
+            cc.spriteFrameCache.getSpriteFrame("restart-default.png"),
+            cc.spriteFrameCache.getSpriteFrame("restart-press.png"),
+            function () {
+                window.gameModel = null;
+                cc.director.runScene(new MainScene());
+            }, this);
+        restartItem.attr({
+            x: cc.winSize.width/2,
+            y: cc.winSize.height/2
+        });
+
+        var exitItem = new cc.MenuItemImage(
+            cc.spriteFrameCache.getSpriteFrame("exit-default.png"),
+            cc.spriteFrameCache.getSpriteFrame("exit-press.png"),
+            function () {
+                window.gameModel = null;
+                cc.director.runScene(new IntroScene());
+            }, this);
+        exitItem.attr({
+            x: cc.winSize.width/2,
+            y: cc.winSize.height/2 + 250
+        });
+
+        var menu = new cc.Menu([exitItem, restartItem, resumeItem ]);
+        menu.x = 0;
+        menu.y = 0;
+        this.addChild(menu);
+    }
+})
+
+var PauseMenuScene = cc.Scene.extend({
+    onEnter:function () {
+        this._super();
+        var layer = new PauseMenuLayer();
+        this.addChild(layer);
+    }
+});
 
 var MainScene = cc.Scene.extend({
     onEnter:function () {
