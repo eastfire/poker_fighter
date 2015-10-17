@@ -35,6 +35,7 @@ var PokerCardSprite = cc.Sprite.extend({
         this.reverse = options.reverse;
 
         this.setName(this.model.cid);
+	this.movingAction = null;
 
         this.numberSprite = new cc.Sprite();
         this.numberSprite.attr({
@@ -110,16 +111,16 @@ var PokerCardSprite = cc.Sprite.extend({
                             this.playerTakeCard.call(this, gameModel.player2);
                         }, target);
                         var midTime = (target.y - midY ) * totalTime / (target.y - player2Y);
-                        target.runAction( new cc.sequence(new cc.delayTime(midTime),
-                        new cc.callFunc(function(){
+                        target.runAction( new cc.Sequence(new cc.DelayTime(midTime),
+                        new cc.CallFunc(function(){
                             //check speed
                             var speedScale = this.getSpeedScale(gameModel.player2);
                             if ( speedScale != this.speedScale ) {
                                 this.stopAllActions();
                                 var speed = this.getSpeed(gameModel.player2);
                                 var newTime = Math.sqrt((this.x - this.destX) * (this.x - this.destX) + (this.y - this.destY) * (this.y - this.destY)) / speed;
-                                this.runAction(new cc.sequence( new cc.moveTo( newTime, this.destX, this.destY ),
-                                new cc.callFunc(function(){
+                                this.runAction(new cc.Sequence( new cc.MoveTo( newTime, this.destX, this.destY ),
+                                new cc.CallFunc(function(){
                                     if ( this.destX > -dimens.card_size.width / 2 && this.destX < cc.winSize.width + dimens.card_size.width / 2 ) {
                                         this.playerTakeCard.call(this, gameModel.player2);
                                     } else {
@@ -139,16 +140,16 @@ var PokerCardSprite = cc.Sprite.extend({
                             this.playerTakeCard.call(this, gameModel.player1);
                         }, target);
                         var midTime = (target.y - midY ) * totalTime / (target.y - player1Y);
-                        target.runAction( new cc.sequence(new cc.delayTime(midTime),
-                            new cc.callFunc(function(){
+                        target.runAction( new cc.Sequence(new cc.DelayTime(midTime),
+                            new cc.CallFunc(function(){
                                 //check speed
                                 var speedScale = this.getSpeedScale(gameModel.player1);
                                 if ( speedScale != this.speedScale ) {
                                     this.stopAllActions();
                                     var speed = this.getSpeed(gameModel.player1);
                                     var newTime = Math.sqrt((this.x - this.destX) * (this.x - this.destX) + (this.y - this.destY) * (this.y - this.destY)) / speed;
-                                    this.runAction(new cc.sequence( new cc.moveTo( newTime, this.destX, this.destY ),
-                                        new cc.callFunc(function(){
+                                    this.runAction(new cc.Sequence( new cc.MoveTo( newTime, this.destX, this.destY ),
+                                        new cc.CallFunc(function(){
                                             if ( this.destX > -dimens.card_size.width / 2 && this.destX < cc.winSize.width + dimens.card_size.width / 2 ) {
                                                 this.playerTakeCard.call(this, gameModel.player1);
                                             } else {
@@ -167,18 +168,18 @@ var PokerCardSprite = cc.Sprite.extend({
                     var speed = target.y < midY ? target.getSpeed(gameModel.player1) : target.getSpeed(gameModel.player2);
                     if ( target.speedX < 0 ) {
                         var time = ( target.x - ( - dimens.card_size.width/2 ) ) / speed;
-                        actionArray.push(new cc.moveTo(time, - dimens.card_size.width/2, target.y));
-                        actionArray.push(new cc.callFunc(function () {
+                        actionArray.push(new cc.MoveTo(time, - dimens.card_size.width/2, target.y));
+                        actionArray.push(new cc.CallFunc(function () {
                             gameModel.destroyCard(target.model);
                         }, target));
                     } else if ( target.speedX > 0 ) {
                         var time = ( cc.winSize.width + dimens.card_size.width/2 - target.x ) / speed;
-                        actionArray.push(new cc.moveTo(time, cc.winSize.width + dimens.card_size.width/2, target.y));
-                        actionArray.push(new cc.callFunc(function () {
+                        actionArray.push(new cc.MoveTo(time, cc.winSize.width + dimens.card_size.width/2, target.y));
+                        actionArray.push(new cc.CallFunc(function () {
                             gameModel.destroyCard(target.model);
                         }, target));
                     }
-                    target.runAction( new cc.sequence(actionArray) );
+                    target.runAction( new cc.Sequence(actionArray) );
                 }
             }
         });
@@ -222,15 +223,15 @@ var PokerCardSprite = cc.Sprite.extend({
         var time = Math.sqrt((this.x - pointX) * (this.x - pointX) + (this.y - lineY) * (this.y - lineY)) / speed;
         this.destX = pointX;
         this.destY = lineY;
-        actionArray.push(new cc.moveTo(time, pointX, lineY));
+        actionArray.push(new cc.MoveTo(time, pointX, lineY));
         if (pointX > -dimens.card_size.width / 2 && pointX < cc.winSize.width + dimens.card_size.width / 2) {
-            actionArray.push(new cc.callFunc(callback, context));
+            actionArray.push(new cc.CallFunc(callback, context));
         } else {
-            actionArray.push(new cc.callFunc(function () {
+            actionArray.push(new cc.CallFunc(function () {
                 gameModel.destroyCard(this.model);
             }, this));
         }
-        this.runAction( new cc.sequence(actionArray) );
+        this.runAction( new cc.Sequence(actionArray) );
         return time;
     },
     getCrossPointX:function(lineY){
@@ -264,19 +265,19 @@ var PokerCardSprite = cc.Sprite.extend({
     getFlipToFrontSequence:function(){
         var oldScaleX = 1;
         var oldScaleY = 1;
-        return new cc.sequence( new cc.scaleTo(times.flip/2, 0, oldScaleY), new cc.callFunc(function(){
+        return new cc.Sequence( new cc.ScaleTo(times.flip/2, 0, oldScaleY), new cc.CallFunc(function(){
             this.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame("card-"+SUIT_ARRAY[this.model.get("suit")]+".png"));
             this.numberSprite.setVisible(true);
             this.numberDownSprite.setVisible(true);
-        },this), new cc.scaleTo(times.flip/2,oldScaleX,oldScaleY));
+        },this), new cc.ScaleTo(times.flip/2,oldScaleX,oldScaleY));
     },
     getFlipToBackSequence:function(){
         var oldScaleX = 1;
         var oldScaleY = 1;
-        return new cc.sequence( new cc.scaleTo(times.flip/2, 0, oldScaleY), new cc.callFunc(function(){
+        return new cc.Sequence( new cc.ScaleTo(times.flip/2, 0, oldScaleY), new cc.CallFunc(function(){
             this.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame("card-back.png"));
             this.numberSprite.setVisible(false);
             this.numberDownSprite.setVisible(false);
-        },this), new cc.scaleTo(times.flip/2,oldScaleX,oldScaleY));
+        },this), new cc.ScaleTo(times.flip/2,oldScaleX,oldScaleY));
     }
 });

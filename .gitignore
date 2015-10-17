@@ -2,3 +2,6 @@ raw
 public/android
 .idea
 frameworks
+*.swp
+*/*.swp
+

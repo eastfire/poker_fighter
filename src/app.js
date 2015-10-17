@@ -134,21 +134,21 @@ var MainLayer = cc.LayerColor.extend({
                 y:cc.winSize.height/2
             })
             this.addChild(this.chipSprite);
-            this.chipSprite.runAction(new cc.sequence(
-                new cc.callFunc(function () {
+            this.chipSprite.runAction(new cc.Sequence(
+                new cc.CallFunc(function () {
                     cc.audioEngine.playEffect(res.ready_mp3, false);
                 }, this),
-                new cc.delayTime(0.4),
-                new cc.scaleTo(0.2, 1, 0),
-                new cc.callFunc(function () {
+                new cc.DelayTime(0.4),
+                new cc.ScaleTo(0.2, 1, 0),
+                new cc.CallFunc(function () {
                     this.chipSprite.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame("fight.png"));
                 }, this),
-                new cc.scaleTo(0.2, 1, 1),
-                new cc.callFunc(function () {
+                new cc.ScaleTo(0.2, 1, 1),
+                new cc.CallFunc(function () {
                     cc.audioEngine.playEffect(res.fight_mp3, false);
                 }, this),
-                new cc.delayTime(0.5),
-                new cc.callFunc(function () {
+                new cc.DelayTime(0.5),
+                new cc.CallFunc(function () {
                     this.chipSprite.removeFromParent(true);
                     this.startNewRound();
                 }, this)
@@ -171,7 +171,7 @@ var MainLayer = cc.LayerColor.extend({
 
     },
     onBetRateChange:function(){
-        var seq = new cc.sequence(new cc.scaleTo(0.2,2,2),new cc.scaleTo(0.2,1,1));
+        var seq = new cc.Sequence(new cc.ScaleTo(0.2,2,2),new cc.ScaleTo(0.2,1,1));
         this.betRateLabel1.runAction(seq.clone());
         this.betRateLabel2.runAction(seq.clone());
         this.renderBetRate();
@@ -200,12 +200,12 @@ var MainLayer = cc.LayerColor.extend({
             scaleY: 1
         });
         var scaleRate = 3;
-        this.countDownLabel.runAction( new cc.sequence(
-            new cc.callFunc(function(){
+        this.countDownLabel.runAction( new cc.Sequence(
+            new cc.CallFunc(function(){
                 cc.audioEngine.playEffect(res.countdown3_mp3, false);
             },this),
-            new cc.scaleTo(1, scaleRate, scaleRate),
-            new cc.callFunc(function(){
+            new cc.ScaleTo(1, scaleRate, scaleRate),
+            new cc.CallFunc(function(){
                 cc.audioEngine.playEffect(res.countdown2_mp3, false);
                 this.countDownLabel.setString(2);
                 this.countDownLabel.attr({
@@ -213,8 +213,8 @@ var MainLayer = cc.LayerColor.extend({
                     scaleY: 1
                 });
             },this),
-            new cc.scaleTo(1, scaleRate, scaleRate),
-            new cc.callFunc(function(){
+            new cc.ScaleTo(1, scaleRate, scaleRate),
+            new cc.CallFunc(function(){
                 cc.audioEngine.playEffect(res.countdown1_mp3, false);
                 this.countDownLabel.setString(1);
                 this.countDownLabel.attr({
@@ -222,8 +222,8 @@ var MainLayer = cc.LayerColor.extend({
                     scaleY: 1
                 });
             },this),
-            new cc.scaleTo(1, scaleRate, scaleRate),
-            new cc.callFunc(function(){
+            new cc.ScaleTo(1, scaleRate, scaleRate),
+            new cc.CallFunc(function(){
                 this.countDownLabel.setVisible(false);
                 this.model.clearNotOwnedCards();
                 this.compareHands();
@@ -288,13 +288,13 @@ var MainLayer = cc.LayerColor.extend({
             });
             this.addChild(sprite, time);
             (function(sprite) {
-                sprite.runAction(new cc.sequence(
-                    new cc.delayTime(time),
-                    new cc.callFunc(function () {
+                sprite.runAction(new cc.Sequence(
+                    new cc.DelayTime(time),
+                    new cc.CallFunc(function () {
                         fromPlayerSprite.model.set("money", fromPlayerSprite.model.get("money") - 100);
                     }, this),
-                    new cc.moveTo(times.giveMoney, toPlayerSprite.moneyLabel.x, toPlayerSprite.moneyLabel.y),
-                    new cc.callFunc(function () {
+                    new cc.MoveTo(times.giveMoney, toPlayerSprite.moneyLabel.x, toPlayerSprite.moneyLabel.y),
+                    new cc.CallFunc(function () {
                         toPlayerSprite.model.set("money", toPlayerSprite.model.get("money") + 100);
                         sprite.removeFromParent(true);
                     }, this)
@@ -310,13 +310,13 @@ var MainLayer = cc.LayerColor.extend({
             });
             this.addChild(sprite, time);
             (function(sprite) {
-                sprite.runAction(new cc.sequence(
-                    new cc.delayTime(time),
-                    new cc.callFunc(function () {
+                sprite.runAction(new cc.Sequence(
+                    new cc.DelayTime(time),
+                    new cc.CallFunc(function () {
                         fromPlayerSprite.model.set("money", fromPlayerSprite.model.get("money") - 10);
                     }, this),
-                    new cc.moveTo(times.giveMoney, toPlayerSprite.moneyLabel.x, toPlayerSprite.moneyLabel.y),
-                    new cc.callFunc(function () {
+                    new cc.MoveTo(times.giveMoney, toPlayerSprite.moneyLabel.x, toPlayerSprite.moneyLabel.y),
+                    new cc.CallFunc(function () {
                         toPlayerSprite.model.set("money", toPlayerSprite.model.get("money") + 10);
                         sprite.removeFromParent(true);
                     }, this)
@@ -332,13 +332,13 @@ var MainLayer = cc.LayerColor.extend({
             });
             this.addChild(sprite, time);
             (function(sprite) {
-                sprite.runAction(new cc.sequence(
-                    new cc.delayTime(time),
-                    new cc.callFunc(function () {
+                sprite.runAction(new cc.Sequence(
+                    new cc.DelayTime(time),
+                    new cc.CallFunc(function () {
                         fromPlayerSprite.model.set("money", fromPlayerSprite.model.get("money") - 1);
                     }, this),
-                    new cc.moveTo(times.giveMoney, toPlayerSprite.moneyLabel.x, toPlayerSprite.moneyLabel.y),
-                    new cc.callFunc(function () {
+                    new cc.MoveTo(times.giveMoney, toPlayerSprite.moneyLabel.x, toPlayerSprite.moneyLabel.y),
+                    new cc.CallFunc(function () {
                         toPlayerSprite.model.set("money", toPlayerSprite.model.get("money") + 1);
                         sprite.removeFromParent(true);
                     }, this)
@@ -424,10 +424,10 @@ var MainLayer = cc.LayerColor.extend({
             } else {
                 moveTime = this.speedAdjust(moveTime, gameModel.player1);
             }
-            sprite.runAction(new cc.sequence(
-                new cc.delayTime(entry.time),
-                new cc.moveTo(moveTime, isOriginMirror ? cc.winSize.width - entry.end.x : entry.end.x, entry.end.y ),
-                new cc.callFunc(function(){
+            sprite.runAction(new cc.Sequence(
+                new cc.DelayTime(entry.time),
+                new cc.MoveTo(moveTime, isOriginMirror ? cc.winSize.width - entry.end.x : entry.end.x, entry.end.y ),
+                new cc.CallFunc(function(){
                     gameModel.destroyCard(cardModel);
                 },this)
             ));
@@ -460,10 +460,10 @@ var MainLayer = cc.LayerColor.extend({
             } else {
                 moveTime = this.speedAdjust(moveTime, gameModel.player1);
             }
-            mirrorSprite.runAction(new cc.sequence(
-                new cc.delayTime(entry.time),
-                new cc.moveTo(moveTime, endX, endY ),
-                new cc.callFunc(function(){
+            mirrorSprite.runAction(new cc.Sequence(
+                new cc.DelayTime(entry.time),
+                new cc.MoveTo(moveTime, endX, endY ),
+                new cc.CallFunc(function(){
                     gameModel.destroyCard(mirrorCardModel);
                 },this)
             ));
@@ -483,17 +483,17 @@ var MainLayer = cc.LayerColor.extend({
         this.betRateLabel1.setString("Game Over");
         this.betRateLabel2.setString("Game Over");
 
-        this.betRateLabel1.runAction(new cc.spawn(new cc.moveTo(times.gameOver, cc.winSize.width/2, cc.winSize.height/2),
-        new cc.scaleTo(times.gameOver, 2,2)));
-        this.betRateLabel2.runAction(new cc.spawn(new cc.moveTo(times.gameOver, cc.winSize.width/2, cc.winSize.height/2),
-            new cc.scaleTo(times.gameOver, 2,2)));
+        this.betRateLabel1.runAction(new cc.Spawn(new cc.MoveTo(times.gameOver, cc.winSize.width/2, cc.winSize.height/2),
+        new cc.ScaleTo(times.gameOver, 2,2)));
+        this.betRateLabel2.runAction(new cc.Spawn(new cc.MoveTo(times.gameOver, cc.winSize.width/2, cc.winSize.height/2),
+            new cc.ScaleTo(times.gameOver, 2,2)));
         this.handTypeLabel1.setVisible(false);
         this.handTypeLabel2.setVisible(false);
 
-        this.player1Sprite.moneyLabel.runAction(new cc.spawn(new cc.moveTo(times.gameOver, cc.winSize.width/2, cc.winSize.height/2 - 250),
-            new cc.scaleTo(times.gameOver, 2,2)));
-        this.player2Sprite.moneyLabel.runAction(new cc.spawn(new cc.moveTo(times.gameOver, cc.winSize.width/2, cc.winSize.height/2 + 250),
-            new cc.scaleTo(times.gameOver, 2,2)));
+        this.player1Sprite.moneyLabel.runAction(new cc.Spawn(new cc.MoveTo(times.gameOver, cc.winSize.width/2, cc.winSize.height/2 - 250),
+            new cc.ScaleTo(times.gameOver, 2,2)));
+        this.player2Sprite.moneyLabel.runAction(new cc.Spawn(new cc.MoveTo(times.gameOver, cc.winSize.width/2, cc.winSize.height/2 + 250),
+            new cc.ScaleTo(times.gameOver, 2,2)));
 
         gameModel.off();
         gameModel = null;

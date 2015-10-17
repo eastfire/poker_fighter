@@ -8,7 +8,7 @@
     "renderMode" : 0,
     "engineDir":"frameworks/cocos2d-html5",
 
-    "modules" : [ "audio","menus"],
+    "modules" : [ "cocos2d"],
 
     "jsList" : [
         "src/libs/underscore-min.js",

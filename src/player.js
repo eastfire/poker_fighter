@@ -364,10 +364,10 @@ var PlayerSprite = cc.Sprite.extend({
                 realX = x;
                 realY = y;
             }
-            if ( sprite ) {
+            if ( sprite != null ) {
                 if ( sprite.x != x || sprite.y != y) {
-                    if ( sprite.movingAction ) sprite.stopAction(sprite.movingAction);
-                    sprite.movingAction = new cc.spawn(new cc.moveTo(times.card_sort, realX, realY), new cc.rotateTo(times.card_sort, cardAngle));
+                    if ( sprite.movingAction != null ) sprite.stopAction(sprite.movingAction);
+                    sprite.movingAction = new cc.Spawn(new cc.MoveTo(times.card_sort, realX, realY), new cc.RotateTo(times.card_sort, cardAngle, cardAngle));
                     if ( sprite.isNewHand ) {
                         if ( !this.showHand ) {
                             sprite.runAction(sprite.getFlipToBackSequence());
@@ -395,10 +395,12 @@ var PlayerSprite = cc.Sprite.extend({
 
         _.each(cards,function(cardModel){
             var sprite = this.getParent().getChildByName(cardModel.cid);
-            if ( this.showHand ) {
-                sprite.runAction(sprite.getFlipToFrontSequence());
-            } else {
-                sprite.runAction(sprite.getFlipToBackSequence());
+            if ( sprite != null ) {
+                if ( this.showHand ) {
+                    sprite.runAction(sprite.getFlipToFrontSequence());
+                } else {
+                    sprite.runAction(sprite.getFlipToBackSequence());
+                }
             }
         }, this);
     },
