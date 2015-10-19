@@ -31,6 +31,7 @@ var MAX_SPEED = 20;
 var PokerCardSprite = cc.Sprite.extend({
     ctor:function(options) {
         this._super();
+	this.retain();
         this.model = options.model;
         this.reverse = options.reverse;
 
@@ -260,6 +261,7 @@ var PokerCardSprite = cc.Sprite.extend({
         this.model.off("destroy",this.onDestroy);
     },
     onDestroy:function(){
+	this.release();
         this.removeFromParent(true);
     },
     getFlipToFrontSequence:function(){

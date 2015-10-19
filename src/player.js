@@ -40,6 +40,7 @@ var PLAYER_POSITION_DOWN = 0;
 var PLAYER_POSITION_UP = 1;
 
 var MAX_HAND = 5;
+var ACTION_TAG_MOVING = 111;
 
 var PlayerModel = Backbone.Model.extend({
     defaults:function(){
@@ -348,7 +349,6 @@ var PlayerSprite = cc.Sprite.extend({
         var i = 0;
         var r = 400;
         _.each(cards,function(cardModel){
-            var sprite = this.getParent().getChildByName(cardModel.cid);
             var realX, realY, angle, cardAngle;
             if ( needCurve ) {
                 angle = ( x - cc.winSize.width / 2 ) /r;
@@ -364,17 +364,17 @@ var PlayerSprite = cc.Sprite.extend({
                 realX = x;
                 realY = y;
             }
+            var sprite = this.getParent().getChildByName(cardModel.cid);
             if ( sprite != null ) {
                 if ( sprite.x != x || sprite.y != y) {
-                    if ( sprite.movingAction != null ) sprite.stopAction(sprite.movingAction);
-                    sprite.movingAction = new cc.Spawn(new cc.MoveTo(times.card_sort, realX, realY), new cc.RotateTo(times.card_sort, cardAngle, cardAngle));
+                    sprite.stopActionByTag(ACTION_TAG_MOVING);
+                    sprite.runAction( new cc.Spawn(new cc.MoveTo(times.card_sort, realX, realY), new cc.RotateTo(times.card_sort, cardAngle, cardAngle)) ).setTag(ACTION_TAG_MOVING);
                     if ( sprite.isNewHand ) {
                         if ( !this.showHand ) {
                             sprite.runAction(sprite.getFlipToBackSequence());
                         }
                         sprite.isNewHand = false;
                     }
-                    sprite.runAction(sprite.movingAction);
                 }
             }
             sprite.zIndex = i;
