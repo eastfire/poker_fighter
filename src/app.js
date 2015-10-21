@@ -7,6 +7,7 @@ var MainLayer = cc.LayerColor.extend({
         this.need_read_fight = options.need_read_fight;
 
         this.initAudio();
+        cc.log(cc.sys.language);
 
         var size = cc.winSize;
 
@@ -45,22 +46,22 @@ var MainLayer = cc.LayerColor.extend({
         menu.y = 0;
         this.addChild(menu);
 
-        this.betRateLabel1 = new cc.LabelTTF("", "Arial", 30 );
-//        this.betRateLabel1.enableOutline(colors.tableLabelOutline, 2);
-//        this.betRateLabel1.setTextColor(colors.tableLabel);
+        this.betRateLabel1 = new ccui.Text("", "Arial", 30 );
+        this.betRateLabel1.enableOutline(colors.tableLabelOutline, 2);
+        this.betRateLabel1.setTextColor(colors.tableLabel);
         this.betRateLabel1.attr({
-            color: colors.tableLabel,
+            //color: colors.tableLabel,
             x: cc.winSize.width/2,
             y: cc.winSize.height/2,
             //anchorX: 1,
             anchorY: 1
         });
         this.addChild(this.betRateLabel1, 0);
-        this.betRateLabel2 = new cc.LabelTTF("", "Arial", 30);//ccui.Text("", "Arial", 30 );
-//        this.betRateLabel2.enableOutline(colors.tableLabelOutline, 2);
-//        this.betRateLabel2.setTextColor(colors.tableLabel);
+        this.betRateLabel2 = new ccui.Text("", "Arial", 30);//ccui.Text("", "Arial", 30 );
+        this.betRateLabel2.enableOutline(colors.tableLabelOutline, 2);
+        this.betRateLabel2.setTextColor(colors.tableLabel);
         this.betRateLabel2.attr({
-            color: colors.tableLabel,
+            //color: colors.tableLabel,
             x: cc.winSize.width/2,
             y: cc.winSize.height/2,
             rotation: 180,
@@ -70,22 +71,22 @@ var MainLayer = cc.LayerColor.extend({
         this.addChild(this.betRateLabel2, 0);
 
 
-        this.handTypeLabel1 = new cc.LabelTTF("", "Arial", 50 );
-//        this.handTypeLabel1.enableOutline(colors.tableLabelOutline, 2);
-//        this.handTypeLabel1.setTextColor(colors.tableLabel);
+        this.handTypeLabel1 = new ccui.Text("", "Arial", 50 );
+        this.handTypeLabel1.enableOutline(colors.tableLabelOutline, 2);
+        this.handTypeLabel1.setTextColor(colors.tableLabel);
         this.handTypeLabel1.attr({
-            color: colors.tableLabel,
+            //color: colors.tableLabel,
             x: cc.winSize.width/2,
             y: 120
         });
         this.addChild(this.handTypeLabel1, 0);
         this.handTypeLabel1.setVisible(false);
 
-        this.handTypeLabel2 = new cc.LabelTTF("", "Arial", 50 );
-//        this.handTypeLabel2.enableOutline(colors.tableLabelOutline, 2);
-//        this.handTypeLabel2.setTextColor(colors.tableLabel);
+        this.handTypeLabel2 = new ccui.Text("", "Arial", 50 );
+        this.handTypeLabel2.enableOutline(colors.tableLabelOutline, 2);
+        this.handTypeLabel2.setTextColor(colors.tableLabel);
         this.handTypeLabel2.attr({
-            color: colors.tableLabel,
+            //color: colors.tableLabel,
             x: cc.winSize.width/2,
             y: cc.winSize.height - 120,
             rotation: 180
@@ -93,22 +94,22 @@ var MainLayer = cc.LayerColor.extend({
         this.addChild(this.handTypeLabel2, 0);
         this.handTypeLabel2.setVisible(false);
 
-        this.winLoseLabel1 = new cc.LabelTTF("", "Arial", 80 );
-//        this.winLoseLabel1.enableOutline(colors.tableLabelOutline, 2);
-//        this.winLoseLabel1.setTextColor(colors.tableLabel);
+        this.winLoseLabel1 = new ccui.Text("", "Arial", 80 );
+        this.winLoseLabel1.enableOutline(colors.tableLabelOutline, 2);
+        this.winLoseLabel1.setTextColor(colors.tableLabel);
         this.winLoseLabel1.attr({
-            color: colors.tableLabel,
+            //color: colors.tableLabel,
             x: cc.winSize.width/2,
             y: 250
         });
         this.addChild(this.winLoseLabel1, 0);
         this.winLoseLabel1.setVisible(false);
 
-        this.winLoseLabel2 = new cc.LabelTTF("", "Arial", 80 );
-//        this.winLoseLabel2.enableOutline(colors.tableLabelOutline, 2);
-//        this.winLoseLabel2.setTextColor(colors.tableLabel);
+        this.winLoseLabel2 = new ccui.Text("", "Arial", 80 );
+        this.winLoseLabel2.enableOutline(colors.tableLabelOutline, 2);
+        this.winLoseLabel2.setTextColor(colors.tableLabel);
         this.winLoseLabel2.attr({
-            color: colors.tableLabel,
+            //color: colors.tableLabel,
             x: cc.winSize.width/2,
             y: cc.winSize.height - 250,
             rotation: 180
@@ -116,11 +117,11 @@ var MainLayer = cc.LayerColor.extend({
         this.addChild(this.winLoseLabel2, 0);
         this.winLoseLabel2.setVisible(false);
 
-        this.countDownLabel = new cc.LabelTTF("", "Arial", 70 );
-//        this.countDownLabel.enableOutline(colors.tableLabelOutline, 2);
-//        this.countDownLabel.setTextColor(colors.tableLabel);
+        this.countDownLabel = new ccui.Text("", "Arial", 70 );
+        this.countDownLabel.enableOutline(colors.tableLabelOutline, 2);
+        this.countDownLabel.setTextColor(colors.tableLabel);
         this.countDownLabel.attr({
-            color: colors.tableLabel,
+            //color: colors.tableLabel,
             x: cc.winSize.width/2,
             y: cc.winSize.height/2
         });
@@ -179,6 +180,64 @@ var MainLayer = cc.LayerColor.extend({
     initEvent:function(){
         this.model.on("change:betRate", this.onBetRateChange, this);
         this.model.on("start-countdown", this.startRoundCountDown, this);
+        cc.eventManager.addListener(this.listener = cc.EventListener.create({
+            event: cc.EventListener.TOUCH_ONE_BY_ONE,
+            swallowTouches: true,
+            onTouchBegan: function (touch, event) {
+                return true;
+            },
+            //Trigger when moving touch
+            onTouchMoved: function (touch, event) {
+                var target = event.getCurrentTarget();
+                var locationInNode = target.convertToNodeSpace(touch.getLocation());
+
+                _.each( target.getChildren(), function(sprite){
+                    if ( sprite instanceof PokerCardSprite && !sprite.alreadyTaken ) {
+                        var padding = 5;
+                        var rect = cc.rect(sprite.x-sprite.width/2+padding, sprite.y-sprite.height/2+padding, sprite.width-2*padding,sprite.height-2*padding);
+
+                        //Check the click area
+                        if (cc.rectContainsPoint(rect, locationInNode)){
+                            sprite.stopAllActions();
+                            sprite.beHolding = true;
+                            var delta = touch.getDelta();
+                            sprite.x += delta.x;
+                            sprite.y += delta.y;
+                            sprite.speedX = delta.x;
+                            if ( delta.y == 0 ) {
+                                if (sprite.y >= cc.winSize.height / 2) {
+                                    sprite.speedY = 1;
+                                } else {
+                                    sprite.speedY = -1;
+                                }
+                            } else {
+                                sprite.speedY = delta.y;
+                            }
+                        } else if ( sprite.beHolding ) {
+                            sprite.beHolding = false;
+                            sprite.onTouchRelease.call(sprite);
+                        }
+                    }
+                },target);
+            },
+            //Process the touch end event
+            onTouchEnded: function (touch, event) {
+                var target = event.getCurrentTarget();
+                var locationInNode = target.convertToNodeSpace(touch.getLocation());
+
+                _.each( target.getChildren(), function(sprite){
+                    if ( sprite instanceof PokerCardSprite && !sprite.alreadyTaken ) {
+                        var rect = cc.rect(sprite.x-sprite.width/2, sprite.y-sprite.height/2, sprite.width,sprite.height);
+
+                        //Check the click area
+                        if (cc.rectContainsPoint(rect, locationInNode)){
+                            sprite.beHolding = false;
+                            sprite.onTouchRelease.call(sprite);
+                        }
+                    }
+                },target);
+            }
+        }), this);
     },
     startRoundCountDown:function(){
         if ( gameModel.get("status") == "countDown" ) {
@@ -193,16 +252,37 @@ var MainLayer = cc.LayerColor.extend({
         }
 
         this.countDownLabel.setVisible(true);
-        this.countDownLabel.setString(3);
+
         this.countDownLabel.attr({
-            rotation: rotation,
-            scaleX: 1,
-            scaleY: 1
+            rotation: rotation
         });
         var scaleRate = 3;
         this.countDownLabel.runAction( new cc.Sequence(
             new cc.CallFunc(function(){
+                cc.audioEngine.playEffect(res.countdown5_mp3, false);
+                this.countDownLabel.setString(5);
+                this.countDownLabel.attr({
+                    scaleX: 1,
+                    scaleY: 1
+                });
+            },this),
+            new cc.ScaleTo(1, scaleRate, scaleRate),
+            new cc.CallFunc(function(){
+                cc.audioEngine.playEffect(res.countdown4_mp3, false);
+                this.countDownLabel.setString(4);
+                this.countDownLabel.attr({
+                    scaleX: 1,
+                    scaleY: 1
+                });
+            },this),
+            new cc.ScaleTo(1, scaleRate, scaleRate),
+            new cc.CallFunc(function(){
                 cc.audioEngine.playEffect(res.countdown3_mp3, false);
+                this.countDownLabel.setString(3);
+                this.countDownLabel.attr({
+                    scaleX: 1,
+                    scaleY: 1
+                });
             },this),
             new cc.ScaleTo(1, scaleRate, scaleRate),
             new cc.CallFunc(function(){
@@ -366,18 +446,13 @@ var MainLayer = cc.LayerColor.extend({
 
         this.model.newDeck();
 
-//        for ( var i = 0; i < 10; i++ ) {
-//            var cardModel = this.model.drawCard();
-//            if (cardModel) {
-//                var sprite = new PokerCardSprite({model: cardModel});
-//                sprite.attr({
-//                    x: Math.random() * 350 + 50,
-//                    y: Math.random() * 500 + 150
-//                })
-//                this.addChild(sprite);
-//                if (sprite.y >= cc.winSize.height / 2) sprite.rotation = 180;
-//            }
-//        }
+//        var cardModel = this.model.drawCard();
+//        var sprite = new PokerCardSprite({model: cardModel});
+//        sprite.attr({
+//            x: 300,
+//            y: 200
+//        });
+//        this.addChild(sprite);
 
         var self = this;
         if ( this.schedulePerSec == null ) {
@@ -608,7 +683,18 @@ var PauseMenuLayer = cc.LayerColor.extend({
             }, this);
         resumeItem.attr({
             x: cc.winSize.width/2,
-            y: cc.winSize.height/2 - 250
+            y: cc.winSize.height/8
+        });
+
+        var infoItem = new cc.MenuItemImage(
+            cc.spriteFrameCache.getSpriteFrame("info-default.png"),
+            cc.spriteFrameCache.getSpriteFrame("info-press.png"),
+            function () {
+
+            }, this);
+        infoItem.attr({
+            x: cc.winSize.width/2,
+            y: cc.winSize.height*3/8
         });
 
         var restartItem = new cc.MenuItemImage(
@@ -620,7 +706,7 @@ var PauseMenuLayer = cc.LayerColor.extend({
             }, this);
         restartItem.attr({
             x: cc.winSize.width/2,
-            y: cc.winSize.height/2
+            y: cc.winSize.height*5/8
         });
 
         var exitItem = new cc.MenuItemImage(
@@ -632,10 +718,10 @@ var PauseMenuLayer = cc.LayerColor.extend({
             }, this);
         exitItem.attr({
             x: cc.winSize.width/2,
-            y: cc.winSize.height/2 + 250
+            y: cc.winSize.height*7/8
         });
 
-        var menu = new cc.Menu([exitItem, restartItem, resumeItem ]);
+        var menu = new cc.Menu([exitItem, restartItem, infoItem, resumeItem ]);
         menu.x = 0;
         menu.y = 0;
         this.addChild(menu);

@@ -4,6 +4,8 @@ var res = {
 
     ready_mp3: "res/ready.mp3",
     fight_mp3: "res/fight.mp3",
+    countdown5_mp3: "res/countdown-5.mp3",
+    countdown4_mp3: "res/countdown-4.mp3",
     countdown3_mp3: "res/countdown-3.mp3",
     countdown2_mp3: "res/countdown-2.mp3",
     countdown1_mp3: "res/countdown-1.mp3",

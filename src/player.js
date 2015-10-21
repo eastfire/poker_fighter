@@ -255,18 +255,18 @@ var PlayerSprite = cc.Sprite.extend({
         }
         this.addChild(moneySprite);
 
-        this.moneyLabel = new cc.LabelTTF(this.model.get("money"), "Arial", 40 );
-//        this.moneyLabel.enableOutline(colors.tableLabelOutline, 2);
-//        this.moneyLabel.setTextColor(colors.tableLabel);
+        this.moneyLabel = new ccui.Text(this.model.get("money"), "Arial", 40 );
+        this.moneyLabel.enableOutline(cc.color.BLACK, 2);
+        this.moneyLabel.setTextColor(cc.color.WHITE);
         if ( this.model.get("position") == PLAYER_POSITION_DOWN ) {
             this.moneyLabel.attr({
-                color: colors.tableLabel,
+                //color: colors.tableLabel,
                 x: 45,
                 y: 25
             });
         } else {
             this.moneyLabel.attr({
-                color: colors.tableLabel,
+                //color: colors.tableLabel,
                 x: 405,
                 y: 775,
                 rotation: 180
