@@ -64,7 +64,7 @@ var dimens = {
         height: 70
     },
     card_number_position:{
-        x: 34,
+        x: 14,
         y: 56
     },
     player1Y : 95,

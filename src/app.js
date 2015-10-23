@@ -190,7 +190,6 @@ var MainLayer = cc.LayerColor.extend({
             onTouchMoved: function (touch, event) {
                 var target = event.getCurrentTarget();
                 var locationInNode = target.convertToNodeSpace(touch.getLocation());
-
                 _.each( target.getChildren(), function(sprite){
                     if ( sprite instanceof PokerCardSprite && !sprite.alreadyTaken ) {
                         var padding = 5;
@@ -199,7 +198,7 @@ var MainLayer = cc.LayerColor.extend({
                         //Check the click area
                         if (cc.rectContainsPoint(rect, locationInNode)){
                             sprite.stopAllActions();
-                            sprite.beHolding = true;
+                            sprite.touchingInstanceId = touch.__instanceId;
                             var delta = touch.getDelta();
                             sprite.x += delta.x;
                             sprite.y += delta.y;
@@ -213,8 +212,8 @@ var MainLayer = cc.LayerColor.extend({
                             } else {
                                 sprite.speedY = delta.y;
                             }
-                        } else if ( sprite.beHolding ) {
-                            sprite.beHolding = false;
+                        } else if ( sprite.touchingInstanceId == touch.__instanceId ) {
+                            sprite.touchingInstanceId = null;
                             sprite.onTouchRelease.call(sprite);
                         }
                     }
@@ -224,14 +223,14 @@ var MainLayer = cc.LayerColor.extend({
             onTouchEnded: function (touch, event) {
                 var target = event.getCurrentTarget();
                 var locationInNode = target.convertToNodeSpace(touch.getLocation());
-
+                var prevLocationInNode = target.convertToNodeSpace(touch.getPreviousLocation());
                 _.each( target.getChildren(), function(sprite){
                     if ( sprite instanceof PokerCardSprite && !sprite.alreadyTaken ) {
                         var rect = cc.rect(sprite.x-sprite.width/2, sprite.y-sprite.height/2, sprite.width,sprite.height);
 
                         //Check the click area
-                        if (cc.rectContainsPoint(rect, locationInNode)){
-                            sprite.beHolding = false;
+                        if ( sprite.touchingInstanceId == touch.__instanceId ){
+                            sprite.touchingInstanceId = null;
                             sprite.onTouchRelease.call(sprite);
                         }
                     }
@@ -525,6 +524,9 @@ var MainLayer = cc.LayerColor.extend({
                 });
                 endX = cc.winSize.width - entry.end.x;
                 endY = cc.winSize.height - entry.end.y;
+            }
+            if ( mirrorSprite.y > cc.winSize.height/2 ) {
+                mirrorSprite.rotation = 180;
             }
 
             this.addChild(mirrorSprite);

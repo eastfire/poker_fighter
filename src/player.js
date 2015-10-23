@@ -364,6 +364,9 @@ var PlayerSprite = cc.Sprite.extend({
                 realX = x;
                 realY = y;
             }
+            if ( realY > cc.winSize.height/2 ) {
+                cardAngle += 180;
+            }
             var sprite = this.getParent().getChildByName(cardModel.cid);
             if ( sprite != null ) {
                 if ( sprite.x != x || sprite.y != y) {
