@@ -9,6 +9,8 @@ var MainLayer = cc.LayerColor.extend({
         this.initAudio();
         cc.log(cc.sys.language);
 
+        this._touchInstanceUsed = {};
+
         var size = cc.winSize;
 
         this.model = options.model;
@@ -191,14 +193,15 @@ var MainLayer = cc.LayerColor.extend({
                 var target = event.getCurrentTarget();
                 var locationInNode = target.convertToNodeSpace(touch.getLocation());
                 _.each( target.getChildren(), function(sprite){
-                    if ( sprite instanceof PokerCardSprite && !sprite.alreadyTaken ) {
-                        var padding = 5;
+                    if ( sprite instanceof PokerCardSprite && !sprite.alreadyTaken && (!target._touchInstanceUsed[touch.__instanceId] || sprite.touchingInstanceId == touch.__instanceId ) ) {
+                        var padding = 0;
                         var rect = cc.rect(sprite.x-sprite.width/2+padding, sprite.y-sprite.height/2+padding, sprite.width-2*padding,sprite.height-2*padding);
 
                         //Check the click area
                         if (cc.rectContainsPoint(rect, locationInNode)){
                             sprite.stopAllActions();
                             sprite.touchingInstanceId = touch.__instanceId;
+                            target._touchInstanceUsed[touch.__instanceId] = true;
                             var delta = touch.getDelta();
                             sprite.x += delta.x;
                             sprite.y += delta.y;
@@ -214,6 +217,7 @@ var MainLayer = cc.LayerColor.extend({
                             }
                         } else if ( sprite.touchingInstanceId == touch.__instanceId ) {
                             sprite.touchingInstanceId = null;
+                            delete target._touchInstanceUsed[touch.__instanceId];
                             sprite.onTouchRelease.call(sprite);
                         }
                     }
@@ -235,6 +239,7 @@ var MainLayer = cc.LayerColor.extend({
                         }
                     }
                 },target);
+                delete target._touchInstanceUsed[touch.__instanceId];
             }
         }), this);
     },
