@@ -341,11 +341,15 @@ var MainLayer = cc.LayerColor.extend({
             this.winLoseLabel2.setString(texts.lose);
             this.giveMoney(money, this.player2Sprite, this.player1Sprite);
             cc.audioEngine.playEffect(res[player1Feature.type], false);
-        } else {
+        } else if ( player2Feature.power > player1Feature.power ) {
             this.winLoseLabel1.setString(texts.lose);
             this.winLoseLabel2.setString(texts.win);
             this.giveMoney(money, this.player1Sprite, this.player2Sprite);
             cc.audioEngine.playEffect(res[player2Feature.type], false);
+        } else {
+            this.winLoseLabel1.setString(texts.tie);
+            this.winLoseLabel2.setString(texts.tie);
+            cc.audioEngine.playEffect(res.tie, false);
         }
         this.scheduleOnce(function(){
             this.model.set("betRate", this.model.get("betRate") + 1);
