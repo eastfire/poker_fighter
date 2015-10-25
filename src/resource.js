@@ -10,6 +10,7 @@ var res = {
     countdown2_mp3: "res/countdown-2.mp3",
     countdown1_mp3: "res/countdown-1.mp3",
     game_over_mp3: "res/game-over.mp3",
+    "five-of-a-kind": "res/five-of-a-kind.mp3",
     "straight-flush": "res/straight-flush.mp3",
     "four-of-a-kind": "res/four-of-a-kind.mp3",
     "full-house": "res/full-house.mp3",
@@ -18,7 +19,9 @@ var res = {
     "three-of-a-kind": "res/three-of-a-kind.mp3",
     "two-pair": "res/two-pair.mp3",
     "one-pair": "res/one-pair.mp3",
-    "high-card": "res/high-card.mp3"
+    "high-card": "res/high-card.mp3",
+
+    "tie":"res/tie.mp3"
 };
 
 var g_resources = [];
@@ -30,7 +33,9 @@ var texts_locale = {
     zh: {
         win:"胜利",
         lose:"失败",
+        tie:"平手",
         handTypeDisplayName: {
+            "five-of-a-kind": "五条",
             "straight-flush": "同花顺",
             "four-of-a-kind": "四条",
             "full-house": "满堂红",
@@ -46,7 +51,9 @@ var texts_locale = {
     en:{
         win:"WIN",
         lose:"LOSE",
+        tie:"TIE",
         handTypeDisplayName: {
+            "five-of-a-kind": "5 of a kind",
             "straight-flush": "straight flush",
             "four-of-a-kind": "4 of a kind",
             "full-house": "full house",
