@@ -193,6 +193,7 @@ var PokerCardSprite = cc.Sprite.extend({
         if ( this.alreadyTaken )
             return;
         if ( player.canTakeCard() ) {
+            this.stopAllActions();
             this.isNewHand = true;
             this.setTag(0);
             player.addHand(this.model);

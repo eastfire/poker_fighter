@@ -8,7 +8,7 @@ var MainLayer = cc.LayerColor.extend({
         this._super(colors.table);
         this.need_read_fight = options.need_read_fight;
 
-        //texts = texts_locale[cc.sys.language];
+        texts = texts_locale[cc.sys.language];
         if ( !texts )
             texts = texts_locale["en"];
         this.initAudio();
@@ -197,15 +197,15 @@ var MainLayer = cc.LayerColor.extend({
                 var target = event.getCurrentTarget();
                 var locationInNode = target.convertToNodeSpace(touch.getLocation());
                 _.each( target.getChildren(), function(sprite){
-                    if ( sprite instanceof PokerCardSprite && !sprite.alreadyTaken && (!target._touchInstanceUsed[touch.__instanceId] || sprite.touchingInstanceId == touch.__instanceId ) ) {
+                    if ( sprite instanceof PokerCardSprite && !sprite.alreadyTaken && (!target._touchInstanceUsed[touch.getID()] || sprite.touchingInstanceId == touch.getID() ) ) {
                         var padding = 0;
                         var rect = cc.rect(sprite.x-sprite.width/2+padding, sprite.y-sprite.height/2+padding, sprite.width-2*padding,sprite.height-2*padding);
 
                         //Check the click area
                         if (cc.rectContainsPoint(rect, locationInNode)){
                             sprite.stopAllActions();
-                            sprite.touchingInstanceId = touch.__instanceId;
-                            target._touchInstanceUsed[touch.__instanceId] = true;
+                            sprite.touchingInstanceId = touch.getID();
+                            target._touchInstanceUsed[touch.getID()] = true;
                             var delta = touch.getDelta();
                             sprite.x += delta.x;
                             sprite.y += delta.y;
@@ -219,9 +219,9 @@ var MainLayer = cc.LayerColor.extend({
                             } else {
                                 sprite.speedY = delta.y;
                             }
-                        } else if ( sprite.touchingInstanceId == touch.__instanceId ) {
+                        } else if ( sprite.touchingInstanceId == touch.getID() ) {
                             sprite.touchingInstanceId = null;
-                            delete target._touchInstanceUsed[touch.__instanceId];
+                            delete target._touchInstanceUsed[touch.getID()];
                             sprite.onTouchRelease.call(sprite);
                         }
                     }
@@ -237,13 +237,13 @@ var MainLayer = cc.LayerColor.extend({
                         var rect = cc.rect(sprite.x-sprite.width/2, sprite.y-sprite.height/2, sprite.width,sprite.height);
 
                         //Check the click area
-                        if ( sprite.touchingInstanceId == touch.__instanceId ){
+                        if ( sprite.touchingInstanceId == touch.getID() ){
                             sprite.touchingInstanceId = null;
                             sprite.onTouchRelease.call(sprite);
                         }
                     }
                 },target);
-                delete target._touchInstanceUsed[touch.__instanceId];
+                delete target._touchInstanceUsed[touch.getID()];
             }
         }), this);
     },
@@ -562,6 +562,7 @@ var MainLayer = cc.LayerColor.extend({
         } else {
             this.sound = 0.5;
         }
+        cc.log(this.sound)
         cc.audioEngine.setEffectsVolume(this.sound);
     },
     gameOver:function(){
