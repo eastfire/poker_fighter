@@ -19,7 +19,7 @@ var PatternModel = Backbone.Model.extend({
                     x: cc.winSize.width+dimens.card_size.width,
                     y: 150 + 40 * i
                 },
-                moveTime: 2.5
+                moveTime: 3
             }
         });
     }
@@ -40,7 +40,7 @@ var Pattern2Model = PatternModel.extend({
                     x: cc.winSize.width+dimens.card_size.width,
                     y: 350 - 40 * i
                 },
-                moveTime: 2.5
+                moveTime: 3
             }
         });
     }
@@ -103,7 +103,7 @@ var Pattern5Model = PatternModel.extend({
                     x: cc.winSize.width+dimens.card_size.width,
                     y: 150 + 30 * i
                 },
-                moveTime: 2.5
+                moveTime: 3
             });
             ret.push({
                 time : i*0.5,
@@ -115,7 +115,7 @@ var Pattern5Model = PatternModel.extend({
                     x: cc.winSize.width+dimens.card_size.width,
                     y: 350 - 30 * i
                 },
-                moveTime: 2.5
+                moveTime: 3
             });
         }
         return ret;
@@ -137,7 +137,7 @@ var Pattern6Model = PatternModel.extend({
                     x: cc.winSize.width+dimens.card_size.width,
                     y: 150 + 30 * (2-i)
                 },
-                moveTime: 2.5
+                moveTime: 3
             });
             ret.push({
                 time : i*0.5,
@@ -149,7 +149,7 @@ var Pattern6Model = PatternModel.extend({
                     x: cc.winSize.width+dimens.card_size.width,
                     y: 350 - 30 * (2-i)
                 },
-                moveTime: 2.5
+                moveTime: 3
             });
         }
         return ret;

@@ -196,7 +196,7 @@ var MainLayer = cc.LayerColor.extend({
             onTouchMoved: function (touch, event) {
                 var target = event.getCurrentTarget();
                 var locationInNode = target.convertToNodeSpace(touch.getLocation());
-                var touchId = cc.isNative ? touch.getID() : touch.__instanceId;
+                var touchId = cc.sys.isNative ? touch.getID() : touch.__instanceId;
                 _.each( target.getChildren(), function(sprite){
                     if ( sprite instanceof PokerCardSprite && !sprite.alreadyTaken && (!target._touchInstanceUsed[touchId] || sprite.touchingInstanceId === touchId ) ) {
                         var padding = 0;
@@ -233,7 +233,7 @@ var MainLayer = cc.LayerColor.extend({
                 var target = event.getCurrentTarget();
                 var locationInNode = target.convertToNodeSpace(touch.getLocation());
                 var prevLocationInNode = target.convertToNodeSpace(touch.getPreviousLocation());
-                var touchId = cc.isNative ? touch.getID() : touch.__instanceId;
+                var touchId = cc.sys.isNative ? touch.getID() : touch.__instanceId;
                 _.each( target.getChildren(), function(sprite){
                     if ( sprite instanceof PokerCardSprite && !sprite.alreadyTaken ) {
                         var rect = cc.rect(sprite.x-sprite.width/2, sprite.y-sprite.height/2, sprite.width,sprite.height);
@@ -503,7 +503,7 @@ var MainLayer = cc.LayerColor.extend({
             });
             this.addChild(sprite);
             var moveTime = entry.moveTime;
-            if ( cardModel.get("number") === 14 ) moveTime /= 2;
+            if ( cardModel.get("number") === 14 ) moveTime /= 1.5;
             if ( sprite.y > cc.winSize.height/2 ) {
                 moveTime = this.speedAdjust(moveTime, gameModel.player2);
             } else {

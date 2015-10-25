@@ -45,7 +45,7 @@ var ACTION_TAG_MOVING = 111;
 var PlayerModel = Backbone.Model.extend({
     defaults:function(){
         return {
-            money : 1000,
+            money : 500,
             hands: [],
             speedDown: 0,
             speedUp: 0,
