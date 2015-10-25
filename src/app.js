@@ -1,13 +1,17 @@
 var GENERATE_CARD_INTERVAL = 5;
 
+var texts;
+
 var MainLayer = cc.LayerColor.extend({
     sprite:null,
     ctor:function (options) {
         this._super(colors.table);
         this.need_read_fight = options.need_read_fight;
 
+        //texts = texts_locale[cc.sys.language];
+        if ( !texts )
+            texts = texts_locale["en"];
         this.initAudio();
-        cc.log(cc.sys.language);
 
         this._touchInstanceUsed = {};
 
@@ -331,13 +335,13 @@ var MainLayer = cc.LayerColor.extend({
         this.winLoseLabel2.setVisible(true);
         var money = this.model.get("betRate") * (player1Feature.rate + player2Feature.rate);
         if ( player1Feature.power > player2Feature.power ) {
-            this.winLoseLabel1.setString("WIN");
-            this.winLoseLabel2.setString("LOSE");
+            this.winLoseLabel1.setString(texts.win);
+            this.winLoseLabel2.setString(texts.lose);
             this.giveMoney(money, this.player2Sprite, this.player1Sprite);
             cc.audioEngine.playEffect(res[player1Feature.type], false);
         } else {
-            this.winLoseLabel1.setString("LOSE");
-            this.winLoseLabel2.setString("WIN");
+            this.winLoseLabel1.setString(texts.lose);
+            this.winLoseLabel2.setString(texts.win);
             this.giveMoney(money, this.player1Sprite, this.player2Sprite);
             cc.audioEngine.playEffect(res[player2Feature.type], false);
         }

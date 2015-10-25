@@ -267,8 +267,8 @@ var PlayerSprite = cc.Sprite.extend({
         } else {
             this.moneyLabel.attr({
                 //color: colors.tableLabel,
-                x: 405,
-                y: 775,
+                x: cc.winSize.width - 45,
+                y: cc.winSize.height - 25,
                 rotation: 180
             });
         }
@@ -338,12 +338,12 @@ var PlayerSprite = cc.Sprite.extend({
         var estimateWidth = cards.length * dimens.card_size.width + (cards.length-1) * dimens.hand_line_card_padding;
         var x;
         var stepX;
-        if ( estimateWidth < dimens.hand_line_width ) {
-            x = ( dimens.hand_line_width - estimateWidth ) / 2 + dimens.card_size.width/2;
+        if ( estimateWidth < cc.winSize.width ) {
+            x = ( cc.winSize.width - estimateWidth ) / 2 + dimens.card_size.width/2;
             stepX = dimens.card_size.width + dimens.hand_line_card_padding;
         } else {
             x = dimens.card_size.width/2;
-            stepX = ( dimens.hand_line_width - dimens.card_size.width ) / (cards.length - 1);
+            stepX = ( cc.winSize.width - dimens.card_size.width ) / (cards.length - 1);
         }
 
         var i = 0;

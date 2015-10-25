@@ -26,20 +26,42 @@ for (var i in res) {
     g_resources.push(res[i]);
 }
 
-var texts = {
-    handTypeDisplayName : {
-        "straight-flush":"同花顺",
-        "four-of-a-kind":"四条",
-        "full-house":"满堂红",
-        "flush":"同花",
-        "straight":"顺子",
-        "three-of-a-kind":"三条",
-        "two-pair":"两对",
-        "one-pair":"一对",
-        "high-card":"散牌",
-        "no-card":"没牌"
+var texts_locale = {
+    zh: {
+        win:"胜利",
+        lose:"失败",
+        handTypeDisplayName: {
+            "straight-flush": "同花顺",
+            "four-of-a-kind": "四条",
+            "full-house": "满堂红",
+            "flush": "同花",
+            "straight": "顺子",
+            "three-of-a-kind": "三条",
+            "two-pair": "两对",
+            "one-pair": "一对",
+            "high-card": "散牌",
+            "no-card": "没牌"
+        }
+    },
+    en:{
+        win:"WIN",
+        lose:"LOSE",
+        handTypeDisplayName: {
+            "straight-flush": "straight flush",
+            "four-of-a-kind": "4 of a kind",
+            "full-house": "full house",
+            "flush": "flush",
+            "straight": "straight",
+            "three-of-a-kind": "3 of a kind",
+            "two-pair": "two pairs",
+            "one-pair": "one pair",
+            "high-card": "high card",
+            "no-card": "no card"
+        }
     }
 };
+
+
 
 var colors = {
     table: new cc.color(0x3b,0x7f,0x42),
@@ -84,6 +106,5 @@ var dimens = {
         y: 380
     },
 
-    hand_line_card_padding : 0,
-    hand_line_width: 450
+    hand_line_card_padding : 0
 };
