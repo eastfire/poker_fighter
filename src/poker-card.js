@@ -2,9 +2,10 @@ SUIT_NUMBER_MAP = {
     spade: 0,
     heart : 1,
     club: 2,
-    diamond: 3
+    diamond: 3,
+    blank: 4
 };
-SUIT_ARRAY = ["spade","heart","club","diamond"];
+SUIT_ARRAY = ["spade","heart","club","diamond", "blank"];
 
 var PokerCardModel = Backbone.Model.extend({
     defaults:function(){

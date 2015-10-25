@@ -18,8 +18,7 @@
         "src/game-common.js",
         "src/pattern.js",
         "src/poker-card.js",
-        "src/skill.js",
-        "src/skill-select.js",
+        "src/item.js",
         "src/player.js",
         "src/intro.js",
         "src/app.js"

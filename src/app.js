@@ -196,16 +196,17 @@ var MainLayer = cc.LayerColor.extend({
             onTouchMoved: function (touch, event) {
                 var target = event.getCurrentTarget();
                 var locationInNode = target.convertToNodeSpace(touch.getLocation());
+                var touchId = cc.isNative ? touch.getID() : touch.__instanceId;
                 _.each( target.getChildren(), function(sprite){
-                    if ( sprite instanceof PokerCardSprite && !sprite.alreadyTaken && (!target._touchInstanceUsed[touch.getID()] || sprite.touchingInstanceId == touch.getID() ) ) {
+                    if ( sprite instanceof PokerCardSprite && !sprite.alreadyTaken && (!target._touchInstanceUsed[touchId] || sprite.touchingInstanceId === touchId ) ) {
                         var padding = 0;
                         var rect = cc.rect(sprite.x-sprite.width/2+padding, sprite.y-sprite.height/2+padding, sprite.width-2*padding,sprite.height-2*padding);
 
                         //Check the click area
                         if (cc.rectContainsPoint(rect, locationInNode)){
                             sprite.stopAllActions();
-                            sprite.touchingInstanceId = touch.getID();
-                            target._touchInstanceUsed[touch.getID()] = true;
+                            sprite.touchingInstanceId = touchId;
+                            target._touchInstanceUsed[touchId] = true;
                             var delta = touch.getDelta();
                             sprite.x += delta.x;
                             sprite.y += delta.y;
@@ -219,9 +220,9 @@ var MainLayer = cc.LayerColor.extend({
                             } else {
                                 sprite.speedY = delta.y;
                             }
-                        } else if ( sprite.touchingInstanceId == touch.getID() ) {
+                        } else if ( sprite.touchingInstanceId === touchId ) {
                             sprite.touchingInstanceId = null;
-                            delete target._touchInstanceUsed[touch.getID()];
+                            delete target._touchInstanceUsed[touchId];
                             sprite.onTouchRelease.call(sprite);
                         }
                     }
@@ -232,18 +233,19 @@ var MainLayer = cc.LayerColor.extend({
                 var target = event.getCurrentTarget();
                 var locationInNode = target.convertToNodeSpace(touch.getLocation());
                 var prevLocationInNode = target.convertToNodeSpace(touch.getPreviousLocation());
+                var touchId = cc.isNative ? touch.getID() : touch.__instanceId;
                 _.each( target.getChildren(), function(sprite){
                     if ( sprite instanceof PokerCardSprite && !sprite.alreadyTaken ) {
                         var rect = cc.rect(sprite.x-sprite.width/2, sprite.y-sprite.height/2, sprite.width,sprite.height);
 
                         //Check the click area
-                        if ( sprite.touchingInstanceId == touch.getID() ){
+                        if ( sprite.touchingInstanceId === touchId ){
                             sprite.touchingInstanceId = null;
                             sprite.onTouchRelease.call(sprite);
                         }
                     }
                 },target);
-                delete target._touchInstanceUsed[touch.getID()];
+                delete target._touchInstanceUsed[touchId];
             }
         }), this);
     },
@@ -562,7 +564,6 @@ var MainLayer = cc.LayerColor.extend({
         } else {
             this.sound = 0.5;
         }
-        cc.log(this.sound)
         cc.audioEngine.setEffectsVolume(this.sound);
     },
     gameOver:function(){

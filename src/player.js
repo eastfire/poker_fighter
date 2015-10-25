@@ -48,7 +48,8 @@ var PlayerModel = Backbone.Model.extend({
             money : 1000,
             hands: [],
             speedDown: 0,
-            speedUp: 0
+            speedUp: 0,
+            item: null
         }
     },
     addHand:function(cardModel){
@@ -71,6 +72,12 @@ var PlayerModel = Backbone.Model.extend({
         return this.get("hands").length < MAX_HAND;
     },
 
+    is5ofAKind:function(cards) {
+        if (cards[0].get("number") === cards[1].get("number") && cards[0].get("number") === cards[2].get("number") && cards[0].get("number") === cards[3].get("number") && cards[0].get("number") === cards[4].get("number") ) {
+            return true;
+        }
+        return false;
+    },
     isFlushStraight:function(cards){
         return this.isFlush(cards) && this.isStraight(cards);
     },
@@ -150,45 +157,49 @@ var PlayerModel = Backbone.Model.extend({
         for ( var i = this.get("hands").length; i < MAX_HAND; i++ ) {
             cards.push( new PokerCardModel({
                 number : -i,
-                suit: 4 + i
+                suit: 5 + i
             }))
         }
 
         var power, type, theCard, rate;
-        if ( this.isFlushStraight(cards) ) {
-            power = 10000 + cards[0].get("number") * 10 + (10 - cards[0].get("suit"));
+        if ( this.is5ofAKind(cards) ) {
+            power = 11000 + cards[0].get("number") * 20 + (19 - cards[0].get("suit"));
+            type = "five-of-a-kind"
+            rate = 100;
+        } else if ( this.isFlushStraight(cards) ) {
+            power = 10000 + cards[0].get("number") * 20 + (19 - cards[0].get("suit"));
             type = "straight-flush"
             rate = 50;
         } else if ( theCard = this.is4ofAKind(cards) ) {
-            power = 9000 + theCard.get("number") * 10 + (10 - theCard.get("suit"));
+            power = 9000 + theCard.get("number") * 20 + (19 - theCard.get("suit"));
             type = "four-of-a-kind";
             rate = 40;
         } else if ( theCard = this.isFullHouse(cards) ) {
-            power = 8000 + theCard.get("number") * 10 + (10 - theCard.get("suit"));
+            power = 8000 + theCard.get("number") * 20 + (19 - theCard.get("suit"));
             type = "full-house";
             rate = 30;
         } else if ( this.isFlush(cards) ) {
-            power = 7000 + cards[0].get("number") * 10 + (10 - cards[0].get("suit"));
+            power = 7000 + cards[0].get("number") * 20 + (19 - cards[0].get("suit"));
             type = "flush";
             rate = 20;
         } else if ( this.isStraight(cards) ) {
-            power = 6000 + cards[0].get("number") * 10 + (10 - cards[0].get("suit"));
+            power = 6000 + cards[0].get("number") * 20 + (19 - cards[0].get("suit"));
             type = "straight";
             rate = 15;
         } else if ( theCard = this.is3ofAKind(cards) ) {
-            power = 5000 + theCard.get("number") * 10 + (10 -theCard.get("suit"));
+            power = 5000 + theCard.get("number") * 20 + (19 -theCard.get("suit"));
             type = "three-of-a-kind";
             rate = 10;
         } else if ( theCard = this.is2Pair(cards) ) {
-            power = 4000 + theCard.get("number") * 10 + (10 -theCard.get("suit"));
+            power = 4000 + theCard.get("number") * 20 + (19 -theCard.get("suit"));
             type = "two-pair";
             rate = 4;
         } else if ( theCard = this.isPair(cards) ) {
-            power = 3000 + theCard.get("number") * 10 + (10 -theCard.get("suit"));
+            power = 3000 + theCard.get("number") * 20 + (19 -theCard.get("suit"));
             type = "one-pair";
             rate = 2;
         } else if ( cards[0].get("number") > 0 ) {
-            power = 2000 + cards[0].get("number") * 10 + (10 -cards[0].get("suit"));
+            power = 2000 + cards[0].get("number") * 20 + (19 -cards[0].get("suit"));
             type = "high-card";
             rate = 1;
         } else {
@@ -255,9 +266,27 @@ var PlayerSprite = cc.Sprite.extend({
         }
         this.addChild(moneySprite);
 
+        var itemSprite = new ItemSprite();
+        if ( this.model.get("position") == PLAYER_POSITION_DOWN ) {
+            itemSprite.attr({
+                x:cc.winSize.width - 45,
+                y: 45
+            });
+        } else {
+            itemSprite.attr({
+                x:45,
+                y: cc.winSize.height - 45,
+                rotation: 180
+            });
+        }
+        this.addChild(itemSprite);
+        if ( this.model.get("item") ) {
+            itemSprite.setItemModel(new ITEM_MODEL_CLASS_MAP[this.model.get("item")]())
+        } else itemSprite.setItemModel(null);
+
         this.moneyLabel = new ccui.Text(this.model.get("money"), "Arial", 40 );
-        this.moneyLabel.enableOutline(cc.color.BLACK, 2);
-        this.moneyLabel.setTextColor(cc.color.WHITE);
+        this.moneyLabel.enableOutline(cc.color.WHITE, 2);
+        this.moneyLabel.setTextColor(cc.color.BLACK);
         if ( this.model.get("position") == PLAYER_POSITION_DOWN ) {
             this.moneyLabel.attr({
                 //color: colors.tableLabel,
