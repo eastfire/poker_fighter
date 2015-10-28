@@ -505,8 +505,18 @@ var MainLayer = cc.LayerColor.extend({
             var cardModel;
             var sprite;
             if ( this.model.get("allowCoin") && Math.random() < this.model.get("coinAppearRate")) {
+                var money = 1;
+                var isRare = false;
+                if ( this.model.get("betRate") >= 10 ) {
+                    money = 10;
+                }
+                if ( Math.random() < this.model.get("bigMoneyRate") ) {
+                    money *= 10;
+                    isRare = true;
+                }
                 cardModel = new MoneyCardModel({
-                    money: 1
+                    money: money,
+                    isRare: isRare
                 });
                 this.model.manageCard(cardModel);
                 sprite = new MoneySpecialCardSprite({model: cardModel});
@@ -540,7 +550,8 @@ var MainLayer = cc.LayerColor.extend({
             var mirrorSprite;
             if ( cardModel instanceof MoneyCardModel ) {
                 mirrorCardModel = new MoneyCardModel({
-                    money: cardModel.get("money")
+                    money: cardModel.get("money"),
+                    isRare: cardModel.get("isRare")
                 });
                 this.model.manageCard(mirrorCardModel);
                 mirrorSprite = new MoneySpecialCardSprite({model: mirrorCardModel});
@@ -639,6 +650,7 @@ var GameModel = Backbone.Model.extend({
             player2Money: 500,
             allowCoin: true,
             coinAppearRate: 0.2,
+            bigMoneyRate: 0.1,
             allowItem: true,
             itemAppearRate: 0.1,
             gameSpeed: 1
@@ -722,7 +734,8 @@ var GameModel = Backbone.Model.extend({
         if ( cardModel instanceof PokerCardModel ) {
             this.discardDeck.push(new PokerCardModel({
                 number: cardModel.get("number"),
-                suit: cardModel.get("suit")
+                suit: cardModel.get("suit"),
+                isRare: cardModel.get("isRare")
             }))
         }
         cardModel.destroy();
