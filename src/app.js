@@ -2,6 +2,8 @@ var GENERATE_CARD_INTERVAL = 5;
 
 var texts;
 
+var RARE_SPEED_RATE = 2;
+
 var MainLayer = cc.LayerColor.extend({
     sprite:null,
     ctor:function (options) {
@@ -198,7 +200,7 @@ var MainLayer = cc.LayerColor.extend({
                 var locationInNode = target.convertToNodeSpace(touch.getLocation());
                 var touchId = cc.sys.isNative ? touch.getID() : touch.__instanceId;
                 _.each( target.getChildren(), function(sprite){
-                    if ( sprite instanceof PokerCardSprite && !sprite.alreadyTaken && (!target._touchInstanceUsed[touchId] || sprite.touchingInstanceId === touchId ) ) {
+                    if ( sprite instanceof PokerCardSprite && sprite.canBeTouch() && (!target._touchInstanceUsed[touchId] || sprite.touchingInstanceId === touchId ) ) {
                         var padding = 0;
                         var rect = cc.rect(sprite.x-sprite.width/2+padding, sprite.y-sprite.height/2+padding, sprite.width-2*padding,sprite.height-2*padding);
 
@@ -235,7 +237,7 @@ var MainLayer = cc.LayerColor.extend({
                 var prevLocationInNode = target.convertToNodeSpace(touch.getPreviousLocation());
                 var touchId = cc.sys.isNative ? touch.getID() : touch.__instanceId;
                 _.each( target.getChildren(), function(sprite){
-                    if ( sprite instanceof PokerCardSprite && !sprite.alreadyTaken ) {
+                    if ( sprite instanceof PokerCardSprite && sprite.canBeTouch() ) {
                         var rect = cc.rect(sprite.x-sprite.width/2, sprite.y-sprite.height/2, sprite.width,sprite.height);
 
                         //Check the click area
@@ -336,16 +338,19 @@ var MainLayer = cc.LayerColor.extend({
         this.winLoseLabel1.setVisible(true);
         this.winLoseLabel2.setVisible(true);
         var money = this.model.get("betRate") * (player1Feature.rate + player2Feature.rate);
+        var winner = 0;
         if ( player1Feature.power > player2Feature.power ) {
             this.winLoseLabel1.setString(texts.win);
             this.winLoseLabel2.setString(texts.lose);
             this.giveMoney(money, this.player2Sprite, this.player1Sprite);
             cc.audioEngine.playEffect(res[player1Feature.type], false);
+            winner = 1;
         } else if ( player2Feature.power > player1Feature.power ) {
             this.winLoseLabel1.setString(texts.lose);
             this.winLoseLabel2.setString(texts.win);
             this.giveMoney(money, this.player1Sprite, this.player2Sprite);
             cc.audioEngine.playEffect(res[player2Feature.type], false);
+            winner = 2;
         } else {
             this.winLoseLabel1.setString(texts.tie);
             this.winLoseLabel2.setString(texts.tie);
@@ -353,9 +358,9 @@ var MainLayer = cc.LayerColor.extend({
         }
         this.scheduleOnce(function(){
             this.model.set("betRate", this.model.get("betRate") + 1);
-            if ( this.player1.get("money") <= 0 ) {
+            if ( this.player1.get("money") <= 0 || ( this.player2.get("money") >= this.player2.get("initMoney") * 2 && winner === 2 ) ) {
                 this.gameOver();
-            } else if ( this.player2.get("money") <= 0 ) {
+            } else if ( this.player2.get("money") <= 0 || ( this.player1.get("money") >= this.player1.get("initMoney") * 2 && winner === 1) ) {
                 this.gameOver();
             } else {
                 this.startNewRound();
@@ -497,17 +502,27 @@ var MainLayer = cc.LayerColor.extend({
         var mirrorType = _.sample([0,1]);
         var list = pattern.get("list");
         _.each(list, function(entry){
-            var cardModel = this.model.drawCard();
-            if ( cardModel == null ) return;
+            var cardModel;
+            var sprite;
+            if ( this.model.get("allowCoin") && Math.random() < this.model.get("coinAppearRate")) {
+                cardModel = new MoneyCardModel({
+                    money: 1
+                });
+                this.model.manageCard(cardModel);
+                sprite = new MoneySpecialCardSprite({model: cardModel});
+            } else {
+                cardModel = this.model.drawCard();
+                if ( cardModel == null ) return;
+                sprite = new PokerCardSprite({model: cardModel});
+            }
 
-            var sprite = new PokerCardSprite({model: cardModel});
             sprite.attr({
                 x: isOriginMirror ? cc.winSize.width - entry.start.x : entry.start.x,
                 y: entry.start.y
             });
             this.addChild(sprite);
             var moveTime = entry.moveTime;
-            if ( cardModel.get("number") === 14 ) moveTime /= 1.5;
+            if ( cardModel.get("isRare") ) moveTime /= RARE_SPEED_RATE;
             if ( sprite.y > cc.winSize.height/2 ) {
                 moveTime = this.speedAdjust(moveTime, gameModel.player2);
             } else {
@@ -521,9 +536,20 @@ var MainLayer = cc.LayerColor.extend({
                 },this)
             ));
 
-            var mirrorCardModel = this.model.drawCard();
-            if ( mirrorCardModel == null ) return;
-            var mirrorSprite = new PokerCardSprite({model: mirrorCardModel});
+            var mirrorCardModel;
+            var mirrorSprite;
+            if ( cardModel instanceof MoneyCardModel ) {
+                mirrorCardModel = new MoneyCardModel({
+                    money: cardModel.get("money")
+                });
+                this.model.manageCard(mirrorCardModel);
+                mirrorSprite = new MoneySpecialCardSprite({model: mirrorCardModel});
+            } else if ( cardModel instanceof PokerCardModel ) {
+                mirrorCardModel = this.model.drawCard();
+                if ( mirrorCardModel == null ) return;
+                mirrorSprite = new PokerCardSprite({model: mirrorCardModel});
+            }
+
             var endX,endY;
             if ( mirrorType ) {
                 mirrorSprite.attr({
@@ -546,7 +572,7 @@ var MainLayer = cc.LayerColor.extend({
 
             this.addChild(mirrorSprite);
             var moveTime = entry.moveTime;
-            if ( mirrorCardModel.get("number") === 14 ) moveTime /= 2;
+            if ( mirrorCardModel.get("isRare") ) moveTime /= RARE_SPEED_RATE;
             if ( mirrorSprite.y > cc.winSize.height/2 ) {
                 moveTime = this.speedAdjust(moveTime, gameModel.player2);
             } else {
@@ -607,6 +633,17 @@ var MainLayer = cc.LayerColor.extend({
 });
 
 var GameModel = Backbone.Model.extend({
+    defaults:function(){
+        return {
+            player1Money: 500,
+            player2Money: 500,
+            allowCoin: true,
+            coinAppearRate: 0.2,
+            allowItem: true,
+            itemAppearRate: 0.1,
+            gameSpeed: 1
+        }
+    },
     initialize:function(){
         this.maxCountDown = 60;
         this.countDown = this.maxCountDown;
@@ -618,10 +655,12 @@ var GameModel = Backbone.Model.extend({
         this.cidToModel = {};
 
         this.player1 = new PlayerModel({
+            money: this.get("player1Money"),
             position : PLAYER_POSITION_DOWN,
             playerType: "player"
         });
         this.player2 = new PlayerModel({
+            money: this.get("player2Money"),
             position : PLAYER_POSITION_UP,
             playerType: "player"
         });
@@ -652,6 +691,10 @@ var GameModel = Backbone.Model.extend({
         }
         return cardModel;
     },
+    manageCard:function(cardModel){
+        this.cidToModel[cardModel.cid] = cardModel;
+        cardModel._owned = false;
+    },
     clearNotOwnedCards:function(){
         var deleteList = [];
         _.each( this.cidToModel, function(cardModel){
@@ -676,10 +719,12 @@ var GameModel = Backbone.Model.extend({
         this.cidToModel = {};
     },
     destroyCard:function(cardModel){
-        this.discardDeck.push( new PokerCardModel({
-            number: cardModel.get("number"),
-            suit: cardModel.get("suit")
-        }))
+        if ( cardModel instanceof PokerCardModel ) {
+            this.discardDeck.push(new PokerCardModel({
+                number: cardModel.get("number"),
+                suit: cardModel.get("suit")
+            }))
+        }
         cardModel.destroy();
         delete this.cidToModel[cardModel.cid];
     },
@@ -759,8 +804,8 @@ var MainScene = cc.Scene.extend({
         if ( window.gameModel )
             return;
         window.gameModel = new GameModel();
-        var layer = new MainLayer({model:gameModel, need_read_fight:true});
-        this.addChild(layer);
+        window.mainLayer = new MainLayer({model:gameModel, need_read_fight:true});
+        this.addChild(window.mainLayer);
     }
 });
 

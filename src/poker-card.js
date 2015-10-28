@@ -20,41 +20,30 @@ function newDeck(){
     var deck = [];
     for ( var number = 8; number <= 14; number ++ ) {
         for ( var suit = 0; suit <= 3; suit ++ ) {
-            deck.push(new PokerCardModel({ number: number, suit: suit }));
+            deck.push(new PokerCardModel({ number: number,
+                suit: suit,
+                isRare: number == 14
+            }));
         }
     }
     return _.shuffle( deck );
 }
 
-var MIN_SPEED = 5;
-var MAX_SPEED = 20;
+var MIN_SPEED = 10;
+var MAX_SPEED = 25;
 
 var PokerCardSprite = cc.Sprite.extend({
     ctor:function(options) {
         this._super();
-	this.retain();
+	    this.retain();
         this.model = options.model;
-        this.reverse = options.reverse;
 
         this.setName(this.model.cid);
-	this.movingAction = null;
+        this.touchable = true;
 
-        this.numberSprite = new cc.Sprite();
-        this.numberSprite.attr({
-            x: dimens.card_number_position.x,
-            y: dimens.card_number_position.y
-        });
-        this.addChild(this.numberSprite, 0);
+        this.initView();
 
-        this.numberDownSprite = new cc.Sprite();
-        this.numberDownSprite.attr({
-            x: dimens.card_size.width - dimens.card_number_position.x,
-            y: dimens.card_size.height - dimens.card_number_position.y,
-            rotation: 180
-        });
-        this.addChild(this.numberDownSprite, 0);
-
-        this.listener = cc.EventListener.create({
+        /*this.listener = cc.EventListener.create({
             event: cc.EventListener.TOUCH_ONE_BY_ONE,
             swallowTouches: true,
             onTouchBegan: function (touch, event) {
@@ -96,7 +85,23 @@ var PokerCardSprite = cc.Sprite.extend({
                     return;
                 target.onTouchRelease.call(target);
             }
+        });*/
+    },
+    initView:function(){
+        this.numberSprite = new cc.Sprite();
+        this.numberSprite.attr({
+            x: dimens.card_number_position.x,
+            y: dimens.card_number_position.y
         });
+        this.addChild(this.numberSprite, 0);
+
+        this.numberDownSprite = new cc.Sprite();
+        this.numberDownSprite.attr({
+            x: dimens.card_size.width - dimens.card_number_position.x,
+            y: dimens.card_size.height - dimens.card_number_position.y,
+            rotation: 180
+        });
+        this.addChild(this.numberDownSprite, 0);
     },
     onTouchRelease:function(){
         var target = this;
@@ -190,6 +195,9 @@ var PokerCardSprite = cc.Sprite.extend({
             target.runAction( new cc.Sequence(actionArray) );
         }
     },
+    canBeTouch:function(){
+        return !this.alreadyTaken && this.touchable;
+    },
     playerTakeCard:function(player){
         if ( this.alreadyTaken )
             return;
@@ -269,7 +277,7 @@ var PokerCardSprite = cc.Sprite.extend({
         this.model.off("destroy",this.onDestroy);
     },
     onDestroy:function(){
-	this.release();
+	    this.release();
         this.removeFromParent(true);
     },
     getFlipToFrontSequence:function(){
@@ -291,3 +299,4 @@ var PokerCardSprite = cc.Sprite.extend({
         },this), new cc.ScaleTo(times.flip/2,oldScaleX,oldScaleY));
     }
 });
+

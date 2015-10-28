@@ -40,9 +40,35 @@ var CloudItemModel = ItemModel.extend({
     }
 });
 
-var ItemSprite = cc.Sprite.extend({
+var ItemSlotSprite = cc.Sprite.extend({
     ctor:function(options) {
-        this._super();
+        this._super(cc.spriteFrameCache.getSpriteFrame("item-slot-bg.png"));
+
+        var x = this.width/2;
+        var y = this.height/2;
+        this.foreground = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("no-item.png"));
+        this.foreground.attr({
+            x: 0,
+            y: 0
+        });
+
+        var clipper = new cc.ClippingNode();
+        clipper.stencil = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("item-fg-mask.png"));
+        clipper.attr({
+            x: x,
+            y: y
+        })
+        this.addChild(clipper);
+        clipper.setAlphaThreshold(0);
+        clipper.addChild(this.foreground);
+
+        var test = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("item-cloud.png"))
+        test.attr({
+            x: x,
+            y: y*3
+        })
+        this.foreground.addChild(test);
+        test.runAction(new cc.MoveTo(1,x,y));
 
         this.chargeLabel = new ccui.Text("", "Arial", 30 );
         this.chargeLabel.enableOutline(cc.color.WHITE, 2);
@@ -94,13 +120,13 @@ var ItemSprite = cc.Sprite.extend({
         this.model = model;
 
         if ( this.model ) {
-            this.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame("item-" + this.model.get("name") + ".png"));
+            this.foreground.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame("item-" + this.model.get("name") + ".png"));
             this.chargeLabel.setVisible(this.model.get("showCharge"));
             this.renderCharge();
             this.model.on("change:charge", this.renderCharge, this);
         } else {
             this.chargeLabel.setVisible(false);
-            this.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame("no-item.png"));
+            this.foreground.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame("no-item.png"));
         }
     },
     renderCharge:function(){

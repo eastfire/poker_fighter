@@ -49,8 +49,12 @@ var PlayerModel = Backbone.Model.extend({
             hands: [],
             speedDown: 0,
             speedUp: 0,
+            needItem: true,
             item: null
         }
+    },
+    initialize:function(){
+        this.set("initMoney",this.get("money"));
     },
     addHand:function(cardModel){
         cardModel._owned = true
@@ -266,23 +270,25 @@ var PlayerSprite = cc.Sprite.extend({
         }
         this.addChild(moneySprite);
 
-        var itemSprite = new ItemSprite();
-        if ( this.model.get("position") == PLAYER_POSITION_DOWN ) {
-            itemSprite.attr({
-                x:cc.winSize.width - 45,
-                y: 45
-            });
-        } else {
-            itemSprite.attr({
-                x:45,
-                y: cc.winSize.height - 45,
-                rotation: 180
-            });
+        if ( this.model.get("needItem") ) {
+            var itemSprite = new ItemSlotSprite();
+            if (this.model.get("position") == PLAYER_POSITION_DOWN) {
+                itemSprite.attr({
+                    x: cc.winSize.width - 45,
+                    y: 45
+                });
+            } else {
+                itemSprite.attr({
+                    x: 45,
+                    y: cc.winSize.height - 45,
+                    rotation: 180
+                });
+            }
+            this.addChild(itemSprite);
+            if (this.model.get("item")) {
+                itemSprite.setItemModel(new ITEM_MODEL_CLASS_MAP[this.model.get("item")]())
+            } else itemSprite.setItemModel(null);
         }
-        this.addChild(itemSprite);
-        if ( this.model.get("item") ) {
-            itemSprite.setItemModel(new ITEM_MODEL_CLASS_MAP[this.model.get("item")]())
-        } else itemSprite.setItemModel(null);
 
         this.moneyLabel = new ccui.Text(this.model.get("money"), "Arial", 40 );
         this.moneyLabel.enableOutline(cc.color.WHITE, 2);

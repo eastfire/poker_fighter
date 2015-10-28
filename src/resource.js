@@ -84,6 +84,7 @@ var times = {
     rotateDirection: 0.1,
     compare: 3.5,
     giveMoney: 0.4,
+    getMoney: 0.25,
     gameOver: 0.9
 };
 
