@@ -46,7 +46,9 @@ var texts_locale = {
             "one-pair": "一对",
             "high-card": "散牌",
             "no-card": "没牌"
-        }
+        },
+
+        letMeSee: "让我看看"
     },
     en:{
         win:"WIN",
@@ -64,7 +66,9 @@ var texts_locale = {
             "one-pair": "one pair",
             "high-card": "high card",
             "no-card": "no card"
-        }
+        },
+
+        letMeSee: "Let me see"
     }
 };
 
@@ -85,7 +89,8 @@ var times = {
     compare: 3.5,
     giveMoney: 0.4,
     getMoney: 0.25,
-    gameOver: 0.9
+    gameOver: 0.9,
+    letMeSee: 0.5
 };
 
 var dimens = {
@@ -94,8 +99,8 @@ var dimens = {
         height: 70
     },
     card_number_position:{
-        x: 14,
-        y: 56
+        x: 10,
+        y: 55
     },
     player1Y : 95,
     player2Y : 705,
@@ -114,5 +119,19 @@ var dimens = {
         y: 380
     },
 
-    hand_line_card_padding : 0
+    hand_line_card_padding : 0,
+
+    bonus: {
+        "five-of-a-kind": 100,
+        "straight-flush": 50,
+        "four-of-a-kind": 40,
+        "full-house": 30,
+        "flush": 20,
+        "straight": 15,
+        "three-of-a-kind": 10,
+        "two-pair": 4,
+        "one-pair": 2,
+        "high-card": 1,
+        "no-card": 1
+    }
 };

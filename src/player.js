@@ -209,12 +209,33 @@ var PlayerModel = Backbone.Model.extend({
         } else {
             power = 0;
             type = "no-card";
-            rate = 1;
+            rate = 0;
         }
         return {
             power: power,
             type: type,
             rate: rate
+        }
+    },
+
+    getAdjust: function(){
+        var speedScale = 1;
+        if ( this.get("speedUp") ) {
+            speedScale *= 2;
+        }
+        if ( this.get("speedDown") ) {
+            speedScale /= 2;
+        }
+        var sizeScale = 1;
+        if ( this.get("sizeUp") ) {
+            sizeScale *= 1.5;
+        }
+        if ( this.get("sizeDown") ) {
+            sizeScale /= 1.5;
+        }
+        return {
+            speedScale : speedScale,
+            sizeScale: sizeScale
         }
     }
 });
@@ -271,23 +292,23 @@ var PlayerSprite = cc.Sprite.extend({
         this.addChild(moneySprite);
 
         if ( this.model.get("needItem") ) {
-            var itemSprite = new ItemSlotSprite();
+            this.itemSlotSprite = new ItemSlotSprite();
             if (this.model.get("position") == PLAYER_POSITION_DOWN) {
-                itemSprite.attr({
+                this.itemSlotSprite.attr({
                     x: cc.winSize.width - 45,
                     y: 45
                 });
             } else {
-                itemSprite.attr({
+                this.itemSlotSprite.attr({
                     x: 45,
                     y: cc.winSize.height - 45,
                     rotation: 180
                 });
             }
-            this.addChild(itemSprite);
+            this.addChild(this.itemSlotSprite);
             if (this.model.get("item")) {
-                itemSprite.setItemModel(new ITEM_MODEL_CLASS_MAP[this.model.get("item")]())
-            } else itemSprite.setItemModel(null);
+                this.itemSlotSprite.setItemModel(new ITEM_MODEL_CLASS_MAP[this.model.get("item")]())
+            } else this.itemSlotSprite.setItemModel(null);
         }
 
         this.moneyLabel = new ccui.Text(this.model.get("money"), "Arial", 40 );
@@ -451,5 +472,8 @@ var PlayerSprite = cc.Sprite.extend({
     },
     render:function(){
 
+    },
+    getAnItem:function(){
+        this.itemSlotSprite.getAnItem();
     }
 })

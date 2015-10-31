@@ -21,6 +21,8 @@
         "src/special-card.js",
         "src/item.js",
         "src/player.js",
+        "src/pause.js",
+        "src/help.js",
         "src/intro.js",
         "src/app.js"
     ]

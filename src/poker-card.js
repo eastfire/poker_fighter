@@ -10,6 +10,7 @@ SUIT_ARRAY = ["spade","heart","club","diamond", "blank"];
 var PokerCardModel = Backbone.Model.extend({
     defaults:function(){
         return {
+            side: "front",
             number : 1,
             suit: 0
         }
@@ -32,7 +33,7 @@ function newDeck(){
 var MIN_SPEED = 10;
 var MAX_SPEED = 25;
 
-var PokerCardSprite = cc.Sprite.extend({
+var NormalCardSprite = cc.Sprite.extend({
     ctor:function(options) {
         this._super();
 	    this.retain();
@@ -255,9 +256,19 @@ var PokerCardSprite = cc.Sprite.extend({
         return ( lineY - this.y ) * this.speedX / this.speedY + this.x;
     },
     render:function(){
-        this.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame("card-"+SUIT_ARRAY[this.model.get("suit")]+".png"));
-        this.numberSprite.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame("number-"+this.model.get("number")+".png"));
-        this.numberDownSprite.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame("number-"+this.model.get("number")+".png"));
+        if ( this.model.get("side") === "front" ) {
+            var suit = this.model.get("suit");
+            this.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame("card-" + SUIT_ARRAY[suit] + ".png"));
+            var r = ( suit === 1 || suit === 3 )?"r":"";
+            this.numberSprite.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame("number-" + this.model.get("number") + r + ".png"));
+            this.numberDownSprite.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame("number-" + this.model.get("number") + r + ".png"));
+            this.numberSprite.setVisible(true);
+            this.numberDownSprite.setVisible(true);
+        } else {
+            this.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame("card-back.png"));
+            this.numberSprite.setVisible(false);
+            this.numberDownSprite.setVisible(false);
+        }
     },
     onEnter:function(){
         this._super();
@@ -279,7 +290,10 @@ var PokerCardSprite = cc.Sprite.extend({
     onDestroy:function(){
 	    this.release();
         this.removeFromParent(true);
-    },
+    }
+});
+
+var PokerCardSprite = NormalCardSprite.extend({
     getFlipToFrontSequence:function(){
         var oldScaleX = 1;
         var oldScaleY = 1;
@@ -287,6 +301,7 @@ var PokerCardSprite = cc.Sprite.extend({
             this.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame("card-"+SUIT_ARRAY[this.model.get("suit")]+".png"));
             this.numberSprite.setVisible(true);
             this.numberDownSprite.setVisible(true);
+            this.model.set("side","front");
         },this), new cc.ScaleTo(times.flip/2,oldScaleX,oldScaleY));
     },
     getFlipToBackSequence:function(){
@@ -296,7 +311,8 @@ var PokerCardSprite = cc.Sprite.extend({
             this.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame("card-back.png"));
             this.numberSprite.setVisible(false);
             this.numberDownSprite.setVisible(false);
+            this.model.set("side","back");
         },this), new cc.ScaleTo(times.flip/2,oldScaleX,oldScaleY));
     }
-});
+})
 

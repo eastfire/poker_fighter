@@ -39,3 +39,36 @@ var MoneySpecialCardSprite = PokerCardSprite.extend({
 
     }
 });
+
+var ItemSpecialCardModel = Backbone.Model.extend({
+    defaults:function(){
+        return {
+        }
+    }
+});
+
+var ItemSpecialCardSprite = PokerCardSprite.extend({
+    initView:function(){
+        this.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame("card-item.png"));
+    },
+    render:function(){
+
+    },
+    playerTakeCard:function(player){
+        if ( this.alreadyTaken )
+            return;
+        this.stopAllActions();
+        this.setTag(0);
+
+        this.alreadyTaken = true;
+
+        var playerSprite = player == gameModel.player1 ? mainLayer.player1Sprite : mainLayer.player2Sprite;
+        this.runAction(new cc.Sequence( new cc.MoveTo(times.getMoney, playerSprite.itemSlotSprite.x, playerSprite.itemSlotSprite.y) ,
+            new cc.CallFunc(function(){
+                gameModel.destroyCard(this.model);
+                playerSprite.getAnItem();
+            },this)
+        ));
+
+    }
+})

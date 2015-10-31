@@ -1,4 +1,5 @@
 var GENERATE_CARD_INTERVAL = 5;
+var GENERATE_ITEM_INTERVAL = 7;
 
 var texts;
 
@@ -251,6 +252,30 @@ var MainLayer = cc.LayerColor.extend({
             }
         }), this);
     },
+    showCountDown:function(){
+        var scaleRate = 3;
+        this.countDownLabel.runAction( new cc.Sequence(
+            new cc.CallFunc(function(){
+                cc.audioEngine.playEffect(res["countdown"+gameModel.get("currentCount")+"_mp3"], false);
+                this.countDownLabel.setString(gameModel.get("currentCount"));
+                this.countDownLabel.attr({
+                    scaleX: 1,
+                    scaleY: 1
+                });
+            },this),
+            new cc.ScaleTo(1, scaleRate, scaleRate),
+            new cc.CallFunc(function(){
+                gameModel.set("currentCount", gameModel.get("currentCount") - 1);
+                if ( gameModel.get("currentCount") <= 0 || ( !gameModel.player1.canTakeCard() && !gameModel.player2.canTakeCard() )) {
+                    this.countDownLabel.setVisible(false);
+                    this.model.clearNotOwnedCards();
+                    this.compareHands();
+                } else {
+                    this.showCountDown();
+                }
+            },this)
+        ));
+    },
     startRoundCountDown:function(){
         if ( gameModel.get("status") == "countDown" ) {
             return;
@@ -268,59 +293,8 @@ var MainLayer = cc.LayerColor.extend({
         this.countDownLabel.attr({
             rotation: rotation
         });
-        var scaleRate = 3;
-        this.countDownLabel.runAction( new cc.Sequence(
-            new cc.CallFunc(function(){
-                cc.audioEngine.playEffect(res.countdown5_mp3, false);
-                this.countDownLabel.setString(5);
-                this.countDownLabel.attr({
-                    scaleX: 1,
-                    scaleY: 1
-                });
-            },this),
-            new cc.ScaleTo(1, scaleRate, scaleRate),
-            new cc.CallFunc(function(){
-                cc.audioEngine.playEffect(res.countdown4_mp3, false);
-                this.countDownLabel.setString(4);
-                this.countDownLabel.attr({
-                    scaleX: 1,
-                    scaleY: 1
-                });
-            },this),
-            new cc.ScaleTo(1, scaleRate, scaleRate),
-            new cc.CallFunc(function(){
-                cc.audioEngine.playEffect(res.countdown3_mp3, false);
-                this.countDownLabel.setString(3);
-                this.countDownLabel.attr({
-                    scaleX: 1,
-                    scaleY: 1
-                });
-            },this),
-            new cc.ScaleTo(1, scaleRate, scaleRate),
-            new cc.CallFunc(function(){
-                cc.audioEngine.playEffect(res.countdown2_mp3, false);
-                this.countDownLabel.setString(2);
-                this.countDownLabel.attr({
-                    scaleX: 1,
-                    scaleY: 1
-                });
-            },this),
-            new cc.ScaleTo(1, scaleRate, scaleRate),
-            new cc.CallFunc(function(){
-                cc.audioEngine.playEffect(res.countdown1_mp3, false);
-                this.countDownLabel.setString(1);
-                this.countDownLabel.attr({
-                    scaleX: 1,
-                    scaleY: 1
-                });
-            },this),
-            new cc.ScaleTo(1, scaleRate, scaleRate),
-            new cc.CallFunc(function(){
-                this.countDownLabel.setVisible(false);
-                this.model.clearNotOwnedCards();
-                this.compareHands();
-            },this)
-        ));
+        gameModel.set("currentCount",5);
+        this.showCountDown();
     },
     compareHands:function(){
         this.model.set("status", "compare");
@@ -476,25 +450,92 @@ var MainLayer = cc.LayerColor.extend({
         var self = this;
         if ( this.schedulePerSec == null ) {
             this.schedulePerSec = function () {
-                if ( self.model.get("status") != "game" ) return;
+                if ( self.model.get("status") !== "game" && self.model.get("status") !== "countDown" ) return;
                 if ( self.model.generateCardCountDown <= 0 ) {
                     self.generateCards.call(self);
                     self.model.generateCardCountDown = GENERATE_CARD_INTERVAL;
                 }
                 self.model.generateCardCountDown--;
+
+                if ( self.model.get("allowItem")) {
+                    if (self.model.generateItemCountDown <= 0) {
+                        if (Math.random() > self.model.get("itemAppearRate")) {
+                            self.generateItems.call(self);
+                        }
+
+                        self.model.generateItemCountDown = GENERATE_ITEM_INTERVAL;
+                    }
+                    self.model.generateItemCountDown--;
+                }
+
                 self.model.totalTime++;
             }
         }
         this.schedule(this.schedulePerSec, 1);
     },
-    speedAdjust:function(moveTime, player){
-        if ( player.get("speedUp") ) {
-            moveTime /= 2;
+    generateItems:function(){
+        var pattern = this.model.getItemPattern().get("pattern");
+        var isOriginMirror = _.sample([0,1]);
+        var mirrorType = _.sample([0,1]);
+        var cardModel = new ItemSpecialCardModel();
+        var sprite = new ItemSpecialCardSprite({model: cardModel});
+        sprite.attr({
+            x: isOriginMirror ? cc.winSize.width - pattern.start.x : pattern.start.x,
+            y: pattern.start.y
+        });
+        this.addChild(sprite);
+        var speedScale = 1;
+        if ( sprite.y > cc.winSize.height/2 ) {
+            speedScale *= gameModel.player2.getAdjust().speedScale;
+        } else {
+            speedScale *= gameModel.player1.getAdjust().speedScale;
         }
-        if ( player.get("speedDown") ) {
-            moveTime *= 2;
+        sprite.runAction( cc.sequence(
+            new cc.DelayTime(pattern.time),
+            cc.moveTo(pattern.moveTime, isOriginMirror ? cc.winSize.width - pattern.end.x : pattern.end.x, pattern.end.y),
+            new cc.CallFunc(function(){
+                gameModel.destroyCard(cardModel);
+            },this)
+        ).speed(speedScale));
+
+        var mirrorCardModel = new ItemSpecialCardModel();
+        var mirrorSprite  = new ItemSpecialCardSprite({model: mirrorCardModel});
+
+        var endX,endY;
+        if ( mirrorType ) {
+            mirrorSprite.attr({
+                x: pattern.start.x,
+                y: cc.winSize.height - pattern.start.y
+            });
+            endX = pattern.end.x;
+            endY = cc.winSize.height - pattern.end.y;
+        } else {
+            mirrorSprite.attr({
+                x: cc.winSize.width - pattern.start.x,
+                y: cc.winSize.height - pattern.start.y
+            });
+            endX = cc.winSize.width - pattern.end.x;
+            endY = cc.winSize.height - pattern.end.y;
         }
-        return moveTime;
+        if ( mirrorSprite.y > cc.winSize.height/2 ) {
+            mirrorSprite.rotation = 180;
+        }
+
+        this.addChild(mirrorSprite);
+        var speedScale = 1;
+        if ( sprite.y > cc.winSize.height/2 ) {
+            speedScale *= gameModel.player2.getAdjust().speedScale;
+        } else {
+            speedScale *= gameModel.player1.getAdjust().speedScale;
+        }
+
+        mirrorSprite.runAction(cc.sequence(
+            new cc.DelayTime(pattern.time),
+            cc.moveTo(pattern.moveTime, endX, endY),
+            new cc.CallFunc(function(){
+                gameModel.destroyCard(mirrorCardModel);
+            },this)
+        ).speed(speedScale));
     },
     generateCards:function(){
         var pattern = this.model.getPattern();
@@ -531,20 +572,21 @@ var MainLayer = cc.LayerColor.extend({
                 y: entry.start.y
             });
             this.addChild(sprite);
-            var moveTime = entry.moveTime;
-            if ( cardModel.get("isRare") ) moveTime /= RARE_SPEED_RATE;
+            var speedScale = 1;
+            if ( cardModel.get("isRare") ) speedScale = RARE_SPEED_RATE;
             if ( sprite.y > cc.winSize.height/2 ) {
-                moveTime = this.speedAdjust(moveTime, gameModel.player2);
+                speedScale *= gameModel.player2.getAdjust().speedScale;
             } else {
-                moveTime = this.speedAdjust(moveTime, gameModel.player1);
+                speedScale *= gameModel.player1.getAdjust().speedScale;
             }
-            sprite.runAction(new cc.Sequence(
+
+            sprite.runAction( cc.sequence(
                 new cc.DelayTime(entry.time),
-                new cc.MoveTo(moveTime, isOriginMirror ? cc.winSize.width - entry.end.x : entry.end.x, entry.end.y ),
+                cc.moveTo(entry.moveTime, isOriginMirror ? cc.winSize.width - entry.end.x : entry.end.x, entry.end.y),
                 new cc.CallFunc(function(){
                     gameModel.destroyCard(cardModel);
                 },this)
-            ));
+            ).speed(speedScale));
 
             var mirrorCardModel;
             var mirrorSprite;
@@ -582,20 +624,21 @@ var MainLayer = cc.LayerColor.extend({
             }
 
             this.addChild(mirrorSprite);
-            var moveTime = entry.moveTime;
-            if ( mirrorCardModel.get("isRare") ) moveTime /= RARE_SPEED_RATE;
-            if ( mirrorSprite.y > cc.winSize.height/2 ) {
-                moveTime = this.speedAdjust(moveTime, gameModel.player2);
+            var speedScale = 1;
+            if ( mirrorCardModel.get("isRare") ) speedScale = RARE_SPEED_RATE;
+            if ( sprite.y > cc.winSize.height/2 ) {
+                speedScale *= gameModel.player2.getAdjust().speedScale;
             } else {
-                moveTime = this.speedAdjust(moveTime, gameModel.player1);
+                speedScale *= gameModel.player1.getAdjust().speedScale;
             }
-            mirrorSprite.runAction(new cc.Sequence(
+
+            mirrorSprite.runAction(cc.sequence(
                 new cc.DelayTime(entry.time),
-                new cc.MoveTo(moveTime, endX, endY ),
+                cc.moveTo(entry.moveTime, endX, endY),
                 new cc.CallFunc(function(){
                     gameModel.destroyCard(mirrorCardModel);
                 },this)
-            ));
+            ).speed(speedScale));
         },this);
     },
     initAudio:function(){
@@ -660,6 +703,8 @@ var GameModel = Backbone.Model.extend({
         this.maxCountDown = 60;
         this.countDown = this.maxCountDown;
         this.generateCardCountDown = 0;
+        this.generateItemCountDown = GENERATE_ITEM_INTERVAL;
+
         this.set("betRate", 1);
         this.set("status", "ready");
         this.totalTime = 0;
@@ -685,6 +730,14 @@ var GameModel = Backbone.Model.extend({
             new Pattern5Model(),
             new Pattern6Model()
         ];
+
+        this.itemPatternPool = [
+            new ItemPatternModel(),
+            new ItemPattern2Model(),
+            new ItemPattern3Model()
+        ];
+
+        this.itemPool = ["cloud"];
     },
     newDeck:function(){
         this.deck = newDeck();
@@ -743,73 +796,16 @@ var GameModel = Backbone.Model.extend({
     },
     getPattern:function(){
         return _.sample( this.patternPool );
+    },
+    getItemPattern:function(){
+        return _.sample( this.itemPatternPool );
+    },
+    generateItemName:function(){
+        return _.sample( this.itemPool );
     }
 })
 
-var PauseMenuLayer = cc.LayerColor.extend({
-    ctor:function(){
-        this._super(colors.table);
 
-        var resumeItem = new cc.MenuItemImage(
-            cc.spriteFrameCache.getSpriteFrame("resume-default.png"),
-            cc.spriteFrameCache.getSpriteFrame("resume-press.png"),
-            function () {
-                cc.director.popScene();
-            }, this);
-        resumeItem.attr({
-            x: cc.winSize.width/2,
-            y: cc.winSize.height/8
-        });
-
-        var infoItem = new cc.MenuItemImage(
-            cc.spriteFrameCache.getSpriteFrame("info-default.png"),
-            cc.spriteFrameCache.getSpriteFrame("info-press.png"),
-            function () {
-
-            }, this);
-        infoItem.attr({
-            x: cc.winSize.width/2,
-            y: cc.winSize.height*3/8
-        });
-
-        var restartItem = new cc.MenuItemImage(
-            cc.spriteFrameCache.getSpriteFrame("restart-default.png"),
-            cc.spriteFrameCache.getSpriteFrame("restart-press.png"),
-            function () {
-                window.gameModel = null;
-                cc.director.runScene(new MainScene());
-            }, this);
-        restartItem.attr({
-            x: cc.winSize.width/2,
-            y: cc.winSize.height*5/8
-        });
-
-        var exitItem = new cc.MenuItemImage(
-            cc.spriteFrameCache.getSpriteFrame("exit-default.png"),
-            cc.spriteFrameCache.getSpriteFrame("exit-press.png"),
-            function () {
-                window.gameModel = null;
-                cc.director.runScene(new IntroScene());
-            }, this);
-        exitItem.attr({
-            x: cc.winSize.width/2,
-            y: cc.winSize.height*7/8
-        });
-
-        var menu = new cc.Menu([exitItem, restartItem, infoItem, resumeItem ]);
-        menu.x = 0;
-        menu.y = 0;
-        this.addChild(menu);
-    }
-})
-
-var PauseMenuScene = cc.Scene.extend({
-    onEnter:function () {
-        this._super();
-        var layer = new PauseMenuLayer();
-        this.addChild(layer);
-    }
-});
 
 var MainScene = cc.Scene.extend({
     onEnter:function () {

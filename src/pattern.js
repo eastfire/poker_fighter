@@ -19,7 +19,7 @@ var PatternModel = Backbone.Model.extend({
                     x: cc.winSize.width+dimens.card_size.width,
                     y: 150 + 40 * i
                 },
-                moveTime: 3
+                moveTime: 3.5
             }
         });
     }
@@ -40,7 +40,7 @@ var Pattern2Model = PatternModel.extend({
                     x: cc.winSize.width+dimens.card_size.width,
                     y: 350 - 40 * i
                 },
-                moveTime: 3
+                moveTime: 3.5
             }
         });
     }
@@ -61,7 +61,7 @@ var Pattern3Model = PatternModel.extend({
                     x: cc.winSize.width+dimens.card_size.width,
                     y: 150 + 40 * i
                 },
-                moveTime: 3
+                moveTime: 3.5
             }
         });
     }
@@ -82,7 +82,7 @@ var Pattern4Model = PatternModel.extend({
                     x: cc.winSize.width+dimens.card_size.width,
                     y: 350 - 40 * i
                 },
-                moveTime: 3
+                moveTime: 3.5
             }
         });
     }
@@ -103,7 +103,7 @@ var Pattern5Model = PatternModel.extend({
                     x: cc.winSize.width+dimens.card_size.width,
                     y: 150 + 30 * i
                 },
-                moveTime: 3
+                moveTime: 3.5
             });
             ret.push({
                 time : i*0.5,
@@ -115,7 +115,7 @@ var Pattern5Model = PatternModel.extend({
                     x: cc.winSize.width+dimens.card_size.width,
                     y: 350 - 30 * i
                 },
-                moveTime: 3
+                moveTime: 3.5
             });
         }
         return ret;
@@ -137,7 +137,7 @@ var Pattern6Model = PatternModel.extend({
                     x: cc.winSize.width+dimens.card_size.width,
                     y: 150 + 30 * (2-i)
                 },
-                moveTime: 3
+                moveTime: 3.5
             });
             ret.push({
                 time : i*0.5,
@@ -149,9 +149,66 @@ var Pattern6Model = PatternModel.extend({
                     x: cc.winSize.width+dimens.card_size.width,
                     y: 350 - 30 * (2-i)
                 },
-                moveTime: 3
+                moveTime: 3.5
             });
         }
         return ret;
+    }
+});
+
+var ItemPatternModel = Backbone.Model.extend({
+    defaults: function () {
+        return {
+            pattern:{
+                time : 4,
+                start : {
+                    x: -dimens.card_size.width,
+                    y: 350
+                },
+                end : {
+                    x: cc.winSize.width+dimens.card_size.width,
+                    y: 350
+                },
+                moveTime: 3
+            }
+        }
+    }
+});
+
+var ItemPattern2Model = Backbone.Model.extend({
+    defaults: function () {
+        return {
+            pattern: {
+                time: 4,
+                start: {
+                    x: -dimens.card_size.width,
+                    y: 350
+                },
+                end: {
+                    x: cc.winSize.width + dimens.card_size.width,
+                    y: 150
+                },
+                moveTime: 3
+            }
+        }
+    }
+});
+
+var ItemPattern3Model = Backbone.Model.extend({
+    defaults: function () {
+        return {
+            pattern: {
+                time: 4,
+                start: {
+                    x: -dimens.card_size.width,
+                    y: 150
+                },
+                end: {
+                    x: cc.winSize.width + dimens.card_size.width,
+                    y: 650
+                },
+                moveTime: 3
+            }
+        }
     }
 });

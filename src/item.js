@@ -91,8 +91,10 @@ var ItemSlotSprite = cc.Sprite.extend({
 
                 //Check the click area
                 if (cc.rectContainsPoint(rect, locationInNode)) {
-                    if ( target.model && target.model.canUse.call(target.model) )
+                    if ( target.status === "usable" && target.model && target.model.canUse.call(target.model) ) {
+                        target.foreground.opacity = 0.8;
                         return true;
+                    }
                 }
                 return false;
             },
@@ -102,6 +104,7 @@ var ItemSlotSprite = cc.Sprite.extend({
             //Process the touch end event
             onTouchEnded: function (touch, event) {
                 var target = event.getCurrentTarget();
+                target.foreground.opacity = 1;
                 target.useItem.call(target);
             }
         });
@@ -145,6 +148,10 @@ var ItemSlotSprite = cc.Sprite.extend({
                     this.setVisible(true);
                 }, this)));
         }
+    },
+    getAnItem:function(){
+        this.status = "rolling";
+        this.status = "usable";
     }
 });
 
