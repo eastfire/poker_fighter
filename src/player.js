@@ -308,7 +308,7 @@ var PlayerSprite = cc.Sprite.extend({
                     rotation: 180
                 });
             }
-            this.addChild(this.itemSlotSprite);
+            this.addChild(this.itemSlotSprite, 80);
             if (this.model.get("item")) {
                 this.itemSlotSprite.setItemModel(new ITEM_MODEL_CLASS_MAP[this.model.get("item")]())
             } else this.itemSlotSprite.setItemModel(null);

@@ -692,7 +692,7 @@ var GameModel = Backbone.Model.extend({
             coinAppearRate: 0.2,
             bigMoneyRate: 0.1,
             allowItem: true,
-            itemAppearRate: 0.2,
+            itemAppearRate: 0.4,
             gameSpeed: 1
         }
     },
