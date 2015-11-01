@@ -170,6 +170,7 @@ var PlayerModel = Backbone.Model.extend({
             power = 11000 + cards[0].get("number") * 20 + (19 - cards[0].get("suit"));
             type = "five-of-a-kind"
             rate = 100;
+            cc.sys.localStorage.setItem("fiveOfAKindAppeared",true);
         } else if ( this.isFlushStraight(cards) ) {
             power = 10000 + cards[0].get("number") * 20 + (19 - cards[0].get("suit"));
             type = "straight-flush"
@@ -250,8 +251,10 @@ var PlayerSprite = cc.Sprite.extend({
         var y;
         if ( this.model.get("position") == PLAYER_POSITION_DOWN ) {
             y = dimens.player1Y/2;
+            this.effectRect = new cc.Rect(0, dimens.player1Y, cc.winSize.width, cc.winSize.height/2 - dimens.player1Y);
         } else {
             y = (dimens.player2Y + cc.winSize.height)/2;
+            this.effectRect = new cc.Rect(0, cc.winSize.height/2, cc.winSize.width, cc.winSize.height/2 - dimens.player1Y);
         }
         this.lookHand.attr({
             x: cc.winSize.width/2,
@@ -292,7 +295,7 @@ var PlayerSprite = cc.Sprite.extend({
         this.addChild(moneySprite);
 
         if ( this.model.get("needItem") ) {
-            this.itemSlotSprite = new ItemSlotSprite();
+            this.itemSlotSprite = new ItemSlotSprite({ owner : this.model.get("position") });
             if (this.model.get("position") == PLAYER_POSITION_DOWN) {
                 this.itemSlotSprite.attr({
                     x: cc.winSize.width - 45,
@@ -358,6 +361,9 @@ var PlayerSprite = cc.Sprite.extend({
                 self.toggleHand();
             }
         }), this.lookHand);
+    },
+    getEffectRect:function(){
+        return this.effectRect;
     },
     onEnter:function(){
         this._super();

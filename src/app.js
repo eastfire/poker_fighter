@@ -177,9 +177,6 @@ var MainLayer = cc.LayerColor.extend({
         this.betRateLabel1.setString("×"+this.model.get("betRate"));
         this.betRateLabel2.setString("×"+this.model.get("betRate"));
     },
-    renderMoney:function(){
-
-    },
     onBetRateChange:function(){
         var seq = new cc.Sequence(new cc.ScaleTo(0.2,2,2),new cc.ScaleTo(0.2,1,1));
         this.betRateLabel1.runAction(seq.clone());
@@ -459,7 +456,7 @@ var MainLayer = cc.LayerColor.extend({
 
                 if ( self.model.get("allowItem")) {
                     if (self.model.generateItemCountDown <= 0) {
-                        if (Math.random() > self.model.get("itemAppearRate")) {
+                        if (Math.random() < self.model.get("itemAppearRate")) {
                             self.generateItems.call(self);
                         }
 
@@ -695,7 +692,7 @@ var GameModel = Backbone.Model.extend({
             coinAppearRate: 0.2,
             bigMoneyRate: 0.1,
             allowItem: true,
-            itemAppearRate: 0.1,
+            itemAppearRate: 0.2,
             gameSpeed: 1
         }
     },
@@ -703,7 +700,7 @@ var GameModel = Backbone.Model.extend({
         this.maxCountDown = 60;
         this.countDown = this.maxCountDown;
         this.generateCardCountDown = 0;
-        this.generateItemCountDown = GENERATE_ITEM_INTERVAL;
+        this.generateItemCountDown = 0;//GENERATE_ITEM_INTERVAL;
 
         this.set("betRate", 1);
         this.set("status", "ready");
@@ -737,7 +734,8 @@ var GameModel = Backbone.Model.extend({
             new ItemPattern3Model()
         ];
 
-        this.itemPool = ["cloud"];
+        this.itemPool = ["cloud","leaf","ace","two"];
+        //this.itemPool = ["two"];
     },
     newDeck:function(){
         this.deck = newDeck();
@@ -784,7 +782,7 @@ var GameModel = Backbone.Model.extend({
         this.cidToModel = {};
     },
     destroyCard:function(cardModel){
-        if ( cardModel instanceof PokerCardModel ) {
+        if ( cardModel instanceof PokerCardModel && !cardModel.isSpecialCard ) {
             this.discardDeck.push(new PokerCardModel({
                 number: cardModel.get("number"),
                 suit: cardModel.get("suit"),
