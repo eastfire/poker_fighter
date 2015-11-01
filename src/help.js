@@ -12,8 +12,8 @@ var PlayerRotateLayer = cc.LayerColor.extend({
             function () {
                 this.letMeSeeItem.setEnabled(false);
                 var rotation = (this.rotation + 180) % 360;
-                this.runAction(new cc.Sequence(new cc.RotateTo(times.letMeSee, rotation ),
-                new cc.CallFunc(function(){
+                this.runAction( cc.sequence( cc.rotateTo(times.letMeSee, rotation ),
+                cc.callFunc(function(){
                     this.letMeSeeItem.setEnabled(true);
                 },this)));
             }, this);
