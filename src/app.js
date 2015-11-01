@@ -190,6 +190,23 @@ var MainLayer = cc.LayerColor.extend({
             event: cc.EventListener.TOUCH_ONE_BY_ONE,
             swallowTouches: true,
             onTouchBegan: function (touch, event) {
+                var target = event.getCurrentTarget();
+                var locationInNode = target.convertToNodeSpace(touch.getLocation());
+                var touchId = cc.sys.isNative ? touch.getID() : touch.__instanceId;
+                _.each( target.getChildren(), function(sprite) {
+                    if (sprite instanceof NormalCardSprite && sprite.canBeTouch() && (!target._touchInstanceUsed[touchId] || sprite.touchingInstanceId === touchId )) {
+                        var rect = cc.rect(sprite.x - sprite.width / 2, sprite.y - sprite.height / 2, sprite.width, sprite.height);
+                        if (cc.rectContainsPoint(rect, locationInNode)){
+                            sprite.touchingInstanceId = touchId;
+                            if (sprite.y >= cc.winSize.height / 2) {
+                                sprite.speedY = 1;
+                            } else {
+                                sprite.speedY = -1;
+                            }
+                            sprite.speedX = 0;
+                        }
+                    }
+                },target);
                 return true;
             },
             //Trigger when moving touch
@@ -198,7 +215,7 @@ var MainLayer = cc.LayerColor.extend({
                 var locationInNode = target.convertToNodeSpace(touch.getLocation());
                 var touchId = cc.sys.isNative ? touch.getID() : touch.__instanceId;
                 _.each( target.getChildren(), function(sprite){
-                    if ( sprite instanceof PokerCardSprite && sprite.canBeTouch() && (!target._touchInstanceUsed[touchId] || sprite.touchingInstanceId === touchId ) ) {
+                    if ( sprite instanceof NormalCardSprite && sprite.canBeTouch() && (!target._touchInstanceUsed[touchId] || sprite.touchingInstanceId === touchId ) ) {
                         var padding = 0;
                         var rect = cc.rect(sprite.x-sprite.width/2+padding, sprite.y-sprite.height/2+padding, sprite.width-2*padding,sprite.height-2*padding);
 
@@ -235,7 +252,7 @@ var MainLayer = cc.LayerColor.extend({
                 var prevLocationInNode = target.convertToNodeSpace(touch.getPreviousLocation());
                 var touchId = cc.sys.isNative ? touch.getID() : touch.__instanceId;
                 _.each( target.getChildren(), function(sprite){
-                    if ( sprite instanceof PokerCardSprite && sprite.canBeTouch() ) {
+                    if ( sprite instanceof NormalCardSprite && sprite.canBeTouch() ) {
                         var rect = cc.rect(sprite.x-sprite.width/2, sprite.y-sprite.height/2, sprite.width,sprite.height);
 
                         //Check the click area
@@ -476,24 +493,31 @@ var MainLayer = cc.LayerColor.extend({
         var mirrorType = _.sample([0,1]);
         var cardModel = new ItemSpecialCardModel();
         var sprite = new ItemSpecialCardSprite({model: cardModel});
-        sprite.attr({
-            x: isOriginMirror ? cc.winSize.width - pattern.start.x : pattern.start.x,
-            y: pattern.start.y
-        });
+
         this.addChild(sprite);
         var speedScale = 1;
+        var scale = 1;
         if ( sprite.y > cc.winSize.height/2 ) {
-            speedScale *= gameModel.player2.getAdjust().speedScale;
+            speedScale *= gameModel.player2.getSpeedAdjust();
+            scale = gameModel.player2.getSizeAdjust();
         } else {
-            speedScale *= gameModel.player1.getAdjust().speedScale;
+            speedScale *= gameModel.player1.getSpeedAdjust();
+            scale = gameModel.player1.getSizeAdjust();
         }
+        sprite.attr({
+            x: isOriginMirror ? cc.winSize.width - pattern.start.x : pattern.start.x,
+            y: pattern.start.y,
+            scaleX : scale,
+            scaleY : scale
+        });
         sprite.runAction( cc.sequence(
-            new cc.DelayTime(pattern.time),
-            cc.moveTo(pattern.moveTime, isOriginMirror ? cc.winSize.width - pattern.end.x : pattern.end.x, pattern.end.y),
+            cc.moveTo(pattern.time, isOriginMirror ? cc.winSize.width - pattern.end.x : pattern.end.x, pattern.end.y),
             new cc.CallFunc(function(){
                 gameModel.destroyCard(cardModel);
             },this)
         ).speed(speedScale));
+
+        if ( pattern.isOnlyOne ) return;
 
         var mirrorCardModel = new ItemSpecialCardModel();
         var mirrorSprite  = new ItemSpecialCardSprite({model: mirrorCardModel});
@@ -520,15 +544,21 @@ var MainLayer = cc.LayerColor.extend({
 
         this.addChild(mirrorSprite);
         var speedScale = 1;
+        var scale = 1;
         if ( sprite.y > cc.winSize.height/2 ) {
-            speedScale *= gameModel.player2.getAdjust().speedScale;
+            speedScale *= gameModel.player2.getSpeedAdjust();
+            scale = gameModel.player2.getSizeAdjust();
         } else {
-            speedScale *= gameModel.player1.getAdjust().speedScale;
+            speedScale *= gameModel.player1.getSpeedAdjust();
+            scale = gameModel.player1.getSizeAdjust();
         }
+        mirrorSprite.attr({
+            scaleX: scale,
+            scaleY: scale
+        })
 
         mirrorSprite.runAction(cc.sequence(
-            new cc.DelayTime(pattern.time),
-            cc.moveTo(pattern.moveTime, endX, endY),
+            cc.moveTo(pattern.time, endX, endY),
             new cc.CallFunc(function(){
                 gameModel.destroyCard(mirrorCardModel);
             },this)
@@ -564,18 +594,23 @@ var MainLayer = cc.LayerColor.extend({
                 sprite = new PokerCardSprite({model: cardModel});
             }
 
-            sprite.attr({
-                x: isOriginMirror ? cc.winSize.width - entry.start.x : entry.start.x,
-                y: entry.start.y
-            });
             this.addChild(sprite);
             var speedScale = 1;
+            var scale;
             if ( cardModel.get("isRare") ) speedScale = RARE_SPEED_RATE;
             if ( sprite.y > cc.winSize.height/2 ) {
-                speedScale *= gameModel.player2.getAdjust().speedScale;
+                speedScale *= gameModel.player2.getSpeedAdjust();
+                scale = gameModel.player2.getSizeAdjust();
             } else {
-                speedScale *= gameModel.player1.getAdjust().speedScale;
+                speedScale *= gameModel.player1.getSpeedAdjust();
+                scale = gameModel.player1.getSizeAdjust();
             }
+            sprite.attr({
+                x: isOriginMirror ? cc.winSize.width - entry.start.x : entry.start.x,
+                y: entry.start.y,
+                scaleX: scale,
+                scaleY: scale
+            });
 
             sprite.runAction( cc.sequence(
                 new cc.DelayTime(entry.time),
@@ -624,10 +659,16 @@ var MainLayer = cc.LayerColor.extend({
             var speedScale = 1;
             if ( mirrorCardModel.get("isRare") ) speedScale = RARE_SPEED_RATE;
             if ( sprite.y > cc.winSize.height/2 ) {
-                speedScale *= gameModel.player2.getAdjust().speedScale;
+                speedScale *= gameModel.player2.getSpeedAdjust();
+                scale = gameModel.player2.getSizeAdjust();
             } else {
-                speedScale *= gameModel.player1.getAdjust().speedScale;
+                speedScale *= gameModel.player1.getSpeedAdjust();
+                scale = gameModel.player1.getSizeAdjust();
             }
+            mirrorSprite.attr({
+                scaleX: scale,
+                scaleY: scale
+            });
 
             mirrorSprite.runAction(cc.sequence(
                 new cc.DelayTime(entry.time),
@@ -692,7 +733,7 @@ var GameModel = Backbone.Model.extend({
             coinAppearRate: 0.2,
             bigMoneyRate: 0.1,
             allowItem: true,
-            itemAppearRate: 0.4,
+            itemAppearRate: 0.3,
             gameSpeed: 1
         }
     },
@@ -731,11 +772,12 @@ var GameModel = Backbone.Model.extend({
         this.itemPatternPool = [
             new ItemPatternModel(),
             new ItemPattern2Model(),
-            new ItemPattern3Model()
+            new ItemPattern3Model(),
+            new ItemPattern4Model()
         ];
 
-        this.itemPool = ["cloud","leaf","ace","two"];
-        //this.itemPool = ["two"];
+        this.itemPool = ["ace","cloud","dizzy","leaf","two"];
+        //this.itemPool = ["dizzy"];
     },
     newDeck:function(){
         this.deck = newDeck();

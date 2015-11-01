@@ -219,25 +219,25 @@ var PlayerModel = Backbone.Model.extend({
         }
     },
 
-    getAdjust: function(){
+    getSpeedAdjust: function() {
         var speedScale = 1;
-        if ( this.get("speedUp") ) {
+        if (this.get("speedUp")) {
             speedScale *= 2;
         }
-        if ( this.get("speedDown") ) {
+        if (this.get("speedDown")) {
             speedScale /= 2;
         }
-        var sizeScale = 1;
+        return speedScale;
+    },
+    getSizeAdjust: function() {
+        var sizeScale = 1.1;
         if ( this.get("sizeUp") ) {
             sizeScale *= 1.5;
         }
         if ( this.get("sizeDown") ) {
             sizeScale /= 1.5;
         }
-        return {
-            speedScale : speedScale,
-            sizeScale: sizeScale
-        }
+        return sizeScale;
     }
 });
 
@@ -437,6 +437,8 @@ var PlayerSprite = cc.Sprite.extend({
                     if ( sprite.isNewHand ) {
                         if ( !this.showHand ) {
                             sprite.runAction(sprite.getFlipToBackSequence());
+                        } else {
+                            sprite.runAction(cc.scaleTo(times.flip,1,1));
                         }
                         sprite.isNewHand = false;
                     }

@@ -115,6 +115,8 @@ var NormalCardSprite = cc.Sprite.extend({
             return;
         }
 
+        target.stopAllActions();
+
         var player1Y = dimens.player1Y;
         var player2Y = dimens.player2Y;
 

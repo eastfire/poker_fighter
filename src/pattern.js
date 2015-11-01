@@ -160,7 +160,8 @@ var ItemPatternModel = Backbone.Model.extend({
     defaults: function () {
         return {
             pattern:{
-                time : 4,
+                isOnlyOne: false,
+                time : 2.5,
                 start : {
                     x: -dimens.card_size.width,
                     y: 350
@@ -168,8 +169,7 @@ var ItemPatternModel = Backbone.Model.extend({
                 end : {
                     x: cc.winSize.width+dimens.card_size.width,
                     y: 350
-                },
-                moveTime: 3
+                }
             }
         }
     }
@@ -179,7 +179,8 @@ var ItemPattern2Model = Backbone.Model.extend({
     defaults: function () {
         return {
             pattern: {
-                time: 4,
+                isOnlyOne: false,
+                time: 2.5,
                 start: {
                     x: -dimens.card_size.width,
                     y: 350
@@ -187,8 +188,7 @@ var ItemPattern2Model = Backbone.Model.extend({
                 end: {
                     x: cc.winSize.width + dimens.card_size.width,
                     y: 150
-                },
-                moveTime: 3
+                }
             }
         }
     }
@@ -198,16 +198,35 @@ var ItemPattern3Model = Backbone.Model.extend({
     defaults: function () {
         return {
             pattern: {
-                time: 4,
+                isOnlyOne: false,
+                time: 2.5,
                 start: {
                     x: -dimens.card_size.width,
                     y: 150
                 },
                 end: {
                     x: cc.winSize.width + dimens.card_size.width,
-                    y: 650
+                    y: cc.winSize.height - 150
+                }
+            }
+        }
+    }
+});
+
+var ItemPattern4Model = Backbone.Model.extend({
+    defaults: function () {
+        return {
+            pattern: {
+                isOnlyOne: true,
+                time: 2.5,
+                start: {
+                    x: -dimens.card_size.width,
+                    y: cc.winSize.height/2
                 },
-                moveTime: 3
+                end: {
+                    x: cc.winSize.width + dimens.card_size.width,
+                    y: cc.winSize.height/2
+                }
             }
         }
     }

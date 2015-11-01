@@ -6,7 +6,7 @@ var MoneyCardModel = Backbone.Model.extend({
     }
 });
 
-var MoneySpecialCardSprite = PokerCardSprite.extend({
+var MoneySpecialCardSprite = NormalCardSprite.extend({
     initView:function(){
         var name;
         if ( this.model.get("money") === 1 ) {
@@ -47,7 +47,7 @@ var ItemSpecialCardModel = Backbone.Model.extend({
     }
 });
 
-var ItemSpecialCardSprite = PokerCardSprite.extend({
+var ItemSpecialCardSprite = NormalCardSprite.extend({
     initView:function(){
         this.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame("card-item.png"));
     },

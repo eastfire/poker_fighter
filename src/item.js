@@ -32,8 +32,8 @@ var CloudItemModel = ItemModel.extend({
             maxCoolDown: 10,
             description:"召唤云朵干扰对手视线",
             showCharge: true,
-            cloudCount : 20,
-            cloudScale: 1.5,
+            cloudCount : 35,
+            cloudScale: 1.75,
             cloudTime: 5
         }
     },
@@ -57,7 +57,7 @@ var CloudItemModel = ItemModel.extend({
             mainLayer.addChild(cloud,50);
 
             (function(sprite) {
-                var delay = Math.round(Math.random()*70)/10;
+                var delay = Math.round(Math.random()*50)/10;
                 sprite.runAction(cc.sequence(
                     cc.delayTime(delay),
                     cc.moveTo(cloudTime, endX, sprite.y),
@@ -95,9 +95,12 @@ var AceItemModel = ItemModel.extend({
         var cardSprite = new PokerCardSprite({
             model: cardModel
         });
+        var scale = playerSprite.model.getSizeAdjust();
         cardSprite.attr({
             x: startX,
             y: startY,
+            scaleX: scale,
+            scaleY: scale,
             opacity: 0,
             rotation: rotation
         });
@@ -106,11 +109,36 @@ var AceItemModel = ItemModel.extend({
         cardSprite.speedY = isDown ? -1 : 1;
         cardSprite.speedX = 0;
 
+        var speedScale = playerSprite.model.getSpeedAdjust();
         cardSprite.runAction(cc.sequence(
             cc.fadeIn(0.5),
             cc.callFunc(function(){
                 this.onTouchRelease()
-            },cardSprite)));
+            },cardSprite)).speed(speedScale));
+    }
+});
+
+var DizzyItemModel = ItemModel.extend({
+    defaults:function(){
+        return {
+            name:"dizzy",
+            displayName:"眩晕",
+            maxCharge: 3,
+            maxCoolDown: 3,
+            description:"对手的牌全部旋转起来",
+            showCharge: true
+        }
+    },
+    effect:function(playerSprite, opponentPlayerSprite){
+        var rect = opponentPlayerSprite.getEffectRect();
+        _.each( mainLayer.getChildren(), function(sprite) {
+            if (sprite instanceof NormalCardSprite ) {
+                var point = new cc.Point(sprite.x, sprite.y);
+                if (cc.rectContainsPoint(rect, point)){
+                    sprite.runAction(cc.rotateBy(0.5,360).repeatForever())
+                }
+            }
+        });
     }
 });
 
@@ -140,22 +168,26 @@ var TwoItemModel = ItemModel.extend({
         var cardSprite = new PokerCardSprite({
             model: cardModel
         });
+        var scale = opponentPlayerSprite.model.getSizeAdjust();
         cardSprite.attr({
             x: startX,
             y: startY,
             opacity: 0,
-            rotation: rotation
+            rotation: rotation,
+            scaleX: scale,
+            scaleY: scale
         });
         mainLayer.addChild(cardSprite);
         gameModel.manageCard(cardModel);
         cardSprite.speedY = isDown ? -1 : 1;
         cardSprite.speedX = 0;
 
+        var speedScale = opponentPlayerSprite.model.getSpeedAdjust();
         cardSprite.runAction(cc.sequence(
             cc.fadeIn(0.5),
             cc.callFunc(function(){
                 this.onTouchRelease()
-            },cardSprite)));
+            },cardSprite)).speed(speedScale));
     }
 });
 
@@ -168,7 +200,7 @@ var LeafItemModel = ItemModel.extend({
             maxCoolDown: 10,
             description:"召唤落叶干扰对手视线",
             showCharge: true,
-            leafCount : 15,
+            leafCount : 25,
             leafScale: 1,
             fallTime: 4
         }
@@ -340,5 +372,6 @@ var ITEM_MODEL_CLASS_MAP = {
     "cloud": CloudItemModel,
     "leaf": LeafItemModel,
     "ace": AceItemModel,
+    "dizzy": DizzyItemModel,
     "two": TwoItemModel
 }
