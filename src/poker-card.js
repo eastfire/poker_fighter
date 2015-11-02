@@ -292,6 +292,9 @@ var NormalCardSprite = cc.Sprite.extend({
     onDestroy:function(){
 	    this.release();
         this.removeFromParent(true);
+    },
+    dizzy:function(){
+        this.runAction(cc.rotateBy(0.5,360).repeatForever())
     }
 });
 

@@ -49,6 +49,9 @@ var PlayerModel = Backbone.Model.extend({
             hands: [],
             speedDown: 0,
             speedUp: 0,
+            scaleUp: 0,
+            scaleDown: 0,
+            dizzy: 0,
             needItem: true,
             item: null
         }
@@ -238,6 +241,28 @@ var PlayerModel = Backbone.Model.extend({
             sizeScale /= 1.5;
         }
         return sizeScale;
+    },
+    maintain:function(){
+        var sizeUp = this.get("sizeUp");
+        if ( sizeUp > 0 ) {
+            this.set("sizeUp", sizeUp - 1);
+        }
+        var sizeDown = this.get("sizeDown");
+        if ( sizeDown > 0 ) {
+            this.set("sizeDown", sizeDown - 1);
+        }
+        var scaleUp = this.get("scaleUp");
+        if ( scaleUp > 0 ) {
+            this.set("scaleUp", scaleUp - 1);
+        }
+        var scaleDown = this.get("scaleDown");
+        if ( scaleDown > 0 ) {
+            this.set("scaleDown", scaleDown - 1);
+        }
+        var dizzy = this.get("dizzy");
+        if ( dizzy > 0 ) {
+            this.set("dizzy", dizzy - 1);
+        }
     }
 });
 

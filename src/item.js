@@ -123,19 +123,21 @@ var DizzyItemModel = ItemModel.extend({
         return {
             name:"dizzy",
             displayName:"眩晕",
-            maxCharge: 3,
-            maxCoolDown: 3,
+            maxCharge: 1,
+            maxCoolDown: 1,
             description:"对手的牌全部旋转起来",
-            showCharge: true
+            showCharge: false,
+            dizzyTime: 10
         }
     },
     effect:function(playerSprite, opponentPlayerSprite){
         var rect = opponentPlayerSprite.getEffectRect();
+        opponentPlayerSprite.model.set("dizzy", this.get("dizzyTime"));
         _.each( mainLayer.getChildren(), function(sprite) {
             if (sprite instanceof NormalCardSprite ) {
                 var point = new cc.Point(sprite.x, sprite.y);
-                if (cc.rectContainsPoint(rect, point)){
-                    sprite.runAction(cc.rotateBy(0.5,360).repeatForever())
+                if (cc.rectContainsPoint(rect, point) && !sprite.alreadyTaken){
+                    sprite.dizzy();
                 }
             }
         });

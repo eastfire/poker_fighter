@@ -465,6 +465,9 @@ var MainLayer = cc.LayerColor.extend({
         if ( this.schedulePerSec == null ) {
             this.schedulePerSec = function () {
                 if ( self.model.get("status") !== "game" && self.model.get("status") !== "countDown" ) return;
+                self.model.player1.maintain.call(self.model.player1);
+                self.model.player2.maintain.call(self.model.player2);
+
                 if ( self.model.generateCardCountDown <= 0 ) {
                     self.generateCards.call(self);
                     self.model.generateCardCountDown = GENERATE_CARD_INTERVAL;
@@ -497,12 +500,15 @@ var MainLayer = cc.LayerColor.extend({
         this.addChild(sprite);
         var speedScale = 1;
         var scale = 1;
+        var isDizzy = 0;
         if ( sprite.y > cc.winSize.height/2 ) {
             speedScale *= gameModel.player2.getSpeedAdjust();
             scale = gameModel.player2.getSizeAdjust();
+            isDizzy = gameModel.player2.get("dizzy");
         } else {
             speedScale *= gameModel.player1.getSpeedAdjust();
             scale = gameModel.player1.getSizeAdjust();
+            isDizzy = gameModel.player1.get("dizzy");
         }
         sprite.attr({
             x: isOriginMirror ? cc.winSize.width - pattern.start.x : pattern.start.x,
@@ -516,6 +522,7 @@ var MainLayer = cc.LayerColor.extend({
                 gameModel.destroyCard(cardModel);
             },this)
         ).speed(speedScale));
+        if ( isDizzy ) sprite.dizzy();
 
         if ( pattern.isOnlyOne ) return;
 
@@ -545,12 +552,15 @@ var MainLayer = cc.LayerColor.extend({
         this.addChild(mirrorSprite);
         var speedScale = 1;
         var scale = 1;
-        if ( sprite.y > cc.winSize.height/2 ) {
+        isDizzy = 0;
+        if ( mirrorSprite.y > cc.winSize.height/2 ) {
             speedScale *= gameModel.player2.getSpeedAdjust();
             scale = gameModel.player2.getSizeAdjust();
+            isDizzy = gameModel.player2.get("dizzy");
         } else {
             speedScale *= gameModel.player1.getSpeedAdjust();
             scale = gameModel.player1.getSizeAdjust();
+            isDizzy = gameModel.player1.get("dizzy");
         }
         mirrorSprite.attr({
             scaleX: scale,
@@ -563,6 +573,10 @@ var MainLayer = cc.LayerColor.extend({
                 gameModel.destroyCard(mirrorCardModel);
             },this)
         ).speed(speedScale));
+
+        if ( isDizzy ) {
+            mirrorSprite.dizzy();
+        }
     },
     generateCards:function(){
         var pattern = this.model.getPattern();
@@ -598,12 +612,15 @@ var MainLayer = cc.LayerColor.extend({
             var speedScale = 1;
             var scale;
             if ( cardModel.get("isRare") ) speedScale = RARE_SPEED_RATE;
+            var isDizzy = 0;
             if ( sprite.y > cc.winSize.height/2 ) {
                 speedScale *= gameModel.player2.getSpeedAdjust();
                 scale = gameModel.player2.getSizeAdjust();
+                isDizzy = gameModel.player2.get("dizzy");
             } else {
                 speedScale *= gameModel.player1.getSpeedAdjust();
                 scale = gameModel.player1.getSizeAdjust();
+                isDizzy = gameModel.player1.get("dizzy");
             }
             sprite.attr({
                 x: isOriginMirror ? cc.winSize.width - entry.start.x : entry.start.x,
@@ -619,6 +636,7 @@ var MainLayer = cc.LayerColor.extend({
                     gameModel.destroyCard(cardModel);
                 },this)
             ).speed(speedScale));
+            if ( isDizzy ) sprite.dizzy();
 
             var mirrorCardModel;
             var mirrorSprite;
@@ -658,12 +676,15 @@ var MainLayer = cc.LayerColor.extend({
             this.addChild(mirrorSprite);
             var speedScale = 1;
             if ( mirrorCardModel.get("isRare") ) speedScale = RARE_SPEED_RATE;
-            if ( sprite.y > cc.winSize.height/2 ) {
+            isDizzy = 0;
+            if ( mirrorSprite.y > cc.winSize.height/2 ) {
                 speedScale *= gameModel.player2.getSpeedAdjust();
                 scale = gameModel.player2.getSizeAdjust();
+                isDizzy = gameModel.player2.get("dizzy");
             } else {
                 speedScale *= gameModel.player1.getSpeedAdjust();
                 scale = gameModel.player1.getSizeAdjust();
+                isDizzy = gameModel.player1.get("dizzy");
             }
             mirrorSprite.attr({
                 scaleX: scale,
@@ -677,6 +698,7 @@ var MainLayer = cc.LayerColor.extend({
                     gameModel.destroyCard(mirrorCardModel);
                 },this)
             ).speed(speedScale));
+            if ( isDizzy ) mirrorSprite.dizzy();
         },this);
     },
     initAudio:function(){
@@ -733,7 +755,7 @@ var GameModel = Backbone.Model.extend({
             coinAppearRate: 0.2,
             bigMoneyRate: 0.1,
             allowItem: true,
-            itemAppearRate: 0.3,
+            itemAppearRate: 1,//0.3,
             gameSpeed: 1
         }
     },
@@ -776,8 +798,8 @@ var GameModel = Backbone.Model.extend({
             new ItemPattern4Model()
         ];
 
-        this.itemPool = ["ace","cloud","dizzy","leaf","two"];
-        //this.itemPool = ["dizzy"];
+        //this.itemPool = ["ace","cloud","dizzy","leaf","two"];
+        this.itemPool = ["dizzy"];
     },
     newDeck:function(){
         this.deck = newDeck();
