@@ -28,13 +28,13 @@ var CloudItemModel = ItemModel.extend({
         return {
             name:"cloud",
             displayName:"唤云",
-            maxCharge: 3,
+            maxCharge: 1,
             maxCoolDown: 10,
             description:"召唤云朵干扰对手视线",
             showCharge: true,
-            cloudCount : 35,
+            cloudCount : 50,
             cloudScale: 1.75,
-            cloudTime: 5
+            effectTime: 10
         }
     },
     effect:function(playerSprite, opponentPlayerSprite){
@@ -44,7 +44,7 @@ var CloudItemModel = ItemModel.extend({
         var rotation = opponentPlayerSprite.model.get("position") === PLAYER_POSITION_DOWN ? 0 : 180;
         var rect = opponentPlayerSprite.getEffectRect();
         var scale = this.get("cloudScale");
-        var cloudTime = this.get("cloudTime");
+        var effectTime = this.get("effectTime");
         for ( var i = 0; i < this.get("cloudCount") ; i ++ ) {
             var cloud = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("cloud.png"));
             cloud.attr( {
@@ -60,7 +60,7 @@ var CloudItemModel = ItemModel.extend({
                 var delay = Math.round(Math.random()*50)/10;
                 sprite.runAction(cc.sequence(
                     cc.delayTime(delay),
-                    cc.moveTo(cloudTime, endX, sprite.y),
+                    cc.moveTo(5, endX, sprite.y),
                     cc.callFunc(function () {
                         sprite.removeFromParent(true);
                     })))
@@ -144,6 +144,32 @@ var DizzyItemModel = ItemModel.extend({
     }
 });
 
+var ShrinkItemModel = ItemModel.extend({
+    defaults:function(){
+        return {
+            name:"shrink",
+            displayName:"缩小光线",
+            maxCharge: 1,
+            maxCoolDown: 1,
+            description:"对手的牌全部缩小",
+            showCharge: false,
+            effectTime: 10
+        }
+    },
+    effect:function(playerSprite, opponentPlayerSprite){
+        var rect = opponentPlayerSprite.getEffectRect();
+        opponentPlayerSprite.model.set("sizeDown", this.get("effectTime"));
+        _.each( mainLayer.getChildren(), function(sprite) {
+            if (sprite instanceof NormalCardSprite ) {
+                var point = new cc.Point(sprite.x, sprite.y);
+                if (cc.rectContainsPoint(rect, point) && !sprite.alreadyTaken){
+                    sprite.shrink();
+                }
+            }
+        });
+    }
+});
+
 var TwoItemModel = ItemModel.extend({
     defaults:function(){
         return {
@@ -198,11 +224,11 @@ var LeafItemModel = ItemModel.extend({
         return {
             name:"leaf",
             displayName:"落叶",
-            maxCharge: 3,
+            maxCharge: 1,
             maxCoolDown: 10,
             description:"召唤落叶干扰对手视线",
             showCharge: true,
-            leafCount : 25,
+            leafCount : 40,
             leafScale: 1,
             fallTime: 4
         }
@@ -371,9 +397,10 @@ var ItemSlotSprite = cc.Sprite.extend({
 });
 
 var ITEM_MODEL_CLASS_MAP = {
-    "cloud": CloudItemModel,
-    "leaf": LeafItemModel,
     "ace": AceItemModel,
+    "cloud": CloudItemModel,
     "dizzy": DizzyItemModel,
+    "leaf": LeafItemModel,
+    "shrink":ShrinkItemModel,
     "two": TwoItemModel
 }

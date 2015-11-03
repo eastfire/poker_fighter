@@ -144,6 +144,10 @@ var NormalCardSprite = cc.Sprite.extend({
                                     }
                                 },this) ) );
                         }
+
+                        //check size
+                        var newSizeScale = gameModel.player2.getSizeAdjust();
+                        this.runAction(cc.scaleTo(0.1, newSizeScale, newSizeScale));
                     },target)) );
             } else {
                 target.moveToLine.call(target, gameModel.player2, player2Y, function(){
@@ -173,6 +177,10 @@ var NormalCardSprite = cc.Sprite.extend({
                                     }
                                 },this) ) );
                         }
+
+                        //check size
+                        var newSizeScale = gameModel.player1.getSizeAdjust();
+                        this.runAction(cc.scaleTo(0.1, newSizeScale, newSizeScale));
                     },target)) );
             } else {
                 target.moveToLine.call(target, gameModel.player1, player1Y, function(){
@@ -295,6 +303,9 @@ var NormalCardSprite = cc.Sprite.extend({
     },
     dizzy:function(){
         this.runAction(cc.rotateBy(0.5,360).repeatForever())
+    },
+    shrink:function(){
+        this.runAction(cc.scaleTo(0.1,1.1/1.5, 1.1/1.5));
     }
 });
 

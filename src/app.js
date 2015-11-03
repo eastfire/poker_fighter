@@ -755,7 +755,7 @@ var GameModel = Backbone.Model.extend({
             coinAppearRate: 0.2,
             bigMoneyRate: 0.1,
             allowItem: true,
-            itemAppearRate: 1,//0.3,
+            itemAppearRate: 0.35,
             gameSpeed: 1
         }
     },
@@ -763,7 +763,7 @@ var GameModel = Backbone.Model.extend({
         this.maxCountDown = 60;
         this.countDown = this.maxCountDown;
         this.generateCardCountDown = 0;
-        this.generateItemCountDown = 0;//GENERATE_ITEM_INTERVAL;
+        this.generateItemCountDown = GENERATE_ITEM_INTERVAL;
 
         this.set("betRate", 1);
         this.set("status", "ready");
@@ -798,8 +798,8 @@ var GameModel = Backbone.Model.extend({
             new ItemPattern4Model()
         ];
 
-        //this.itemPool = ["ace","cloud","dizzy","leaf","two"];
-        this.itemPool = ["dizzy"];
+        this.itemPool = ["ace","cloud","dizzy","leaf","shrink","two"];
+        //this.itemPool = ["shrink"];
     },
     newDeck:function(){
         this.deck = newDeck();
