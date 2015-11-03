@@ -31,7 +31,7 @@ var CloudItemModel = ItemModel.extend({
             maxCharge: 1,
             maxCoolDown: 10,
             description:"召唤云朵干扰对手视线",
-            showCharge: true,
+            showCharge: false,
             cloudCount : 50,
             cloudScale: 1.75,
             effectTime: 10
@@ -135,7 +135,7 @@ var DizzyItemModel = ItemModel.extend({
         opponentPlayerSprite.model.set("dizzy", this.get("dizzyTime"));
         _.each( mainLayer.getChildren(), function(sprite) {
             if (sprite instanceof NormalCardSprite ) {
-                var point = new cc.Point(sprite.x, sprite.y);
+                var point = cc.p(sprite.x, sprite.y);
                 if (cc.rectContainsPoint(rect, point) && !sprite.alreadyTaken){
                     sprite.dizzy();
                 }
@@ -161,7 +161,7 @@ var ShrinkItemModel = ItemModel.extend({
         opponentPlayerSprite.model.set("sizeDown", this.get("effectTime"));
         _.each( mainLayer.getChildren(), function(sprite) {
             if (sprite instanceof NormalCardSprite ) {
-                var point = new cc.Point(sprite.x, sprite.y);
+                var point = cc.p(sprite.x, sprite.y);
                 if (cc.rectContainsPoint(rect, point) && !sprite.alreadyTaken){
                     sprite.shrink();
                 }
@@ -227,7 +227,7 @@ var LeafItemModel = ItemModel.extend({
             maxCharge: 1,
             maxCoolDown: 10,
             description:"召唤落叶干扰对手视线",
-            showCharge: true,
+            showCharge: false,
             leafCount : 40,
             leafScale: 1,
             fallTime: 4

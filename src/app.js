@@ -474,16 +474,13 @@ var MainLayer = cc.LayerColor.extend({
                 }
                 self.model.generateCardCountDown--;
 
-                if ( self.model.get("allowItem")) {
-                    if (self.model.generateItemCountDown <= 0) {
-                        if (Math.random() < self.model.get("itemAppearRate")) {
-                            self.generateItems.call(self);
-                        }
-
-                        self.model.generateItemCountDown = GENERATE_ITEM_INTERVAL;
+                if (self.model.generateItemCountDown <= 0) {
+                    if (Math.random() < self.model.get("itemAppearRate")) {
+                        self.generateItems.call(self);
                     }
-                    self.model.generateItemCountDown--;
+                    self.model.generateItemCountDown = GENERATE_ITEM_INTERVAL;
                 }
+                self.model.generateItemCountDown--;
 
                 self.model.totalTime++;
             }
@@ -586,7 +583,7 @@ var MainLayer = cc.LayerColor.extend({
         _.each(list, function(entry){
             var cardModel;
             var sprite;
-            if ( this.model.get("allowCoin") && Math.random() < this.model.get("coinAppearRate")) {
+            if ( Math.random() < this.model.get("coinAppearRate")) {
                 var money = 1;
                 var isRare = false;
                 if ( this.model.get("betRate") >= 10 ) {
@@ -751,11 +748,9 @@ var GameModel = Backbone.Model.extend({
         return {
             player1Money: 500,
             player2Money: 500,
-            allowCoin: true,
             coinAppearRate: 0.2,
             bigMoneyRate: 0.1,
-            allowItem: true,
-            itemAppearRate: 0.35,
+            itemAppearRate: 0.4,
             gameSpeed: 1
         }
     },
