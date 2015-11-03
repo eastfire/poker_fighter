@@ -321,7 +321,8 @@ var ItemSlotSprite = cc.Sprite.extend({
 
                 //Check the click area
                 if (cc.rectContainsPoint(rect, locationInNode)) {
-                    if ( target.status === "usable" && target.model && target.model.canUse.call(target.model) ) {
+                    var gameStatus = gameModel.get("status");
+                    if ( (gameStatus === "game" || gameStatus === "countDown") && target.status === "usable" && target.model && target.model.canUse.call(target.model) ) {
                         target.foreground.opacity = 200;
                         return true;
                     }
