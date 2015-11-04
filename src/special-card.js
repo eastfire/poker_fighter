@@ -72,3 +72,41 @@ var ItemSpecialCardSprite = NormalCardSprite.extend({
 
     }
 })
+
+var BombSpecialCardModel = Backbone.Model.extend({
+    initialize:function(){
+        this.isSpecialCard = true;
+    }
+});
+
+var BombSpecialCardSprite = NormalCardSprite.extend({
+    initView:function(){
+        this.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame("bomb.png"));
+    },
+    render:function(){
+
+    },
+    playerTakeCard:function(player){
+        if ( this.alreadyTaken )
+            return;
+        this.stopAllActions();
+        this.setTag(0);
+
+        this.alreadyTaken = true;
+        this.zIndex = 20;
+        var playerSprite = player == gameModel.player1 ? mainLayer.player1Sprite : mainLayer.player2Sprite;
+        this.runAction(new cc.Sequence( new cc.MoveTo(times.getMoney, cc.winSize.width/2, player == gameModel.player1 ? dimens.player1HandPosition.y : dimens.player2HandPosition.y ) ,
+            new cc.CallFunc(function(){
+                gameModel.destroyCard(this.model);
+
+                //TODO play explosion animation
+
+                if ( player.canTakeCard() ) {
+                    //Destroy hand
+                    player.discardRandomCard();
+                }
+            },this)
+        ));
+
+    }
+})

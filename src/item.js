@@ -245,6 +245,50 @@ var TwoItemModel = ItemModel.extend({
     }
 });
 
+var BombItemModel = ItemModel.extend({
+    defaults:function(){
+        return {
+            name:"bomb",
+            displayName:"炸弹",
+            maxCharge: 1,
+            maxCoolDown: 0,
+            description:"召唤一个可摧毁对方手牌的炸弹",
+            showCharge: false
+        }
+    },
+    effect:function(playerSprite, opponentPlayerSprite){
+        var isDown = opponentPlayerSprite.model.get("position") === PLAYER_POSITION_DOWN;
+        var rect = opponentPlayerSprite.getEffectRect();
+        var rotation = isDown ? 0 : 180;
+        var startY = cc.winSize.height/2;
+        var startX = 50 + Math.random()*(cc.winSize.width-100);
+        var cardModel = new BombSpecialCardModel({});
+        var cardSprite = new BombSpecialCardSprite({
+            model: cardModel
+        });
+        var scale = opponentPlayerSprite.model.getSizeAdjust();
+        cardSprite.attr({
+            x: startX,
+            y: startY,
+            opacity: 0,
+            rotation: rotation,
+            scaleX: scale,
+            scaleY: scale
+        });
+        mainLayer.addChild(cardSprite);
+        gameModel.manageCard(cardModel);
+        cardSprite.speedY = isDown ? -1 : 1;
+        cardSprite.speedX = 0;
+
+        var speedScale = opponentPlayerSprite.model.getSpeedAdjust();
+        cardSprite.runAction(cc.sequence(
+            cc.fadeIn(0.5),
+            cc.callFunc(function(){
+                this.onTouchRelease()
+            },cardSprite)).speed(speedScale));
+    }
+});
+
 var LeafItemModel = ItemModel.extend({
     defaults:function(){
         return {
@@ -425,6 +469,7 @@ var ItemSlotSprite = cc.Sprite.extend({
 
 var ITEM_MODEL_CLASS_MAP = {
     "ace": AceItemModel,
+    "bomb": BombItemModel,
     "cloud": CloudItemModel,
     "dizzy": DizzyItemModel,
     "leaf": LeafItemModel,

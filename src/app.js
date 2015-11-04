@@ -793,8 +793,8 @@ var GameModel = Backbone.Model.extend({
             new ItemPattern4Model()
         ];
 
-        this.itemPool = ["ace","cloud","dizzy","enlarge","leaf","shrink","two"];
-        //this.itemPool = ["enlarge","shrink"];
+        this.itemPool = ["ace","bomb","cloud","dizzy","enlarge","leaf","shrink","two"];
+        //this.itemPool = ["bomb"];
     },
     newDeck:function(){
         this.deck = newDeck();

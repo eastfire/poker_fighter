@@ -65,6 +65,15 @@ var PlayerModel = Backbone.Model.extend({
         cards.push(cardModel);
         this.sortHand();
     },
+    discardRandomCard:function(){
+        var hands = this.get("hands");
+        if ( hands.length === 0 ) return;
+        var cardModel = _.sample( hands );
+        var index = _.indexOf(hands, cardModel);
+        hands.splice(index,1);
+        gameModel.destroyCard(cardModel);
+        this.sortHand();
+    },
     sortHand:function(){
         var cards = this.get("hands");
         var sortedCards = _.sortBy(cards, function(cardModel){
