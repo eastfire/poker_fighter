@@ -306,6 +306,9 @@ var NormalCardSprite = cc.Sprite.extend({
     },
     shrink:function(){
         this.runAction(cc.scaleTo(0.1,1.1/1.5, 1.1/1.5));
+    },
+    enlarge:function(){
+        this.runAction(cc.scaleTo(0.1,1.1*1.5, 1.1*1.5));
     }
 });
 

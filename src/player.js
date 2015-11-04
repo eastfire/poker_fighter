@@ -276,10 +276,10 @@ var PlayerSprite = cc.Sprite.extend({
         var y;
         if ( this.model.get("position") == PLAYER_POSITION_DOWN ) {
             y = dimens.player1Y/2;
-            this.effectRect = cc.rect(0, dimens.player1Y, cc.winSize.width, cc.winSize.height/2 - dimens.player1Y);
+            this.effectRect = cc.rect(0, dimens.player1Y, cc.winSize.width, cc.winSize.height/2 - dimens.player1Y - 1);
         } else {
             y = (dimens.player2Y + cc.winSize.height)/2;
-            this.effectRect = cc.rect(0, cc.winSize.height/2, cc.winSize.width, cc.winSize.height/2 - dimens.player1Y);
+            this.effectRect = cc.rect(0, cc.winSize.height/2+1, cc.winSize.width, cc.winSize.height/2 - dimens.player1Y - 1);
         }
         this.lookHand.attr({
             x: cc.winSize.width/2,
@@ -389,6 +389,9 @@ var PlayerSprite = cc.Sprite.extend({
     },
     getEffectRect:function(){
         return this.effectRect;
+    },
+    isThisSide:function(y){
+        return (this.effectRect.y <= y) && (this.effectRect.y+this.effectRect.height) >= y;
     },
     onEnter:function(){
         this._super();

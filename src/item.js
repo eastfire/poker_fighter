@@ -86,7 +86,7 @@ var AceItemModel = ItemModel.extend({
         var rect = playerSprite.getEffectRect();
         var rotation = isDown ? 0 : 180;
         var startY = cc.winSize.height/2;
-        var startX = cc.winSize.width/2;
+        var startX = 50 + Math.random()*(cc.winSize.width-100);
         var cardModel = new PokerCardModel({
             suit: 4,
             number: 14
@@ -131,12 +131,10 @@ var DizzyItemModel = ItemModel.extend({
         }
     },
     effect:function(playerSprite, opponentPlayerSprite){
-        var rect = opponentPlayerSprite.getEffectRect();
         opponentPlayerSprite.model.set("dizzy", this.get("dizzyTime"));
         _.each( mainLayer.getChildren(), function(sprite) {
             if (sprite instanceof NormalCardSprite ) {
-                var point = new cc.Point(sprite.x, sprite.y);
-                if (cc.rectContainsPoint(rect, point) && !sprite.alreadyTaken){
+                if (opponentPlayerSprite.isThisSide(sprite.y) && !sprite.alreadyTaken ){
                     sprite.dizzy();
                 }
             }
@@ -157,13 +155,41 @@ var ShrinkItemModel = ItemModel.extend({
         }
     },
     effect:function(playerSprite, opponentPlayerSprite){
-        var rect = opponentPlayerSprite.getEffectRect();
-        opponentPlayerSprite.model.set("sizeDown", this.get("effectTime"));
+        opponentPlayerSprite.model.set({
+            "sizeUp":0,
+            "sizeDown":this.get("effectTime")
+        });
         _.each( mainLayer.getChildren(), function(sprite) {
             if (sprite instanceof NormalCardSprite ) {
-                var point = new cc.Point(sprite.x, sprite.y);
-                if (cc.rectContainsPoint(rect, point) && !sprite.alreadyTaken){
+                if (opponentPlayerSprite.isThisSide(sprite.y) && !sprite.alreadyTaken){
                     sprite.shrink();
+                }
+            }
+        });
+    }
+});
+
+var EnlargeItemModel = ItemModel.extend({
+    defaults:function(){
+        return {
+            name:"enlarge",
+            displayName:"放大光线",
+            maxCharge: 1,
+            maxCoolDown: 1,
+            description:"对手的牌全部放大",
+            showCharge: false,
+            effectTime: 10
+        }
+    },
+    effect:function(playerSprite, opponentPlayerSprite){
+        playerSprite.model.set({
+            "sizeDown":0,
+            "sizeUp":this.get("effectTime")
+        } );
+        _.each( mainLayer.getChildren(), function(sprite) {
+            if (sprite instanceof NormalCardSprite ) {
+                if (playerSprite.isThisSide(sprite.y) && !sprite.alreadyTaken){
+                    sprite.enlarge();
                 }
             }
         });
@@ -187,7 +213,7 @@ var TwoItemModel = ItemModel.extend({
         var rect = opponentPlayerSprite.getEffectRect();
         var rotation = isDown ? 0 : 180;
         var startY = cc.winSize.height/2;
-        var startX = cc.winSize.width/2;
+        var startX = 50 + Math.random()*(cc.winSize.width-100);
         var cardModel = new PokerCardModel({
             suit: 4,
             number: 2
@@ -402,5 +428,6 @@ var ITEM_MODEL_CLASS_MAP = {
     "dizzy": DizzyItemModel,
     "leaf": LeafItemModel,
     "shrink":ShrinkItemModel,
+    "enlarge":EnlargeItemModel,
     "two": TwoItemModel
 }
