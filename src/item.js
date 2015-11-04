@@ -31,7 +31,7 @@ var CloudItemModel = ItemModel.extend({
             maxCharge: 1,
             maxCoolDown: 10,
             description:"召唤云朵干扰对手视线",
-            showCharge: true,
+            showCharge: false,
             cloudCount : 50,
             cloudScale: 1.75,
             effectTime: 10
@@ -253,7 +253,7 @@ var LeafItemModel = ItemModel.extend({
             maxCharge: 1,
             maxCoolDown: 10,
             description:"召唤落叶干扰对手视线",
-            showCharge: true,
+            showCharge: false,
             leafCount : 40,
             leafScale: 1,
             fallTime: 4
@@ -347,7 +347,8 @@ var ItemSlotSprite = cc.Sprite.extend({
 
                 //Check the click area
                 if (cc.rectContainsPoint(rect, locationInNode)) {
-                    if ( target.status === "usable" && target.model && target.model.canUse.call(target.model) ) {
+                    var gameStatus = gameModel.get("status");
+                    if ( (gameStatus === "game" || gameStatus === "countDown") && target.status === "usable" && target.model && target.model.canUse.call(target.model) ) {
                         target.foreground.opacity = 200;
                         return true;
                     }
