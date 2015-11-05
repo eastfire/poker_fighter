@@ -52,6 +52,7 @@ var PlayerModel = Backbone.Model.extend({
             scaleUp: 0,
             scaleDown: 0,
             dizzy: 0,
+            spy: 0,
             needItem: true,
             item: null
         }
@@ -252,6 +253,10 @@ var PlayerModel = Backbone.Model.extend({
         return sizeScale;
     },
     maintain:function(){
+        _.each( ["sizeUp","sizeDown","scaleUp","scaleDown","dizzy","spy"],function(attr){
+            var value = this.get(attr);
+
+        },this );
         var sizeUp = this.get("sizeUp");
         if ( sizeUp > 0 ) {
             this.set("sizeUp", sizeUp - 1);
@@ -272,6 +277,20 @@ var PlayerModel = Backbone.Model.extend({
         if ( dizzy > 0 ) {
             this.set("dizzy", dizzy - 1);
         }
+        var spy = this.get("spy");
+        if ( spy > 0 ) {
+            this.set("spy", spy - 1);
+        }
+    },
+    cleanStatus:function(){
+        this.set({
+            sizeUp: 0,
+            sizeDown: 0,
+            scaleUp: 0,
+            scaleDown: 0,
+            dizzy: 0,
+            spy: 0
+        })
     }
 });
 
@@ -414,16 +433,46 @@ var PlayerSprite = cc.Sprite.extend({
     initEvent:function(){
         this.model.on("change:hands",this.onHandChange, this);
         this.model.on("change:money",this.onMoneyChange, this);
+        this.model.on("change:spy",this.onSpyChange,this);
     },
     closeEvent:function(){
         this.model.off("change:hands",this.onHandChange);
         this.model.off("change:money",this.onMoneyChange);
+        this.model.off("change:spy",this.onSpyChange);
     },
     renderMoney:function(){
         this.moneyLabel.setString(this.model.get("money"));
     },
     onMoneyChange:function(){
         this.renderMoney();
+    },
+    onSpyChange:function(){
+        var prev = this.model.previous("spy");
+        var current = this.model.get("spy");
+        if ( !prev && current ) {
+            this.showHand = true;
+            this.forceShowHand();
+            this.eyeSprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("eye.png"));
+            var y;
+            var rotation;
+            if ( this.model.get("position") == PLAYER_POSITION_DOWN ) {
+                y = dimens.player1Y;
+                rotation = 0;
+            } else {
+                y = dimens.player2Y;
+                rotation = 180;
+            }
+            this.eyeSprite.attr({
+                x: cc.winSize.width/2,
+                y: y,
+                rotation: rotation
+            })
+            this.addChild(this.eyeSprite);
+        } else if ( prev && !current ) {
+            this.hideHand();
+            this.eyeSprite.removeFromParent(true);
+            this.eyeSprite = null;
+        }
     },
     onHandChange:function(){
         var needCurve = true;
@@ -491,7 +540,7 @@ var PlayerSprite = cc.Sprite.extend({
         }
     },
     toggleHand:function(){
-        if ( gameModel.get("status") === "compare" )
+        if ( gameModel.get("status") === "compare" || this.model.get("spy") )
             return;
 
         this.showHand = !this.showHand;
@@ -513,6 +562,14 @@ var PlayerSprite = cc.Sprite.extend({
         _.each(cards,function(cardModel){
             var sprite = this.getParent().getChildByName(cardModel.cid);
             if ( !sprite.numberSprite.isVisible() ) sprite.runAction(sprite.getFlipToFrontSequence());
+        }, this);
+    },
+    hideHand:function(){
+        this.showHand = false;
+        var cards = this.model.get("hands");
+        _.each(cards,function(cardModel){
+            var sprite = this.getParent().getChildByName(cardModel.cid);
+            if ( sprite != null && sprite.numberSprite.isVisible() ) sprite.runAction(sprite.getFlipToBackSequence());
         }, this);
     },
     render:function(){

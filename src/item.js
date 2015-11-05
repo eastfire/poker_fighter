@@ -127,11 +127,11 @@ var DizzyItemModel = ItemModel.extend({
             maxCoolDown: 1,
             description:"对手的牌全部旋转起来",
             showCharge: false,
-            dizzyTime: 10
+            effectTime: 10
         }
     },
     effect:function(playerSprite, opponentPlayerSprite){
-        opponentPlayerSprite.model.set("dizzy", this.get("dizzyTime"));
+        opponentPlayerSprite.model.set("dizzy", this.get("effectTime"));
         _.each( mainLayer.getChildren(), function(sprite) {
             if (sprite instanceof NormalCardSprite ) {
                 if (opponentPlayerSprite.isThisSide(sprite.y) && !sprite.alreadyTaken ){
@@ -193,6 +193,23 @@ var EnlargeItemModel = ItemModel.extend({
                 }
             }
         });
+    }
+});
+
+var SpyItemModel = ItemModel.extend({
+    defaults:function(){
+        return {
+            name:"spy",
+            displayName:"窥探",
+            maxCharge: 1,
+            maxCoolDown: 1,
+            description:"看对手的牌10秒钟",
+            showCharge: false,
+            effectTime: 10
+        }
+    },
+    effect:function(playerSprite, opponentPlayerSprite){
+        opponentPlayerSprite.model.set("spy", this.get("effectTime"));
     }
 });
 
@@ -475,5 +492,6 @@ var ITEM_MODEL_CLASS_MAP = {
     "leaf": LeafItemModel,
     "shrink":ShrinkItemModel,
     "enlarge":EnlargeItemModel,
-    "two": TwoItemModel
+    "two": TwoItemModel,
+    "spy": SpyItemModel
 }

@@ -446,6 +446,8 @@ var MainLayer = cc.LayerColor.extend({
         this.winLoseLabel1.setVisible(false);
         this.winLoseLabel2.setVisible(false);
 
+        this.player1.cleanStatus();
+        this.player2.cleanStatus();
         this.player1.set("hands", []);
         this.player2.set("hands", []);
 
@@ -793,8 +795,8 @@ var GameModel = Backbone.Model.extend({
             new ItemPattern4Model()
         ];
 
-        this.itemPool = ["ace","bomb","cloud","dizzy","enlarge","leaf","shrink","two"];
-        //this.itemPool = ["bomb"];
+        this.itemPool = ["ace","bomb","cloud","dizzy","enlarge","leaf","shrink","spy", "two"];
+        //this.itemPool = ["spy"];
     },
     newDeck:function(){
         this.deck = newDeck();
