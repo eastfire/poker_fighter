@@ -109,4 +109,35 @@ var BombSpecialCardSprite = NormalCardSprite.extend({
         ));
 
     }
-})
+});
+
+var ThiefSpecialCardModel = Backbone.Model.extend({
+    initialize:function(){
+        this.isSpecialCard = true;
+        this.power = Math.random() < 0.1 ? 10 : Math.ceil( Math.random()*5);
+    }
+});
+var ThiefSpecialCardSprite = NormalCardSprite.extend({
+    initView:function(){
+        this.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame(this.model.power == 10 ? "thief-red.png" : "thief-green.png"));
+    },
+    render:function(){
+
+    },
+    playerTakeCard:function(player){
+        if ( this.alreadyTaken )
+            return;
+        this.stopAllActions();
+        this.setTag(0);
+
+        this.alreadyTaken = true;
+
+        var playerSprite = player == gameModel.player1 ? mainLayer.player1Sprite : mainLayer.player2Sprite;
+        this.runAction(new cc.Sequence( new cc.MoveTo(times.getMoney, playerSprite.moneyLabel.x, playerSprite.moneyLabel.y) ,
+            new cc.CallFunc(function(){
+                player.set("money", Math.max(1, player.get("money") - this.model.power * gameModel.get("betRate")));
+                gameModel.destroyCard(this.model);
+            },this)
+        ));
+    }
+});

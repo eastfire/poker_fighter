@@ -355,6 +355,50 @@ var LeafItemModel = ItemModel.extend({
     }
 });
 
+var ThiefItemModel = ItemModel.extend({
+    defaults:function(){
+        return {
+            name:"thief",
+            displayName:"小偷",
+            maxCharge: 1,
+            maxCoolDown: 0,
+            description:"派出小偷潜入对方金库。使对方损失1～5乘以当前赔率的金钱（一定概率损失10）",
+            showCharge: false
+        }
+    },
+    effect:function(playerSprite, opponentPlayerSprite){
+        var isDown = opponentPlayerSprite.model.get("position") === PLAYER_POSITION_DOWN;
+        var rect = opponentPlayerSprite.getEffectRect();
+        var rotation = isDown ? 0 : 180;
+        var startY = cc.winSize.height/2;
+        var startX = 50 + Math.random()*(cc.winSize.width-100);
+        var cardModel = new ThiefSpecialCardModel({});
+        var cardSprite = new ThiefSpecialCardSprite({
+            model: cardModel
+        });
+        var scale = opponentPlayerSprite.model.getSizeAdjust();
+        cardSprite.attr({
+            x: startX,
+            y: startY,
+            opacity: 0,
+            rotation: rotation,
+            scaleX: scale,
+            scaleY: scale
+        });
+        mainLayer.addChild(cardSprite);
+        gameModel.manageCard(cardModel);
+        cardSprite.speedY = isDown ? -1 : 1;
+        cardSprite.speedX = 0;
+
+        var speedScale = opponentPlayerSprite.model.getSpeedAdjust();
+        cardSprite.runAction(cc.sequence(
+            cc.fadeIn(0.5),
+            cc.callFunc(function(){
+                this.onTouchRelease()
+            },cardSprite)).speed(speedScale));
+    }
+});
+
 var ItemSlotSprite = cc.Sprite.extend({
     ctor:function(options) {
         this._super(cc.spriteFrameCache.getSpriteFrame("item-slot-bg.png"));
@@ -489,9 +533,11 @@ var ITEM_MODEL_CLASS_MAP = {
     "bomb": BombItemModel,
     "cloud": CloudItemModel,
     "dizzy": DizzyItemModel,
+    "enlarge":EnlargeItemModel,
     "leaf": LeafItemModel,
     "shrink":ShrinkItemModel,
-    "enlarge":EnlargeItemModel,
-    "two": TwoItemModel,
-    "spy": SpyItemModel
+    "spy": SpyItemModel,
+    "thief": ThiefItemModel,
+    "two": TwoItemModel
+
 }
