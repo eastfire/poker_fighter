@@ -2,6 +2,7 @@ var res = {
     game_plist : "res/game.plist",
     game_png : "res/game.png",
 
+    explosion_mp3: "res/explosion.mp3",
     ready_mp3: "res/ready.mp3",
     fight_mp3: "res/fight.mp3",
     countdown5_mp3: "res/countdown-5.mp3",

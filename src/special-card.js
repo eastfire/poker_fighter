@@ -100,7 +100,7 @@ var BombSpecialCardSprite = NormalCardSprite.extend({
                 gameModel.destroyCard(this.model);
 
                 //TODO play explosion animation
-
+                cc.audioEngine.playEffect(res.explosion_mp3, false);
                 if ( player.canTakeCard() ) {
                     //Destroy hand
                     player.discardRandomCard();
