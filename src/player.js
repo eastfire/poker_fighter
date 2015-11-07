@@ -58,7 +58,7 @@ var PlayerModel = Backbone.Model.extend({
         }
     },
     initialize:function(){
-        this.set("initMoney",this.get("money"));
+        this.set("winningMoney",this.get("money")*2);
     },
     addHand:function(cardModel){
         cardModel._owned = true

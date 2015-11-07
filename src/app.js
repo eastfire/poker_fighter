@@ -346,9 +346,9 @@ var MainLayer = cc.LayerColor.extend({
         }
         this.scheduleOnce(function(){
             this.model.set("betRate", this.model.get("betRate") + 1);
-            if ( this.player1.get("money") <= 0 || ( this.player2.get("money") >= this.player2.get("initMoney") * 2 && winner === 2 ) ) {
+            if ( this.player1.get("money") <= 0 || ( this.player2.get("money") >= this.player2.get("winningMoney") && winner === 2 ) ) {
                 this.gameOver();
-            } else if ( this.player2.get("money") <= 0 || ( this.player1.get("money") >= this.player1.get("initMoney") * 2 && winner === 1) ) {
+            } else if ( this.player2.get("money") <= 0 || ( this.player1.get("money") >= this.player1.get("winningMoney") && winner === 1) ) {
                 this.gameOver();
             } else {
                 this.startNewRound();
@@ -728,6 +728,7 @@ var MainLayer = cc.LayerColor.extend({
 
         gameModel.off();
         gameModel = null;
+        cc.eventManager.removeListener(this.listener);
         cc.eventManager.addListener(cc.EventListener.create({
             event: cc.EventListener.TOUCH_ONE_BY_ONE,
             swallowTouches: true,
