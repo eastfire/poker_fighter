@@ -1,5 +1,44 @@
 var IntroLayer = cc.Layer.extend({
+    ctor:function(){
+        this._super();
+        var sprite = new cc.Sprite(res.intro_png);
+        sprite.attr({
+            x: cc.winSize.width/2,
+            y: cc.winSize.height/2
+        })
+        this.addChild(sprite);
 
+        var lang = cc.sys.language;
+        if ( lang != "zh" ) lang = "en";
+
+        var vsItem = new cc.MenuItemImage(
+            cc.spriteFrameCache.getSpriteFrame("menu-vs-default-"+lang+".png"),
+            cc.spriteFrameCache.getSpriteFrame("menu-vs-press-"+lang+".png"),
+            function () {
+                cc.director.runScene(new ModeSelectScene());
+            }, this);
+        vsItem.attr({
+            x: cc.winSize.width/2,
+            y: cc.winSize.height/2 - 100
+        });
+
+        var quickVsItem = new cc.MenuItemImage(
+            cc.spriteFrameCache.getSpriteFrame("menu-quick-vs-default-"+lang+".png"),
+            cc.spriteFrameCache.getSpriteFrame("menu-quick-vs-press-"+lang+".png"),
+            function () {
+                cc.director.runScene(new MainScene());
+            }, this);
+        quickVsItem.attr({
+            x: cc.winSize.width/2,
+            y: cc.winSize.height/2 - 200
+        });
+        var menu = new cc.Menu([vsItem, quickVsItem]);
+        menu.x = 0;
+        menu.y = 0;
+        this.addChild(menu);
+
+
+    }
 });
 
 var IntroScene = cc.Scene.extend({

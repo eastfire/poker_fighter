@@ -62,7 +62,7 @@ cc.game.onStart = function(){
     //load resources
     cc.LoaderScene.preload(g_resources, function () {
         cc.spriteFrameCache.addSpriteFrames(res.game_plist);
-        cc.director.runScene(new MainScene());
+        cc.director.runScene(new IntroScene());
     }, this);
 };
 cc.game.run();

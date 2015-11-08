@@ -727,7 +727,7 @@ var MainLayer = cc.LayerColor.extend({
             new cc.ScaleTo(times.gameOver, 2,2)));
 
         gameModel.off();
-        gameModel = null;
+
         cc.eventManager.removeListener(this.listener);
         cc.eventManager.addListener(cc.EventListener.create({
             event: cc.EventListener.TOUCH_ONE_BY_ONE,
@@ -740,7 +740,13 @@ var MainLayer = cc.LayerColor.extend({
             },
             //Process the touch end event
             onTouchEnded: function (touch, event) {
-                cc.director.runScene(new IntroScene());
+                if ( gameModel.get("mode") == "vs" ) {
+                    cc.director.runScene(new ModeSelectScene());
+                } else if ( gameModel.get("mode") == "quick-vs" ) {
+                    cc.director.runScene(new IntroScene());
+                }
+
+                gameModel = null;
             }
         }), this);
     }
@@ -753,8 +759,9 @@ var GameModel = Backbone.Model.extend({
             player2Money: 500,
             coinAppearRate: 0.2,
             bigMoneyRate: 0.1,
-            itemAppearRate: 0.5,
-            gameSpeed: 1
+            itemAppearRate: 0.5, //0, 0.25, 0.5, 0.75, 1
+            gameSpeed: 1,
+            mode: "quick-vs" //quick-vs , vs, solo
         }
     },
     initialize:function(){
@@ -797,7 +804,7 @@ var GameModel = Backbone.Model.extend({
         ];
 
         this.itemPool = ["ace","bomb","cloud","dizzy","enlarge","leaf","shrink","spy", "thief", "two"];
-        this.itemPool = ["bomb"];
+        //this.itemPool = ["thief"];
     },
     newDeck:function(){
         this.deck = newDeck();
@@ -868,11 +875,15 @@ var GameModel = Backbone.Model.extend({
 
 
 var MainScene = cc.Scene.extend({
+    ctor:function(options){
+        this._super();
+        this.options = options;
+    },
     onEnter:function () {
         this._super();
         if ( window.gameModel )
             return;
-        window.gameModel = new GameModel();
+        window.gameModel = new GameModel(this.options);
         window.mainLayer = new MainLayer({model:gameModel, need_read_fight:true});
         this.addChild(window.mainLayer);
     }

@@ -24,6 +24,7 @@
         "src/pause.js",
         "src/help.js",
         "src/intro.js",
+        "src/mode-select.js",
         "src/app.js"
     ]
 }
