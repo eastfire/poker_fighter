@@ -95,16 +95,28 @@ var BombSpecialCardSprite = NormalCardSprite.extend({
         this.alreadyTaken = true;
         this.zIndex = 20;
         var playerSprite = player == gameModel.player1 ? mainLayer.player1Sprite : mainLayer.player2Sprite;
+
+        var explosionFrames = [];
+        for (var i = 0; i < 5; i++) {
+            var frame = cc.spriteFrameCache.getSpriteFrame("explosion-"+i+".png");
+            explosionFrames.push(frame);
+        }
+        var animation = new cc.Animation(explosionFrames, 0.15);
+        this.explosionAction = new cc.Animate(animation);
+        this.explosionAction.retain();
+
         this.runAction(new cc.Sequence( new cc.MoveTo(times.getMoney, cc.winSize.width/2, player == gameModel.player1 ? dimens.player1HandPosition.y : dimens.player2HandPosition.y ) ,
             new cc.CallFunc(function(){
-                gameModel.destroyCard(this.model);
-
-                //TODO play explosion animation
                 cc.audioEngine.playEffect(res.explosion_mp3, false);
                 if ( player.canTakeCard() ) {
                     //Destroy hand
                     player.discardRandomCard();
                 }
+            },this),
+            this.explosionAction,
+            cc.callFunc(function(){
+                this.explosionAction.release();
+                gameModel.destroyCard(this.model);
             },this)
         ));
 
@@ -117,6 +129,7 @@ var ThiefSpecialCardModel = Backbone.Model.extend({
         this.power = Math.random() < 0.1 ? 10 : Math.ceil( Math.random()*5);
     }
 });
+
 var ThiefSpecialCardSprite = NormalCardSprite.extend({
     initView:function(){
         this.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame(this.model.power == 10 ? "thief-red.png" : "thief-green.png"));

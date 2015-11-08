@@ -753,7 +753,7 @@ var GameModel = Backbone.Model.extend({
             player2Money: 500,
             coinAppearRate: 0.2,
             bigMoneyRate: 0.1,
-            itemAppearRate: 0.4,
+            itemAppearRate: 0.5,
             gameSpeed: 1
         }
     },
@@ -797,7 +797,7 @@ var GameModel = Backbone.Model.extend({
         ];
 
         this.itemPool = ["ace","bomb","cloud","dizzy","enlarge","leaf","shrink","spy", "thief", "two"];
-        //this.itemPool = ["thief"];
+        this.itemPool = ["bomb"];
     },
     newDeck:function(){
         this.deck = newDeck();
