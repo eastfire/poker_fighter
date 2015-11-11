@@ -142,6 +142,86 @@ var DizzyItemModel = ItemModel.extend({
     }
 });
 
+var FastItemModel = ItemModel.extend({
+    defaults:function(){
+        return {
+            name:"fast",
+            displayName:"快进",
+            maxCharge: 1,
+            maxCoolDown: 1,
+            description:"对手的牌速度加快",
+            showCharge: false,
+            effectTime: 10
+        }
+    },
+    effect:function(playerSprite, opponentPlayerSprite){
+        opponentPlayerSprite.model.set({
+            "speedDown":10,
+            "speedUp":this.get("effectTime")
+        });
+        _.each( mainLayer.getChildren(), function(sprite) {
+            if (sprite instanceof NormalCardSprite ) {
+                if (opponentPlayerSprite.isThisSide(sprite.y) && !sprite.alreadyTaken){
+                    sprite.changeSpeed(1.5);
+                }
+            }
+        });
+    }
+});
+
+var NukeItemModel = ItemModel.extend({
+    defaults:function(){
+        return {
+            name:"nuke",
+            displayName:"核弹",
+            maxCharge: 1,
+            maxCoolDown: 1,
+            description:"毁掉场上所有的牌和玩家的手牌",
+            showCharge: false
+        }
+    },
+    effect:function(playerSprite, opponentPlayerSprite){
+
+        gameModel.set("status", "game");
+        mainLayer.countDownLabel.setVisible(false);
+
+        playerSprite.model.set("hands", []);
+        opponentPlayerSprite.model.set("hands", []);
+
+        gameModel.clearCards();
+
+        gameModel.newDeck();
+
+        var explosionSprite = new cc.Sprite();
+        explosionSprite.attr({
+            x: cc.winSize.width/2,
+            y: cc.winSize.height/2,
+            scaleX: 10,
+            scaleY: 10,
+            rotation: playerSprite.model.get("position") === PLAYER_POSITION_DOWN ? 0 : 180
+        });
+
+        var explosionFrames = [];
+        for (var i = 0; i < 8; i++) {
+            var frame = cc.spriteFrameCache.getSpriteFrame("big-explosion-"+i+".png");
+            explosionFrames.push(frame);
+        }
+        var animation = new cc.Animation(explosionFrames, 0.12);
+        var explosionAction = new cc.Animate(animation);
+
+        mainLayer.addChild(explosionSprite);
+
+        cc.audioEngine.playEffect(res.explosion_mp3, false);
+        explosionSprite.runAction(new cc.Sequence(
+            explosionAction,
+            cc.callFunc(function(){
+                explosionSprite.removeFromParent(true);
+            },this)
+        ));
+
+    }
+});
+
 var ShrinkItemModel = ItemModel.extend({
     defaults:function(){
         return {
@@ -521,9 +601,9 @@ var ItemSlotSprite = cc.Sprite.extend({
                 }, this)));
         }
     },
-    getAnItem:function(){
+    getAnItem:function(name){
         this.status = "rolling";
-        var itemName = window.gameModel.generateItemName();
+        var itemName = name || window.gameModel.generateItemName();
         this.setItemModel(new ITEM_MODEL_CLASS_MAP[itemName]());
     }
 });
@@ -534,7 +614,9 @@ var ITEM_MODEL_CLASS_MAP = {
     "cloud": CloudItemModel,
     "dizzy": DizzyItemModel,
     "enlarge":EnlargeItemModel,
+    "fast": FastItemModel,
     "leaf": LeafItemModel,
+    "nuke": NukeItemModel,
     "shrink":ShrinkItemModel,
     "spy": SpyItemModel,
     "thief": ThiefItemModel,

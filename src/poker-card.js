@@ -123,14 +123,14 @@ var NormalCardSprite = cc.Sprite.extend({
         var midY = cc.winSize.height/2;
         if ( target.speedY > 0 ) {
             if ( target.y < midY ) {
-                var result = target.getMoveToLineAction.call(target, gameModel.player1, player2Y, function(){
+                var totalTime = target.moveToLine.call(target, gameModel.player1, player2Y, function(){
                     this.playerTakeCard.call(this, gameModel.player2);
                 }, target);
-                var midTime = (target.y - midY ) * result.time / (target.y - player2Y);
-                target.runAction( target.mainAction = cc.spawn( result.action, new cc.Sequence(new cc.DelayTime(midTime),
+                var midTime = (target.y - midY ) * totalTime / (target.y - player2Y);
+                target.runAction( new cc.Sequence(new cc.DelayTime(midTime),
                     new cc.CallFunc(function(){
                         //check speed
-                        /*var speedScale = this.getSpeedScale(gameModel.player2);
+                        var speedScale = this.getSpeedScale(gameModel.player2);
                         if ( speedScale != this.speedScale ) {
                             this.stopAllActions();
                             var speed = this.getSpeed(gameModel.player2);
@@ -143,37 +143,27 @@ var NormalCardSprite = cc.Sprite.extend({
                                         gameModel.destroyCard(this.model);
                                     }
                                 },this) ) );
-                        }*/
-                        var newSpeedScale = gameModel.player2.getSpeedAdjust();
-                        this.changeSpeed(newSpeedScale);
+                        }
 
                         //check size
                         var newSizeScale = gameModel.player2.getSizeAdjust();
                         this.runAction(cc.scaleTo(0.1, newSizeScale, newSizeScale));
-                    },target)) ));
+                    },target)) );
             } else {
-                target.runAction( target.mainAction = target.getMoveToLineAction.call(target, gameModel.player2, player2Y, function(){
+                target.moveToLine.call(target, gameModel.player2, player2Y, function(){
                     target.playerTakeCard.call(target, gameModel.player2);
-                }, target));
+                }, target);
             }
         } else if ( target.speedY < 0 ) {
             if ( target.y >= midY ) {
-                var result = target.getMoveToLineAction.call(target, gameModel.player2, player1Y, function(){
+                var totalTime = target.moveToLine.call(target, gameModel.player2, player1Y, function(){
                     this.playerTakeCard.call(this, gameModel.player1);
                 }, target);
-                var midTime = (target.y - midY ) * result.time / (target.y - player1Y);
-                target.runAction( target.mainAction = cc.spawn( result.action, new cc.Sequence(new cc.DelayTime(midTime),
+                var midTime = (target.y - midY ) * totalTime / (target.y - player1Y);
+                target.runAction( new cc.Sequence(new cc.DelayTime(midTime),
                     new cc.CallFunc(function(){
-                        if ( gameModel.player1.get("type") === "ai" ) {
-                            this.touchable = false;
-                        } else {
-                            this.touchable = true;
-                        }
                         //check speed
-                        var newSpeedScale = gameModel.player1.getSpeedAdjust();
-                        this.changeSpeed(newSpeedScale);
-
-                        /*var speedScale = this.getSpeedScale(gameModel.player1);
+                        var speedScale = this.getSpeedScale(gameModel.player1);
                         if ( speedScale != this.speedScale ) {
                             this.stopAllActions();
                             var speed = this.getSpeed(gameModel.player1);
@@ -186,16 +176,16 @@ var NormalCardSprite = cc.Sprite.extend({
                                         gameModel.destroyCard(this.model);
                                     }
                                 },this) ) );
-                        }*/
+                        }
 
                         //check size
                         var newSizeScale = gameModel.player1.getSizeAdjust();
                         this.runAction(cc.scaleTo(0.1, newSizeScale, newSizeScale));
-                    },target)) ));
+                    },target)) );
             } else {
-                target.runAction( target.mainAction = target.getMoveToLineAction.call(target, gameModel.player1, player1Y, function(){
+                target.moveToLine.call(target, gameModel.player1, player1Y, function(){
                     target.playerTakeCard.call(target, gameModel.player1);
-                }, target).action );
+                }, target);
             }
         } else if ( target.speedY == 0 ) {
             var actionArray = [];
@@ -213,7 +203,7 @@ var NormalCardSprite = cc.Sprite.extend({
                     gameModel.destroyCard(target.model);
                 }, target));
             }
-            target.runAction( target.mainAction = new cc.Sequence(actionArray) );
+            target.runAction( new cc.Sequence(actionArray) );
         }
     },
     canBeTouch:function(){
@@ -247,14 +237,14 @@ var NormalCardSprite = cc.Sprite.extend({
     getSpeed:function(player){
         var originSpeed = Math.max(0.1, Math.sqrt( this.speedX*this.speedX + this.speedY * this.speedY ) );
         var speed = Math.min( MAX_SPEED, Math.max( MIN_SPEED, originSpeed ) ) * 30;
-        //this.speedScale = this.getSpeedScale(player);
-        //speed = speed * this.speedScale;
+        this.speedScale = this.getSpeedScale(player);
+        speed = speed * this.speedScale;
         return speed;
     },
-    changeSpeed:function(speed){
-        this.mainAction.setSpeed(speed);
+    changeSpeed:function(){
+
     },
-    getMoveToLineAction:function(player, lineY, callback, context){
+    moveToLine:function(player, lineY, callback, context){
         var actionArray = [];
         var pointX = this.getCrossPointX.call(this, lineY);
         var speed = this.getSpeed(player);
@@ -269,10 +259,8 @@ var NormalCardSprite = cc.Sprite.extend({
                 gameModel.destroyCard(this.model);
             }, this));
         }
-        return {
-            time: time,
-            action: new cc.Sequence(actionArray)
-        };
+        this.runAction( new cc.Sequence(actionArray) );
+        return time;
     },
     getCrossPointX:function(lineY){
         return ( lineY - this.y ) * this.speedX / this.speedY + this.x;

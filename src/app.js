@@ -271,6 +271,7 @@ var MainLayer = cc.LayerColor.extend({
         var scaleRate = 3;
         this.countDownLabel.runAction( new cc.Sequence(
             new cc.CallFunc(function(){
+                if ( this.model.get("status") != "countDown" ) return;
                 cc.audioEngine.playEffect(res["countdown"+gameModel.get("currentCount")+"_mp3"], false);
                 this.countDownLabel.setString(gameModel.get("currentCount"));
                 this.countDownLabel.attr({
@@ -280,6 +281,7 @@ var MainLayer = cc.LayerColor.extend({
             },this),
             new cc.ScaleTo(1, scaleRate, scaleRate),
             new cc.CallFunc(function(){
+                if ( this.model.get("status") != "countDown" ) return;
                 gameModel.set("currentCount", gameModel.get("currentCount") - 1);
                 if ( gameModel.get("currentCount") <= 0 || ( !gameModel.player1.canTakeCard() && !gameModel.player2.canTakeCard() )) {
                     this.countDownLabel.setVisible(false);
@@ -808,8 +810,8 @@ var GameModel = Backbone.Model.extend({
             new ItemPattern4Model()
         ];
 
-        this.itemPool = ["ace","bomb","cloud","dizzy","enlarge","leaf","shrink","spy", "thief", "two"];
-//        this.itemPool = ["shrink","enlarge"];
+        this.itemPool = ["ace","bomb","cloud","dizzy","enlarge","leaf","nuke", "shrink","spy", "thief", "two"];
+        //this.itemPool = ["fast","nuke"];
     },
     newDeck:function(){
         this.deck = newDeck();
