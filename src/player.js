@@ -49,8 +49,8 @@ var PlayerModel = Backbone.Model.extend({
             hands: [],
             speedDown: 0,
             speedUp: 0,
-            scaleUp: 0,
-            scaleDown: 0,
+            sizeUp: 0,
+            sizeDown: 0,
             dizzy: 0,
             spy: 0,
             needItem: true,
@@ -253,41 +253,19 @@ var PlayerModel = Backbone.Model.extend({
         return sizeScale;
     },
     maintain:function(){
-        _.each( ["sizeUp","sizeDown","scaleUp","scaleDown","dizzy","spy"],function(attr){
+        _.each( ["speedUp","speedDown","sizeUp","sizeDown","dizzy","spy"],function(attr){
             var value = this.get(attr);
-
+            if ( value > 0 ) {
+                this.set(attr, value - 1);
+            }
         },this );
-        var sizeUp = this.get("sizeUp");
-        if ( sizeUp > 0 ) {
-            this.set("sizeUp", sizeUp - 1);
-        }
-        var sizeDown = this.get("sizeDown");
-        if ( sizeDown > 0 ) {
-            this.set("sizeDown", sizeDown - 1);
-        }
-        var scaleUp = this.get("scaleUp");
-        if ( scaleUp > 0 ) {
-            this.set("scaleUp", scaleUp - 1);
-        }
-        var scaleDown = this.get("scaleDown");
-        if ( scaleDown > 0 ) {
-            this.set("scaleDown", scaleDown - 1);
-        }
-        var dizzy = this.get("dizzy");
-        if ( dizzy > 0 ) {
-            this.set("dizzy", dizzy - 1);
-        }
-        var spy = this.get("spy");
-        if ( spy > 0 ) {
-            this.set("spy", spy - 1);
-        }
     },
     cleanStatus:function(){
         this.set({
             sizeUp: 0,
             sizeDown: 0,
-            scaleUp: 0,
-            scaleDown: 0,
+            speedUp: 0,
+            speedDown: 0,
             dizzy: 0,
             spy: 0
         })

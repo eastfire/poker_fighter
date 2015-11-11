@@ -4,6 +4,7 @@ var GENERATE_ITEM_INTERVAL = 7;
 var texts;
 
 var RARE_SPEED_RATE = 2;
+var MAIN_ACTION_TAG = 1;
 
 var MainLayer = cc.LayerColor.extend({
     sprite:null,
@@ -53,7 +54,7 @@ var MainLayer = cc.LayerColor.extend({
         var menu = new cc.Menu([pauseItem]);
         menu.x = 0;
         menu.y = 0;
-        this.addChild(menu);
+        this.addChild(menu, 100);
 
         this.betRateLabel1 = new ccui.Text("", "Arial", 30 );
         this.betRateLabel1.enableOutline(colors.tableLabelOutline, 2);
@@ -351,6 +352,8 @@ var MainLayer = cc.LayerColor.extend({
             } else if ( this.player2.get("money") <= 0 || ( this.player1.get("money") >= this.player1.get("winningMoney") && winner === 1) ) {
                 this.gameOver();
             } else {
+                this.player1.cleanStatus();
+                this.player2.cleanStatus();
                 this.startNewRound();
             }
         }, times.compare)
@@ -446,8 +449,6 @@ var MainLayer = cc.LayerColor.extend({
         this.winLoseLabel1.setVisible(false);
         this.winLoseLabel2.setVisible(false);
 
-        this.player1.cleanStatus();
-        this.player2.cleanStatus();
         this.player1.set("hands", []);
         this.player2.set("hands", []);
 
@@ -515,12 +516,13 @@ var MainLayer = cc.LayerColor.extend({
             scaleX : scale,
             scaleY : scale
         });
-        sprite.runAction( cc.sequence(
+        sprite.runAction( sprite.mainAction = cc.sequence(
             cc.moveTo(pattern.time, isOriginMirror ? cc.winSize.width - pattern.end.x : pattern.end.x, pattern.end.y),
             new cc.CallFunc(function(){
                 gameModel.destroyCard(cardModel);
             },this)
-        ).speed(speedScale));
+        ).speed(1));
+        sprite.changeSpeed(speedScale);
         if ( isDizzy ) sprite.dizzy();
 
         if ( pattern.isOnlyOne ) return;
@@ -566,12 +568,13 @@ var MainLayer = cc.LayerColor.extend({
             scaleY: scale
         })
 
-        mirrorSprite.runAction(cc.sequence(
+        mirrorSprite.runAction(sprite.mainAction = cc.sequence(
             cc.moveTo(pattern.time, endX, endY),
             new cc.CallFunc(function(){
                 gameModel.destroyCard(mirrorCardModel);
             },this)
-        ).speed(speedScale));
+        ).speed(1));
+        sprite.changeSpeed(speedScale);
 
         if ( isDizzy ) {
             mirrorSprite.dizzy();
@@ -628,13 +631,14 @@ var MainLayer = cc.LayerColor.extend({
                 scaleY: scale
             });
 
-            sprite.runAction( cc.sequence(
+            sprite.runAction( sprite.mainAction = cc.sequence(
                 new cc.DelayTime(entry.time),
                 cc.moveTo(entry.moveTime, isOriginMirror ? cc.winSize.width - entry.end.x : entry.end.x, entry.end.y),
                 new cc.CallFunc(function(){
                     gameModel.destroyCard(cardModel);
                 },this)
-            ).speed(speedScale));
+            ).speed(1));
+            sprite.changeSpeed(speedScale);
             if ( isDizzy ) sprite.dizzy();
 
             var mirrorCardModel;
@@ -690,13 +694,14 @@ var MainLayer = cc.LayerColor.extend({
                 scaleY: scale
             });
 
-            mirrorSprite.runAction(cc.sequence(
+            mirrorSprite.runAction(sprite.mainAction = cc.sequence(
                 new cc.DelayTime(entry.time),
                 cc.moveTo(entry.moveTime, endX, endY),
                 new cc.CallFunc(function(){
                     gameModel.destroyCard(mirrorCardModel);
                 },this)
-            ).speed(speedScale));
+            ).speed(1));
+            sprite.changeSpeed(speedScale);
             if ( isDizzy ) mirrorSprite.dizzy();
         },this);
     },
@@ -804,7 +809,7 @@ var GameModel = Backbone.Model.extend({
         ];
 
         this.itemPool = ["ace","bomb","cloud","dizzy","enlarge","leaf","shrink","spy", "thief", "two"];
-        //this.itemPool = ["thief"];
+//        this.itemPool = ["shrink","enlarge"];
     },
     newDeck:function(){
         this.deck = newDeck();

@@ -48,7 +48,7 @@ var PlayerRotateLayer = cc.LayerColor.extend({
         letMeSeeLabel.attr({
 
             x: cc.winSize.width/2,
-            y: cc.winSize.height - 15,
+            y: cc.winSize.height - 18,
             rotation: 180
         });
         this.addChild(letMeSeeLabel);
@@ -91,7 +91,8 @@ var HelpPokerLayer = PlayerRotateLayer.extend({
         betRateLabel.setTextColor(colors.tableLabel);
         betRateLabel.attr({
             x: this.betRateLabelX,
-            y: this.currentY
+            y: this.currentY,
+            anchorX: 0
         });
         this.addChild(betRateLabel);
 
@@ -105,7 +106,7 @@ var HelpPokerLayer = PlayerRotateLayer.extend({
         this.currentY = cc.winSize.height - 75;
         this.startX = 50;
         this.featureLabelX = cc.winSize.width*2/3;
-        this.betRateLabelX = cc.winSize.width - 50;
+        this.betRateLabelX = cc.winSize.width - 65;
         var totalHeight = cc.winSize.height - 90;
         this.stepY = totalHeight / 9;
         var fiveOfAKindAppeared = cc.sys.localStorage.getItem("fiveOfAKindAppeared");
