@@ -6,6 +6,8 @@ var res = {
 
     explosion_mp3: "res/explosion.mp3",
     spring_mp3: "res/spring-boing.mp3",
+    slot_machine_mp3: "res/slot-machine.mp3",
+    cash_register_mp3: "res/cash-register.mp3",
 
     ready_mp3: "res/ready.mp3",
     fight_mp3: "res/fight.mp3",

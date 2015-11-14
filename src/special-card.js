@@ -149,6 +149,10 @@ var ThiefSpecialCardSprite = NormalCardSprite.extend({
         this.runAction(new cc.Sequence( new cc.MoveTo(times.getMoney, playerSprite.moneyLabel.x, playerSprite.moneyLabel.y) ,
             new cc.CallFunc(function(){
                 player.set("money", Math.max(1, player.get("money") - this.model.power * gameModel.get("betRate")));
+                cc.audioEngine.playEffect(res.cash_register_mp3, false);
+            },this),
+            cc.moveTo( 0.1, player == gameModel.player1 ? - dimens.card_size.width : cc.winSize.width + dimens.card_size.width, playerSprite.moneyLabel.y ),
+            cc.callFunc(function(){
                 gameModel.destroyCard(this.model);
             },this)
         ));

@@ -506,6 +506,8 @@ var ThiefItemModel = ItemModel.extend({
     }
 });
 
+var DUMMY_ITEM_COUNT = 10;
+
 var ItemSlotSprite = cc.Sprite.extend({
     ctor:function(options) {
         this._super(cc.spriteFrameCache.getSpriteFrame("item-slot-bg.png"));
@@ -629,9 +631,42 @@ var ItemSlotSprite = cc.Sprite.extend({
         }
     },
     getAnItem:function(name){
+        if ( this.status == "rolling" ) return;
         this.status = "rolling";
+        cc.audioEngine.playEffect(res.slot_machine_mp3, false);
+        if ( this.model ) {
+            var sprite = new cc.Sprite( cc.spriteFrameCache.getSpriteFrame("item-" + this.model.get("name") + ".png") );
+            sprite.attr({
+                x: this.width/2,
+                y: this.height/2
+            });
+            this.foreground.addChild(sprite);
+            var actionArray = [cc.moveBy(2, 0, -this.height * (DUMMY_ITEM_COUNT+1)).easing(cc.easeSineInOut()), cc.removeSelf(true)];
+            sprite.runAction(cc.sequence(actionArray));
+            this.chargeLabel.setVisible(false);
+            this.foreground.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame("no-item.png"));
+        }
         var itemName = name || window.gameModel.generateItemName();
-        this.setItemModel(new ITEM_MODEL_CLASS_MAP[itemName]());
+        for ( var i = 0; i < DUMMY_ITEM_COUNT+1; i++ ) {
+            var randomName
+            if ( i == DUMMY_ITEM_COUNT ) {
+                randomName = itemName;
+            } else randomName = window.gameModel.generateItemName();
+
+            var sprite = new cc.Sprite( cc.spriteFrameCache.getSpriteFrame("item-" + randomName + ".png") );
+            sprite.attr({
+                x: this.width/2,
+                y: this.height*3/2+this.height*i
+            });
+            this.foreground.addChild(sprite);
+            var actionArray = [cc.moveBy(2, 0, -this.height * (DUMMY_ITEM_COUNT+1)).easing(cc.easeSineInOut()), cc.removeSelf(true)];
+            if ( i == DUMMY_ITEM_COUNT ) {
+                actionArray.push(cc.callFunc(function(){
+                    this.setItemModel(new ITEM_MODEL_CLASS_MAP[itemName]());
+                },this));
+            }
+            sprite.runAction(cc.sequence(actionArray));
+        }
     }
 });
 

@@ -78,7 +78,7 @@ var NormalCardSprite = cc.Sprite.extend({
                         this.dizzy();
                     else this.rotation = 0;
                     //touchable change
-                    this.touchable = (gameModel.player2.get("type") === "ai");
+                    this.touchable = (gameModel.player2.get("type") !== "ai");
                 }, target);
                 //check size
                 var newSizeScale = gameModel.player1.getSizeAdjust();
@@ -86,6 +86,8 @@ var NormalCardSprite = cc.Sprite.extend({
                 //dizzy
                 if ( gameModel.player1.get("dizzy") )
                     this.dizzy();
+                //touchable change
+                this.touchable = (gameModel.player1.get("type") !== "ai");
             } else {
                 target.moveToLine.call(target, gameModel.player2, player2Y, function(){
                     target.playerTakeCard.call(target, gameModel.player2);
@@ -96,6 +98,8 @@ var NormalCardSprite = cc.Sprite.extend({
                 //dizzy
                 if ( gameModel.player2.get("dizzy") )
                     this.dizzy();
+                //touchable change
+                this.touchable = (gameModel.player2.get("type") !== "ai");
             }
         } else if ( target.speedY < 0 ) {
             if ( target.y >= midY ) {
@@ -112,7 +116,7 @@ var NormalCardSprite = cc.Sprite.extend({
                         this.dizzy();
                     else this.rotation = 180;
                     //touchable change
-                    this.touchable = (gameModel.player1.get("type") === "ai");
+                    this.touchable = (gameModel.player1.get("type") !== "ai");
                 }, target);
                 //check size
                 var newSizeScale = gameModel.player2.getSizeAdjust();
@@ -120,6 +124,8 @@ var NormalCardSprite = cc.Sprite.extend({
                 //dizzy
                 if ( gameModel.player2.get("dizzy") )
                     this.dizzy();
+                //touchable change
+                this.touchable = (gameModel.player2.get("type") !== "ai");
             } else {
                 target.moveToLine.call(target, gameModel.player1, player1Y, function(){
                     target.playerTakeCard.call(target, gameModel.player1);
@@ -130,6 +136,8 @@ var NormalCardSprite = cc.Sprite.extend({
                 //dizzy
                 if ( gameModel.player1.get("dizzy") )
                     this.dizzy();
+                //touchable change
+                this.touchable = (gameModel.player1.get("type") !== "ai");
             }
         } else if ( target.speedY == 0 ) {
             var actionArray = [];
@@ -160,6 +168,8 @@ var NormalCardSprite = cc.Sprite.extend({
                 //check dizzy
                 if ( gameModel.player1.get("dizzy") )
                     this.dizzy();
+                //touchable change
+                this.touchable = (gameModel.player1.get("type") !== "ai");
             } else {
                 //check size
                 var newSizeScale = gameModel.player2.getSizeAdjust();
@@ -167,6 +177,8 @@ var NormalCardSprite = cc.Sprite.extend({
                 //check dizzy
                 if ( gameModel.player2.get("dizzy") )
                     this.dizzy();
+                //touchable change
+                this.touchable = (gameModel.player2.get("type") !== "ai");
             }
         }
     },
