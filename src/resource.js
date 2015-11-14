@@ -5,6 +5,8 @@ var res = {
     intro_png : "res/intro.png",
 
     explosion_mp3: "res/explosion.mp3",
+    spring_mp3: "res/spring-boing.mp3",
+
     ready_mp3: "res/ready.mp3",
     fight_mp3: "res/fight.mp3",
     countdown5_mp3: "res/countdown-5.mp3",

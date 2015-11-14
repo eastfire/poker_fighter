@@ -35,7 +35,7 @@ var PauseMenuLayer = cc.LayerColor.extend({
                 cc.director.runScene(new MainScene());
             }, this);
         restartItem.attr({
-            x: cc.winSize.width/2,
+            x: cc.winSize.width*2/3,
             y: cc.winSize.height*5/8
         });
 
@@ -47,14 +47,53 @@ var PauseMenuLayer = cc.LayerColor.extend({
                 cc.director.runScene(new IntroScene());
             }, this);
         exitItem.attr({
+            x: cc.winSize.width/3,
+            y: cc.winSize.height*5/8
+        });
+
+        this.muteItem = new cc.MenuItemImage(
+            cc.spriteFrameCache.getSpriteFrame("mute-default.png"),
+            cc.spriteFrameCache.getSpriteFrame("mute-press.png"),
+            function () {
+                var store = cc.sys.localStorage.getItem("sound");
+                var sound = 0;
+                if ( store != null ) {
+                    sound = 1-store;
+                } else {
+                    sound = 0;
+                }
+                cc.sys.localStorage.setItem("sound",sound);
+                cc.audioEngine.setEffectsVolume(sound);
+                this.renderMuteItem();
+            }, this);
+        this.renderMuteItem();
+        this.muteItem.attr({
             x: cc.winSize.width/2,
             y: cc.winSize.height*7/8
         });
 
-        var menu = new cc.Menu([exitItem, restartItem, infoItem, resumeItem ]);
+
+        var menu = new cc.Menu([exitItem, restartItem, infoItem, resumeItem, this.muteItem ]);
         menu.x = 0;
         menu.y = 0;
         this.addChild(menu);
+    },
+    renderMuteItem:function(){
+        var store = cc.sys.localStorage.getItem("sound");
+        var sound = 1;
+        if ( store != null ) {
+            sound = store;
+        } else {
+            sound = 0;
+        }
+        cc.log("renderMuteItem"+sound);
+        if ( sound != 0 ) { //"0"?
+            this.muteItem.setNormalSpriteFrame(cc.spriteFrameCache.getSpriteFrame("mute-default.png"));
+            this.muteItem.setSelectedSpriteFrame(cc.spriteFrameCache.getSpriteFrame("mute-press.png"));
+        } else {
+            this.muteItem.setNormalSpriteFrame(cc.spriteFrameCache.getSpriteFrame("unmute-default.png"));
+            this.muteItem.setSelectedSpriteFrame(cc.spriteFrameCache.getSpriteFrame("unmute-press.png"));
+        }
     }
 })
 

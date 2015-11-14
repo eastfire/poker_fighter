@@ -106,7 +106,7 @@ var AceItemModel = ItemModel.extend({
         });
         mainLayer.addChild(cardSprite);
         gameModel.manageCard(cardModel);
-        cardSprite.speedY = isDown ? -1 : 1;
+        cardSprite.speedY = isDown ? -NATURE_SPEED : NATURE_SPEED;
         cardSprite.speedX = 0;
 
         var speedScale = playerSprite.model.getSpeedAdjust();
@@ -156,13 +156,40 @@ var FastItemModel = ItemModel.extend({
     },
     effect:function(playerSprite, opponentPlayerSprite){
         opponentPlayerSprite.model.set({
-            "speedDown":10,
+            "speedDown":0,
             "speedUp":this.get("effectTime")
         });
         _.each( mainLayer.getChildren(), function(sprite) {
             if (sprite instanceof NormalCardSprite ) {
                 if (opponentPlayerSprite.isThisSide(sprite.y) && !sprite.alreadyTaken){
-                    sprite.changeSpeed(1.5);
+                    sprite.onTouchRelease();
+                }
+            }
+        });
+    }
+});
+
+var SlowItemModel = ItemModel.extend({
+    defaults:function(){
+        return {
+            name:"slow",
+            displayName:"减速",
+            maxCharge: 1,
+            maxCoolDown: 1,
+            description:"自己的牌减速",
+            showCharge: false,
+            effectTime: 10
+        }
+    },
+    effect:function(playerSprite, opponentPlayerSprite){
+        playerSprite.model.set({
+            "speedUp":0,
+            "speedDown":this.get("effectTime")
+        });
+        _.each( mainLayer.getChildren(), function(sprite) {
+            if (sprite instanceof NormalCardSprite ) {
+                if (playerSprite.isThisSide(sprite.y) && !sprite.alreadyTaken){
+                    sprite.onTouchRelease();
                 }
             }
         });
@@ -330,7 +357,7 @@ var TwoItemModel = ItemModel.extend({
         });
         mainLayer.addChild(cardSprite);
         gameModel.manageCard(cardModel);
-        cardSprite.speedY = isDown ? -1 : 1;
+        cardSprite.speedY = isDown ? -NATURE_SPEED : NATURE_SPEED;
         cardSprite.speedX = 0;
 
         var speedScale = opponentPlayerSprite.model.getSpeedAdjust();
@@ -374,7 +401,7 @@ var BombItemModel = ItemModel.extend({
         });
         mainLayer.addChild(cardSprite);
         gameModel.manageCard(cardModel);
-        cardSprite.speedY = isDown ? -1 : 1;
+        cardSprite.speedY = isDown ? -NATURE_SPEED : NATURE_SPEED;
         cardSprite.speedX = 0;
 
         var speedScale = opponentPlayerSprite.model.getSpeedAdjust();
@@ -467,7 +494,7 @@ var ThiefItemModel = ItemModel.extend({
         });
         mainLayer.addChild(cardSprite);
         gameModel.manageCard(cardModel);
-        cardSprite.speedY = isDown ? -1 : 1;
+        cardSprite.speedY = isDown ? -NATURE_SPEED : NATURE_SPEED;
         cardSprite.speedX = 0;
 
         var speedScale = opponentPlayerSprite.model.getSpeedAdjust();
@@ -618,6 +645,7 @@ var ITEM_MODEL_CLASS_MAP = {
     "leaf": LeafItemModel,
     "nuke": NukeItemModel,
     "shrink":ShrinkItemModel,
+    "slow": SlowItemModel,
     "spy": SpyItemModel,
     "thief": ThiefItemModel,
     "two": TwoItemModel

@@ -30,8 +30,8 @@ function newDeck(){
     return _.shuffle( deck );
 }
 
-var MIN_SPEED = 10;
-var MAX_SPEED = 25;
+var MIN_SPEED = 100;
+var MAX_SPEED = 400;
 
 var NormalCardSprite = cc.Sprite.extend({
     ctor:function(options) {
@@ -43,66 +43,8 @@ var NormalCardSprite = cc.Sprite.extend({
         this.touchable = true;
 
         this.initView();
-
-        /*this.listener = cc.EventListener.create({
-            event: cc.EventListener.TOUCH_ONE_BY_ONE,
-            swallowTouches: true,
-            onTouchBegan: function (touch, event) {
-                var target = event.getCurrentTarget();
-
-                var locationInNode = target.convertToNodeSpace(touch.getLocation());
-                var s = target.getContentSize();
-                var rect = cc.rect(0, 0, s.width, s.height);
-
-                //Check the click area
-                if (cc.rectContainsPoint(rect, locationInNode)) {
-                    target.stopAllActions();
-                    target.speedX = 0;
-                    if ( target.y >= cc.winSize.height/2 ) {
-                        target.speedY = 1;
-                    } else {
-                        target.speedY = -1;
-                    }
-                    return true;
-                }
-                return false;
-            },
-            //Trigger when moving touch
-            onTouchMoved: function (touch, event) {
-                var target = event.getCurrentTarget();
-                if ( target.alreadyTaken )
-                    return;
-
-                var delta = touch.getDelta();
-                target.x += delta.x;
-                target.y += delta.y;
-                target.speedX = delta.x;
-                target.speedY = delta.y;
-            },
-            //Process the touch end event
-            onTouchEnded: function (touch, event) {
-                var target = event.getCurrentTarget();
-                if ( target.alreadyTaken )
-                    return;
-                target.onTouchRelease.call(target);
-            }
-        });*/
     },
     initView:function(){
-        this.numberSprite = new cc.Sprite();
-        this.numberSprite.attr({
-            x: dimens.card_number_position.x,
-            y: dimens.card_number_position.y
-        });
-        this.addChild(this.numberSprite, 0);
-
-        this.numberDownSprite = new cc.Sprite();
-        this.numberDownSprite.attr({
-            x: dimens.card_size.width - dimens.card_number_position.x,
-            y: dimens.card_size.height - dimens.card_number_position.y,
-            rotation: 180
-        });
-        this.addChild(this.numberDownSprite, 0);
     },
     onTouchRelease:function(){
         var target = this;
@@ -123,87 +65,109 @@ var NormalCardSprite = cc.Sprite.extend({
         var midY = cc.winSize.height/2;
         if ( target.speedY > 0 ) {
             if ( target.y < midY ) {
-                var totalTime = target.moveToLine.call(target, gameModel.player1, player2Y, function(){
-                    this.playerTakeCard.call(this, gameModel.player2);
+                target.moveToLine.call(target, gameModel.player1, midY, function(){
+                    target.stopAllActions();
+                    this.moveToLine.call(this, gameModel.player2, player2Y, function(){
+                        this.playerTakeCard.call(this, gameModel.player2);
+                    }, this);
+                    //check size
+                    var newSizeScale = gameModel.player2.getSizeAdjust();
+                    this.runAction(cc.scaleTo(0.1, newSizeScale, newSizeScale));
+                    //dizzy
+                    if ( gameModel.player2.get("dizzy") )
+                        this.dizzy();
+                    else this.rotation = 0;
+                    //touchable change
+                    this.touchable = (gameModel.player2.get("type") === "ai");
                 }, target);
-                var midTime = (target.y - midY ) * totalTime / (target.y - player2Y);
-                target.runAction( new cc.Sequence(new cc.DelayTime(midTime),
-                    new cc.CallFunc(function(){
-                        //check speed
-                        var speedScale = this.getSpeedScale(gameModel.player2);
-                        if ( speedScale != this.speedScale ) {
-                            this.stopAllActions();
-                            var speed = this.getSpeed(gameModel.player2);
-                            var newTime = Math.sqrt((this.x - this.destX) * (this.x - this.destX) + (this.y - this.destY) * (this.y - this.destY)) / speed;
-                            this.runAction(new cc.Sequence( new cc.MoveTo( newTime, this.destX, this.destY ),
-                                new cc.CallFunc(function(){
-                                    if ( this.destX > -dimens.card_size.width / 2 && this.destX < cc.winSize.width + dimens.card_size.width / 2 ) {
-                                        this.playerTakeCard.call(this, gameModel.player2);
-                                    } else {
-                                        gameModel.destroyCard(this.model);
-                                    }
-                                },this) ) );
-                        }
-
-                        //check size
-                        var newSizeScale = gameModel.player2.getSizeAdjust();
-                        this.runAction(cc.scaleTo(0.1, newSizeScale, newSizeScale));
-                    },target)) );
+                //check size
+                var newSizeScale = gameModel.player1.getSizeAdjust();
+                this.runAction(cc.scaleTo(0.1, newSizeScale, newSizeScale));
+                //dizzy
+                if ( gameModel.player1.get("dizzy") )
+                    this.dizzy();
             } else {
                 target.moveToLine.call(target, gameModel.player2, player2Y, function(){
                     target.playerTakeCard.call(target, gameModel.player2);
                 }, target);
+                //check size
+                var newSizeScale = gameModel.player2.getSizeAdjust();
+                this.runAction(cc.scaleTo(0.1, newSizeScale, newSizeScale));
+                //dizzy
+                if ( gameModel.player2.get("dizzy") )
+                    this.dizzy();
             }
         } else if ( target.speedY < 0 ) {
             if ( target.y >= midY ) {
-                var totalTime = target.moveToLine.call(target, gameModel.player2, player1Y, function(){
-                    this.playerTakeCard.call(this, gameModel.player1);
+                target.moveToLine.call(target, gameModel.player2, midY, function(){
+                    target.stopAllActions();
+                    this.moveToLine.call(this, gameModel.player1, player1Y, function(){
+                        this.playerTakeCard.call(this, gameModel.player1);
+                    }, this);
+                    //check size
+                    var newSizeScale = gameModel.player1.getSizeAdjust();
+                    this.runAction(cc.scaleTo(0.1, newSizeScale, newSizeScale));
+                    //dizzy
+                    if ( gameModel.player1.get("dizzy") )
+                        this.dizzy();
+                    else this.rotation = 180;
+                    //touchable change
+                    this.touchable = (gameModel.player1.get("type") === "ai");
                 }, target);
-                var midTime = (target.y - midY ) * totalTime / (target.y - player1Y);
-                target.runAction( new cc.Sequence(new cc.DelayTime(midTime),
-                    new cc.CallFunc(function(){
-                        //check speed
-                        var speedScale = this.getSpeedScale(gameModel.player1);
-                        if ( speedScale != this.speedScale ) {
-                            this.stopAllActions();
-                            var speed = this.getSpeed(gameModel.player1);
-                            var newTime = Math.sqrt((this.x - this.destX) * (this.x - this.destX) + (this.y - this.destY) * (this.y - this.destY)) / speed;
-                            this.runAction(new cc.Sequence( new cc.MoveTo( newTime, this.destX, this.destY ),
-                                new cc.CallFunc(function(){
-                                    if ( this.destX > -dimens.card_size.width / 2 && this.destX < cc.winSize.width + dimens.card_size.width / 2 ) {
-                                        this.playerTakeCard.call(this, gameModel.player1);
-                                    } else {
-                                        gameModel.destroyCard(this.model);
-                                    }
-                                },this) ) );
-                        }
-
-                        //check size
-                        var newSizeScale = gameModel.player1.getSizeAdjust();
-                        this.runAction(cc.scaleTo(0.1, newSizeScale, newSizeScale));
-                    },target)) );
+                //check size
+                var newSizeScale = gameModel.player2.getSizeAdjust();
+                this.runAction(cc.scaleTo(0.1, newSizeScale, newSizeScale));
+                //dizzy
+                if ( gameModel.player2.get("dizzy") )
+                    this.dizzy();
             } else {
                 target.moveToLine.call(target, gameModel.player1, player1Y, function(){
                     target.playerTakeCard.call(target, gameModel.player1);
                 }, target);
+                //check size
+                var newSizeScale = gameModel.player1.getSizeAdjust();
+                this.runAction(cc.scaleTo(0.1, newSizeScale, newSizeScale));
+                //dizzy
+                if ( gameModel.player1.get("dizzy") )
+                    this.dizzy();
             }
         } else if ( target.speedY == 0 ) {
             var actionArray = [];
-            var speed = target.y < midY ? target.getSpeed(gameModel.player1) : target.getSpeed(gameModel.player2);
+            this.speed = this.getSpeed();
+            if ( target.y < midY ) {
+                target.speedScale = gameModel.player1.getSpeedAdjust()
+            } else target.speedScale = gameModel.player2.getSpeedAdjust()
+
             if ( target.speedX < 0 ) {
-                var time = ( target.x - ( - dimens.card_size.width/2 ) ) / speed;
+                var time = ( target.x - ( - dimens.card_size.width/2 ) ) / (this.speed * this.speedScale);
                 actionArray.push(new cc.MoveTo(time, - dimens.card_size.width/2, target.y));
                 actionArray.push(new cc.CallFunc(function () {
                     gameModel.destroyCard(target.model);
                 }, target));
             } else if ( target.speedX > 0 ) {
-                var time = ( cc.winSize.width + dimens.card_size.width/2 - target.x ) / speed;
+                var time = ( cc.winSize.width + dimens.card_size.width/2 - target.x ) / (this.speed * this.speedScale);
                 actionArray.push(new cc.MoveTo(time, cc.winSize.width + dimens.card_size.width/2, target.y));
                 actionArray.push(new cc.CallFunc(function () {
                     gameModel.destroyCard(target.model);
                 }, target));
             }
             target.runAction( new cc.Sequence(actionArray) );
+
+            if ( target.y < midY ) {
+                //check size
+                var newSizeScale = gameModel.player1.getSizeAdjust();
+                this.runAction(cc.scaleTo(0.1, newSizeScale, newSizeScale));
+                //check dizzy
+                if ( gameModel.player1.get("dizzy") )
+                    this.dizzy();
+            } else {
+                //check size
+                var newSizeScale = gameModel.player2.getSizeAdjust();
+                this.runAction(cc.scaleTo(0.1, newSizeScale, newSizeScale));
+                //check dizzy
+                if ( gameModel.player2.get("dizzy") )
+                    this.dizzy();
+            }
         }
     },
     canBeTouch:function(){
@@ -218,49 +182,49 @@ var NormalCardSprite = cc.Sprite.extend({
             this.setTag(0);
             player.addHand(this.model);
             this.alreadyTaken = true;
-            //cc.eventManager.removeListener(this.listener);
         } else {
+            cc.audioEngine.playEffect(res.spring_mp3, false);
             this.stopAllActions();
-            gameModel.destroyCard(this.model);
+            if ( this.y < cc.winSize.height/2 ) {
+                this.y = dimens.player1Y + 1;
+            } else this.y = dimens.player2Y - 1;
+
+            this.speedY = -this.speedY;
+            this.onTouchRelease();
         }
     },
-    getSpeedScale:function(player){
-        var speedScale = 1;
-        if ( player.get("speedUp") ) {
-            speedScale = speedScale*2;
-        }
-        if ( player.get("speedDown") ) {
-            speedScale = speedScale/2;
-        }
-        return speedScale;
+    moveToPoint:function(x,y, callback, context){
+        this.destX = x;
+        this.destY = y;
+        var speed = this.speed * this.speedScale;
+        var time = Math.sqrt((this.x - x) * (this.x - x) + (this.y - y) * (this.y - y)) / speed;
+        this.moveCallback = callback;
+        this.moveContext = context;
+        this.runAction( cc.sequence( cc.moveTo(time, x,y), cc.callFunc(callback, context) ) );
     },
-    getSpeed:function(player){
-        var originSpeed = Math.max(0.1, Math.sqrt( this.speedX*this.speedX + this.speedY * this.speedY ) );
-        var speed = Math.min( MAX_SPEED, Math.max( MIN_SPEED, originSpeed ) ) * 30;
-        this.speedScale = this.getSpeedScale(player);
-        speed = speed * this.speedScale;
+    changeSpeed:function(speedScale){
+        this.speedScale = speedScale;
+        var speed = this.speed * speedScale;
+        var time = Math.sqrt((this.x - this.destX) * (this.x - this.destX) + (this.y - this.destY) * (this.y - this.destY)) / speed;
+        this.runAction( cc.sequence( cc.moveTo(time, this.destX,this.destY), cc.callFunc(this.moveCallback, this.moveContext) ) );
+    },
+    getSpeed:function(){
+        var originSpeed = Math.max(MIN_SPEED, Math.sqrt( this.speedX*this.speedX + this.speedY * this.speedY ) );
+        var speed = Math.min(originSpeed, MAX_SPEED);
         return speed;
     },
-    changeSpeed:function(){
 
-    },
     moveToLine:function(player, lineY, callback, context){
-        var actionArray = [];
         var pointX = this.getCrossPointX.call(this, lineY);
-        var speed = this.getSpeed(player);
-        var time = Math.sqrt((this.x - pointX) * (this.x - pointX) + (this.y - lineY) * (this.y - lineY)) / speed;
-        this.destX = pointX;
-        this.destY = lineY;
-        actionArray.push(new cc.MoveTo(time, pointX, lineY));
+        this.speedScale = player.getSpeedAdjust();
+        this.speed = this.getSpeed();
         if (pointX > -dimens.card_size.width / 2 && pointX < cc.winSize.width + dimens.card_size.width / 2) {
-            actionArray.push(new cc.CallFunc(callback, context));
+            this.moveToPoint(pointX, lineY, callback, context);
         } else {
-            actionArray.push(new cc.CallFunc(function () {
+            this.moveToPoint(pointX, lineY, function(){
                 gameModel.destroyCard(this.model);
-            }, this));
+            },this);
         }
-        this.runAction( new cc.Sequence(actionArray) );
-        return time;
     },
     getCrossPointX:function(lineY){
         return ( lineY - this.y ) * this.speedX / this.speedY + this.x;
@@ -290,11 +254,9 @@ var NormalCardSprite = cc.Sprite.extend({
         this._super();
     },
     initEvent:function(){
-        //cc.eventManager.addListener(this.listener, this);
         this.model.on("destroy",this.onDestroy,this);
     },
     closeEvent:function(){
-        //cc.eventManager.removeListener(this.listener);
         this.model.off("destroy",this.onDestroy);
     },
     onDestroy:function(){
@@ -313,6 +275,22 @@ var NormalCardSprite = cc.Sprite.extend({
 });
 
 var PokerCardSprite = NormalCardSprite.extend({
+    initView:function(){
+        this.numberSprite = new cc.Sprite();
+        this.numberSprite.attr({
+            x: dimens.card_number_position.x,
+            y: dimens.card_number_position.y
+        });
+        this.addChild(this.numberSprite, 0);
+
+        this.numberDownSprite = new cc.Sprite();
+        this.numberDownSprite.attr({
+            x: dimens.card_size.width - dimens.card_number_position.x,
+            y: dimens.card_size.height - dimens.card_number_position.y,
+            rotation: 180
+        });
+        this.addChild(this.numberDownSprite, 0);
+    },
     getFlipToFrontSequence:function(){
         var oldScaleX = 1;
         var oldScaleY = 1;

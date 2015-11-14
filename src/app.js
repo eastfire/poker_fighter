@@ -6,6 +6,8 @@ var texts;
 var RARE_SPEED_RATE = 2;
 var MAIN_ACTION_TAG = 1;
 
+var NATURE_SPEED = 180;
+
 var MainLayer = cc.LayerColor.extend({
     sprite:null,
     ctor:function (options) {
@@ -200,9 +202,9 @@ var MainLayer = cc.LayerColor.extend({
                         if (cc.rectContainsPoint(rect, locationInNode)){
                             sprite.touchingInstanceId = touchId;
                             if (sprite.y >= cc.winSize.height / 2) {
-                                sprite.speedY = 1;
+                                sprite.speedY = NATURE_SPEED;
                             } else {
-                                sprite.speedY = -1;
+                                sprite.speedY = -NATURE_SPEED;
                             }
                             sprite.speedX = 0;
                         }
@@ -228,15 +230,15 @@ var MainLayer = cc.LayerColor.extend({
                             var delta = touch.getDelta();
                             sprite.x += delta.x;
                             sprite.y += delta.y;
-                            sprite.speedX = delta.x;
+                            sprite.speedX = delta.x*50;
                             if ( delta.y == 0 ) {
                                 if (sprite.y >= cc.winSize.height / 2) {
-                                    sprite.speedY = 1;
+                                    sprite.speedY = NATURE_SPEED;
                                 } else {
-                                    sprite.speedY = -1;
+                                    sprite.speedY = -NATURE_SPEED;
                                 }
                             } else {
-                                sprite.speedY = delta.y;
+                                sprite.speedY = delta.y*50;
                             }
                         } else if ( sprite.touchingInstanceId === touchId ) {
                             sprite.touchingInstanceId = null;
@@ -500,32 +502,18 @@ var MainLayer = cc.LayerColor.extend({
         var sprite = new ItemSpecialCardSprite({model: cardModel});
 
         this.addChild(sprite);
-        var speedScale = 1;
-        var scale = 1;
-        var isDizzy = 0;
-        if ( sprite.y > cc.winSize.height/2 ) {
-            speedScale *= gameModel.player2.getSpeedAdjust();
-            scale = gameModel.player2.getSizeAdjust();
-            isDizzy = gameModel.player2.get("dizzy");
+        if ( isOriginMirror ) {
+            sprite.speedX = - pattern.speedX;
         } else {
-            speedScale *= gameModel.player1.getSpeedAdjust();
-            scale = gameModel.player1.getSizeAdjust();
-            isDizzy = gameModel.player1.get("dizzy");
+            sprite.speedX = pattern.speedX;
         }
+        sprite.speedY = pattern.speedY;
+
         sprite.attr({
             x: isOriginMirror ? cc.winSize.width - pattern.start.x : pattern.start.x,
-            y: pattern.start.y,
-            scaleX : scale,
-            scaleY : scale
+            y: pattern.start.y
         });
-        sprite.runAction( sprite.mainAction = cc.sequence(
-            cc.moveTo(pattern.time, isOriginMirror ? cc.winSize.width - pattern.end.x : pattern.end.x, pattern.end.y),
-            new cc.CallFunc(function(){
-                gameModel.destroyCard(cardModel);
-            },this)
-        ).speed(1));
-        sprite.changeSpeed(speedScale);
-        if ( isDizzy ) sprite.dizzy();
+        sprite.onTouchRelease();
 
         if ( pattern.isOnlyOne ) return;
 
@@ -540,6 +528,8 @@ var MainLayer = cc.LayerColor.extend({
             });
             endX = pattern.end.x;
             endY = cc.winSize.height - pattern.end.y;
+
+            mirrorSprite.speedX = pattern.speedX;
         } else {
             mirrorSprite.attr({
                 x: cc.winSize.width - pattern.start.x,
@@ -547,40 +537,16 @@ var MainLayer = cc.LayerColor.extend({
             });
             endX = cc.winSize.width - pattern.end.x;
             endY = cc.winSize.height - pattern.end.y;
+
+            mirrorSprite.speedX = - pattern.speedX;
         }
+        mirrorSprite.speedY = - pattern.speedY;
         if ( mirrorSprite.y > cc.winSize.height/2 ) {
             mirrorSprite.rotation = 180;
         }
 
         this.addChild(mirrorSprite);
-        var speedScale = 1;
-        var scale = 1;
-        isDizzy = 0;
-        if ( mirrorSprite.y > cc.winSize.height/2 ) {
-            speedScale *= gameModel.player2.getSpeedAdjust();
-            scale = gameModel.player2.getSizeAdjust();
-            isDizzy = gameModel.player2.get("dizzy");
-        } else {
-            speedScale *= gameModel.player1.getSpeedAdjust();
-            scale = gameModel.player1.getSizeAdjust();
-            isDizzy = gameModel.player1.get("dizzy");
-        }
-        mirrorSprite.attr({
-            scaleX: scale,
-            scaleY: scale
-        })
-
-        mirrorSprite.runAction(sprite.mainAction = cc.sequence(
-            cc.moveTo(pattern.time, endX, endY),
-            new cc.CallFunc(function(){
-                gameModel.destroyCard(mirrorCardModel);
-            },this)
-        ).speed(1));
-        sprite.changeSpeed(speedScale);
-
-        if ( isDizzy ) {
-            mirrorSprite.dizzy();
-        }
+        mirrorSprite.onTouchRelease();
     },
     generateCards:function(){
         var pattern = this.model.getPattern();
@@ -613,35 +579,27 @@ var MainLayer = cc.LayerColor.extend({
             }
 
             this.addChild(sprite);
-            var speedScale = 1;
-            var scale;
-            if ( cardModel.get("isRare") ) speedScale = RARE_SPEED_RATE;
-            var isDizzy = 0;
-            if ( sprite.y > cc.winSize.height/2 ) {
-                speedScale *= gameModel.player2.getSpeedAdjust();
-                scale = gameModel.player2.getSizeAdjust();
-                isDizzy = gameModel.player2.get("dizzy");
-            } else {
-                speedScale *= gameModel.player1.getSpeedAdjust();
-                scale = gameModel.player1.getSizeAdjust();
-                isDizzy = gameModel.player1.get("dizzy");
-            }
             sprite.attr({
                 x: isOriginMirror ? cc.winSize.width - entry.start.x : entry.start.x,
-                y: entry.start.y,
-                scaleX: scale,
-                scaleY: scale
+                y: entry.start.y
             });
 
-            sprite.runAction( sprite.mainAction = cc.sequence(
+            sprite.speedX = entry.speedX;
+            sprite.speedY = entry.speedY;
+            if ( cardModel.get("isRare") ) {
+                sprite.speedX *= RARE_SPEED_RATE;
+                sprite.speedY *= RARE_SPEED_RATE;
+            }
+            if ( isOriginMirror ) {
+                sprite.speedX = -sprite.speedX;
+            }
+
+            sprite.runAction( cc.sequence(
                 new cc.DelayTime(entry.time),
-                cc.moveTo(entry.moveTime, isOriginMirror ? cc.winSize.width - entry.end.x : entry.end.x, entry.end.y),
                 new cc.CallFunc(function(){
-                    gameModel.destroyCard(cardModel);
-                },this)
-            ).speed(1));
-            sprite.changeSpeed(speedScale);
-            if ( isDizzy ) sprite.dizzy();
+                    this.onTouchRelease();
+                },sprite)
+            ));
 
             var mirrorCardModel;
             var mirrorSprite;
@@ -666,6 +624,7 @@ var MainLayer = cc.LayerColor.extend({
                 });
                 endX = entry.end.x;
                 endY = cc.winSize.height - entry.end.y;
+                mirrorSprite.speedX = entry.speedX;
             } else {
                 mirrorSprite.attr({
                     x: cc.winSize.width - entry.start.x,
@@ -673,38 +632,26 @@ var MainLayer = cc.LayerColor.extend({
                 });
                 endX = cc.winSize.width - entry.end.x;
                 endY = cc.winSize.height - entry.end.y;
+                mirrorSprite.speedX = -entry.speedX;
             }
             if ( mirrorSprite.y > cc.winSize.height/2 ) {
                 mirrorSprite.rotation = 180;
             }
 
-            this.addChild(mirrorSprite);
-            var speedScale = 1;
-            if ( mirrorCardModel.get("isRare") ) speedScale = RARE_SPEED_RATE;
-            isDizzy = 0;
-            if ( mirrorSprite.y > cc.winSize.height/2 ) {
-                speedScale *= gameModel.player2.getSpeedAdjust();
-                scale = gameModel.player2.getSizeAdjust();
-                isDizzy = gameModel.player2.get("dizzy");
-            } else {
-                speedScale *= gameModel.player1.getSpeedAdjust();
-                scale = gameModel.player1.getSizeAdjust();
-                isDizzy = gameModel.player1.get("dizzy");
+            mirrorSprite.speedY = -entry.speedY;
+            if ( mirrorCardModel.get("isRare") ) {
+                mirrorSprite.speedX *= RARE_SPEED_RATE;
+                mirrorSprite.speedY *= RARE_SPEED_RATE;
             }
-            mirrorSprite.attr({
-                scaleX: scale,
-                scaleY: scale
-            });
 
-            mirrorSprite.runAction(sprite.mainAction = cc.sequence(
+            this.addChild(mirrorSprite);
+
+            mirrorSprite.runAction( cc.sequence(
                 new cc.DelayTime(entry.time),
-                cc.moveTo(entry.moveTime, endX, endY),
                 new cc.CallFunc(function(){
-                    gameModel.destroyCard(mirrorCardModel);
-                },this)
-            ).speed(1));
-            sprite.changeSpeed(speedScale);
-            if ( isDizzy ) mirrorSprite.dizzy();
+                    this.onTouchRelease();
+                },mirrorSprite)
+            ));
         },this);
     },
     initAudio:function(){
@@ -712,7 +659,7 @@ var MainLayer = cc.LayerColor.extend({
         if ( store != null ) {
             this.sound = store;
         } else {
-            this.sound = 0.5;
+            this.sound = 1;
         }
         cc.audioEngine.setEffectsVolume(this.sound);
     },
@@ -766,7 +713,7 @@ var GameModel = Backbone.Model.extend({
             player2Money: 500,
             coinAppearRate: 0.2,
             bigMoneyRate: 0.1,
-            itemAppearRate: 0.5, //0, 0.25, 0.5, 0.75, 1
+            itemAppearRate: 1,//0.5, //0, 0.25, 0.5, 0.75, 1
             gameSpeed: 1,
             mode: "quick-vs" //quick-vs , vs, solo
         }
@@ -804,14 +751,14 @@ var GameModel = Backbone.Model.extend({
         ];
 
         this.itemPatternPool = [
-            new ItemPatternModel(),
+            new ItemPattern1Model(),
             new ItemPattern2Model(),
             new ItemPattern3Model(),
             new ItemPattern4Model()
         ];
 
-        this.itemPool = ["ace","bomb","cloud","dizzy","enlarge","leaf","nuke", "shrink","spy", "thief", "two"];
-        //this.itemPool = ["fast","nuke"];
+        this.itemPool = ["ace","bomb","cloud","dizzy","enlarge","fast","leaf","nuke", "shrink","spy","slow","thief", "two"];
+        this.itemPool = ["fast","slow"];
     },
     newDeck:function(){
         this.deck = newDeck();
