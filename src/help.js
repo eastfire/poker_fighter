@@ -2,22 +2,25 @@
  * Created by 赢潮 on 2015/10/29.
  */
 
+var ACCELERATE_THRESHOLD_X = 0.2;
+var ACCELERATE_THRESHOLD_Y = 0.2;
+
 var PlayerRotateLayer = cc.LayerColor.extend({
     ctor: function () {
         this._super(colors.table);
 
-        this.letMeSeeItem = new cc.MenuItemImage(
-            cc.spriteFrameCache.getSpriteFrame("let-me-see-default.png"),
-            cc.spriteFrameCache.getSpriteFrame("let-me-see-press.png"),
-            function () {
-                this.rotateLayer();
-            }, this);
-        this.letMeSeeItem.attr({
-            x: cc.winSize.width/2,
-            y: cc.winSize.height,
-            anchorX: 0.5,
-            anchorY: 1
-        });
+//        this.letMeSeeItem = new cc.MenuItemImage(
+//            cc.spriteFrameCache.getSpriteFrame("let-me-see-default.png"),
+//            cc.spriteFrameCache.getSpriteFrame("let-me-see-press.png"),
+//            function () {
+//                this.rotateLayer();
+//            }, this);
+//        this.letMeSeeItem.attr({
+//            x: cc.winSize.width/2,
+//            y: cc.winSize.height,
+//            anchorX: 0.5,
+//            anchorY: 1
+//        });
 
         var exitItem = new cc.MenuItemImage(
             cc.spriteFrameCache.getSpriteFrame("exit-default.png"),
@@ -32,20 +35,20 @@ var PlayerRotateLayer = cc.LayerColor.extend({
             y: 30
         });
 
-        var menu = new cc.Menu([this.letMeSeeItem, exitItem]);
+        var menu = new cc.Menu([/*this.letMeSeeItem,*/ exitItem]);
         menu.x = 0;
         menu.y = 0;
         this.addChild(menu);
 
-        var letMeSeeLabel = new ccui.Text(texts.letMeSee, "Arial", 30 );
-        letMeSeeLabel.enableOutline(colors.tableLabelOutline, 2);
-        letMeSeeLabel.setTextColor(colors.tableLabel);
-        letMeSeeLabel.attr({
-            x: cc.winSize.width/2,
-            y: cc.winSize.height - 18,
-            rotation: 180
-        });
-        this.addChild(letMeSeeLabel);
+//        var letMeSeeLabel = new ccui.Text(texts.letMeSee, "Arial", 30 );
+//        letMeSeeLabel.enableOutline(colors.tableLabelOutline, 2);
+//        letMeSeeLabel.setTextColor(colors.tableLabel);
+//        letMeSeeLabel.attr({
+//            x: cc.winSize.width/2,
+//            y: cc.winSize.height - 18,
+//            rotation: 180
+//        });
+//        this.addChild(letMeSeeLabel);
 
         if( 'accelerometer' in cc.sys.capabilities ) {
             var self = this;
@@ -56,34 +59,26 @@ var PlayerRotateLayer = cc.LayerColor.extend({
                 event: cc.EventListener.ACCELERATION,
                 callback: function(accelEvent, event){
                     var target = event.getCurrentTarget();
-                    if ( Math.abs(accelEvent.x) < 10 ) {
-                        if ( accelEvent.y < -10 && self.rotation == 0 ) {
+                    if ( Math.abs(accelEvent.x) < ACCELERATE_THRESHOLD_X ) {
+                        if ( accelEvent.y > ACCELERATE_THRESHOLD_Y && self.rotation == 0 ) {
                             self.rotateLayer.call(self);
-                        } else if ( accelEvent.y > 10 && self.rotation == 180 ) {
+                        } else if ( accelEvent.y < -ACCELERATE_THRESHOLD_Y && self.rotation == 180 ) {
                             self.rotateLayer.call(self);
                         }
                     }
                 }
             }, this);
 
-            var sprite = this.sprite = new cc.Sprite(s_pathR2);
-            this.addChild( sprite );
-            sprite.x = winSize.width/2;
-            sprite.y = winSize.height/2;
-
-            // for low-pass filter
-            this.prevX = 0;
-            this.prevY = 0;
         } else {
             cc.log("ACCELEROMETER not supported");
         }
     },
     rotateLayer:function(){
-        this.letMeSeeItem.setEnabled(false);
+ //       this.letMeSeeItem.setEnabled(false);
         var rotation = (this.rotation + 180) % 360;
         this.runAction( cc.sequence( cc.rotateTo(times.letMeSee, rotation ),
             cc.callFunc(function(){
-                this.letMeSeeItem.setEnabled(true);
+   //             this.letMeSeeItem.setEnabled(true);
             },this)));
     },
     onExit: function(){
@@ -141,7 +136,7 @@ var HelpPokerLayer = PlayerRotateLayer.extend({
 
         var scale = 0.7;
         //straight flush
-        this.currentY = cc.winSize.height - 75;
+        this.currentY = cc.winSize.height - 50;
         this.startX = 50;
         this.featureLabelX = cc.winSize.width*2/3;
         this.betRateLabelX = cc.winSize.width - 65;

@@ -97,7 +97,8 @@ var times = {
     giveMoney: 0.4,
     getMoney: 0.25,
     gameOver: 0.9,
-    letMeSee: 0.5
+    letMeSee: 0.5,
+    slot_machine: 2.2
 };
 
 var dimens = {

@@ -641,7 +641,7 @@ var ItemSlotSprite = cc.Sprite.extend({
                 y: this.height/2
             });
             this.foreground.addChild(sprite);
-            var actionArray = [cc.moveBy(2, 0, -this.height * (DUMMY_ITEM_COUNT+1)).easing(cc.easeSineInOut()), cc.removeSelf(true)];
+            var actionArray = [cc.moveBy(times.slot_machine, 0, -this.height * (DUMMY_ITEM_COUNT+1)).easing(cc.easeSineInOut()), cc.removeSelf(true)];
             sprite.runAction(cc.sequence(actionArray));
             this.chargeLabel.setVisible(false);
             this.foreground.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame("no-item.png"));
@@ -659,7 +659,7 @@ var ItemSlotSprite = cc.Sprite.extend({
                 y: this.height*3/2+this.height*i
             });
             this.foreground.addChild(sprite);
-            var actionArray = [cc.moveBy(2, 0, -this.height * (DUMMY_ITEM_COUNT+1)).easing(cc.easeSineInOut()), cc.removeSelf(true)];
+            var actionArray = [cc.moveBy(times.slot_machine, 0, -this.height * (DUMMY_ITEM_COUNT+1)).easing(cc.easeSineInOut()), cc.removeSelf(true)];
             if ( i == DUMMY_ITEM_COUNT ) {
                 actionArray.push(cc.callFunc(function(){
                     this.setItemModel(new ITEM_MODEL_CLASS_MAP[itemName]());
