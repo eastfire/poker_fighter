@@ -10,12 +10,7 @@ var PlayerRotateLayer = cc.LayerColor.extend({
             cc.spriteFrameCache.getSpriteFrame("let-me-see-default.png"),
             cc.spriteFrameCache.getSpriteFrame("let-me-see-press.png"),
             function () {
-                this.letMeSeeItem.setEnabled(false);
-                var rotation = (this.rotation + 180) % 360;
-                this.runAction( cc.sequence( cc.rotateTo(times.letMeSee, rotation ),
-                cc.callFunc(function(){
-                    this.letMeSeeItem.setEnabled(true);
-                },this)));
+                this.rotateLayer();
             }, this);
         this.letMeSeeItem.attr({
             x: cc.winSize.width/2,
@@ -46,12 +41,55 @@ var PlayerRotateLayer = cc.LayerColor.extend({
         letMeSeeLabel.enableOutline(colors.tableLabelOutline, 2);
         letMeSeeLabel.setTextColor(colors.tableLabel);
         letMeSeeLabel.attr({
-
             x: cc.winSize.width/2,
             y: cc.winSize.height - 18,
             rotation: 180
         });
         this.addChild(letMeSeeLabel);
+
+        if( 'accelerometer' in cc.sys.capabilities ) {
+            var self = this;
+            // call is called 30 times per second
+            cc.inputManager.setAccelerometerInterval(1/30);
+            cc.inputManager.setAccelerometerEnabled(true);
+            cc.eventManager.addListener({
+                event: cc.EventListener.ACCELERATION,
+                callback: function(accelEvent, event){
+                    var target = event.getCurrentTarget();
+                    if ( Math.abs(accelEvent.x) < 10 ) {
+                        if ( accelEvent.y < -10 && self.rotation == 0 ) {
+                            self.rotateLayer.call(self);
+                        } else if ( accelEvent.y > 10 && self.rotation == 180 ) {
+                            self.rotateLayer.call(self);
+                        }
+                    }
+                }
+            }, this);
+
+            var sprite = this.sprite = new cc.Sprite(s_pathR2);
+            this.addChild( sprite );
+            sprite.x = winSize.width/2;
+            sprite.y = winSize.height/2;
+
+            // for low-pass filter
+            this.prevX = 0;
+            this.prevY = 0;
+        } else {
+            cc.log("ACCELEROMETER not supported");
+        }
+    },
+    rotateLayer:function(){
+        this.letMeSeeItem.setEnabled(false);
+        var rotation = (this.rotation + 180) % 360;
+        this.runAction( cc.sequence( cc.rotateTo(times.letMeSee, rotation ),
+            cc.callFunc(function(){
+                this.letMeSeeItem.setEnabled(true);
+            },this)));
+    },
+    onExit: function(){
+        this._super();
+        if( 'accelerometer' in cc.sys.capabilities )
+            cc.inputManager.setAccelerometerEnabled(false);
     }
 });
 
