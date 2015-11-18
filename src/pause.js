@@ -32,7 +32,7 @@ var PauseMenuLayer = cc.LayerColor.extend({
             cc.spriteFrameCache.getSpriteFrame("restart-press.png"),
             function () {
                 window.gameModel = null;
-                cc.director.runScene(new MainScene());
+                cc.director.runScene(new MainScene(setting));
             }, this);
         restartItem.attr({
             x: cc.winSize.width*2/3,

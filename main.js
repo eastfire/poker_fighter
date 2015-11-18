@@ -46,6 +46,7 @@
  }
  *
  */
+var texts;
 
 cc.game.onStart = function(){
     if(!cc.sys.isNative && document.getElementById("cocosLoading")) //If referenced loading.js, please remove it
@@ -61,6 +62,10 @@ cc.game.onStart = function(){
     cc.view.resizeWithBrowserSize(true);
     //load resources
     cc.LoaderScene.preload(g_resources, function () {
+        texts = texts_locale[cc.sys.language];
+        if ( !texts )
+            texts = texts_locale["en"];
+
         cc.spriteFrameCache.addSpriteFrames(res.game_plist);
         cc.director.runScene(new IntroScene());
     }, this);

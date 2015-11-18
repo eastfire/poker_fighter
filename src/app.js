@@ -1,8 +1,6 @@
 var GENERATE_CARD_INTERVAL = 5;
 var GENERATE_ITEM_INTERVAL = 7;
 
-var texts;
-
 var RARE_SPEED_RATE = 2;
 var MAIN_ACTION_TAG = 1;
 
@@ -14,9 +12,6 @@ var MainLayer = cc.LayerColor.extend({
         this._super(colors.table);
         this.need_read_fight = options.need_read_fight;
 
-        texts = texts_locale[cc.sys.language];
-        if ( !texts )
-            texts = texts_locale["en"];
         this.initAudio();
 
         this._touchInstanceUsed = {};
@@ -351,9 +346,9 @@ var MainLayer = cc.LayerColor.extend({
         }
         this.scheduleOnce(function(){
             this.model.set("betRate", this.model.get("betRate") + 1);
-            if ( this.player1.get("money") <= 0 || ( this.player2.get("money") >= this.player2.get("winningMoney") && winner === 2 ) ) {
+            if ( this.player1.get("money") <= 0 || ( this.player2.get("money") >= this.player2.get("targetMoney") && winner === 2 ) ) {
                 this.gameOver();
-            } else if ( this.player2.get("money") <= 0 || ( this.player1.get("money") >= this.player1.get("winningMoney") && winner === 1) ) {
+            } else if ( this.player2.get("money") <= 0 || ( this.player1.get("money") >= this.player1.get("targetMoney") && winner === 1) ) {
                 this.gameOver();
             } else {
                 this.player1.cleanStatus();
@@ -556,7 +551,7 @@ var MainLayer = cc.LayerColor.extend({
         _.each(list, function(entry){
             var cardModel;
             var sprite;
-            if ( Math.random() < this.model.get("coinAppearRate")) {
+            if ( Math.random() < this.model.get("tokenAppearRate")) {
                 var money = 1;
                 var isRare = false;
                 if ( this.model.get("betRate") >= 10 ) {
@@ -709,13 +704,14 @@ var MainLayer = cc.LayerColor.extend({
 var GameModel = Backbone.Model.extend({
     defaults:function(){
         return {
-            player1Money: 500,
-            player2Money: 500,
-            coinAppearRate: 0.2,
+            playerInitMoney: [500,500],
+            playerTargetMoney: [1000,1000],
+            tokenAppearRate: 0.2,
             bigMoneyRate: 0.1,
             itemAppearRate: 0.5, //0, 0.25, 0.5, 0.75, 1
             gameSpeed: 1,
-            mode: "quick-vs" //quick-vs , vs, solo
+            deck: 8,
+            mode: "quick-vs" //quick-vs , vs, vs-ai, adventure
         }
     },
     initialize:function(){
@@ -731,12 +727,14 @@ var GameModel = Backbone.Model.extend({
         this.cidToModel = {};
 
         this.player1 = new PlayerModel({
-            money: this.get("player1Money"),
+            money: this.get("playerInitMoney")[0],
+            targetMoney: this.get("playerTargetMoney")[0],
             position : PLAYER_POSITION_DOWN,
             playerType: "player"
         });
         this.player2 = new PlayerModel({
-            money: this.get("player2Money"),
+            money: this.get("playerInitMoney")[1],
+            targetMoney: this.get("playerTargetMoney")[1],
             position : PLAYER_POSITION_UP,
             playerType: "player"
         });
@@ -761,7 +759,17 @@ var GameModel = Backbone.Model.extend({
         //this.itemPool = ["thief"];
     },
     newDeck:function(){
-        this.deck = newDeck();
+        var deck = [];
+        for ( var number = this.get("deck"); number <= 14; number ++ ) {
+            for ( var suit = 0; suit <= 3; suit ++ ) {
+                deck.push(new PokerCardModel({ number: number,
+                    suit: suit,
+                    isRare: number == 14
+                }));
+            }
+        }
+
+        this.deck = _.shuffle( deck );
         this.discardDeck = [];
     },
     drawCard:function(){
@@ -825,8 +833,6 @@ var GameModel = Backbone.Model.extend({
         return _.sample( this.itemPool );
     }
 })
-
-
 
 var MainScene = cc.Scene.extend({
     ctor:function(options){

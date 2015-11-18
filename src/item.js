@@ -131,6 +131,7 @@ var DizzyItemModel = ItemModel.extend({
         }
     },
     effect:function(playerSprite, opponentPlayerSprite){
+        cc.audioEngine.playEffect(res.dizzy_mp3, false);
         opponentPlayerSprite.model.set("dizzy", this.get("effectTime"));
         _.each( mainLayer.getChildren(), function(sprite) {
             if (sprite instanceof NormalCardSprite ) {
@@ -155,6 +156,7 @@ var FastItemModel = ItemModel.extend({
         }
     },
     effect:function(playerSprite, opponentPlayerSprite){
+        cc.audioEngine.playEffect(res.speed_up_mp3, false);
         opponentPlayerSprite.model.set({
             "speedDown":0,
             "speedUp":this.get("effectTime")
@@ -182,6 +184,7 @@ var SlowItemModel = ItemModel.extend({
         }
     },
     effect:function(playerSprite, opponentPlayerSprite){
+        cc.audioEngine.playEffect(res.slow_down_mp3, false);
         playerSprite.model.set({
             "speedUp":0,
             "speedDown":this.get("effectTime")

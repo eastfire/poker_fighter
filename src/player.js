@@ -46,6 +46,7 @@ var PlayerModel = Backbone.Model.extend({
     defaults:function(){
         return {
             money : 500,
+            targetMoney: 1000,
             hands: [],
             speedDown: 0,
             speedUp: 0,
@@ -56,9 +57,6 @@ var PlayerModel = Backbone.Model.extend({
             needItem: true,
             item: null
         }
-    },
-    initialize:function(){
-        this.set("winningMoney",this.get("money")*2);
     },
     addHand:function(cardModel){
         cardModel._owned = true

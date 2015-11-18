@@ -8,6 +8,10 @@ var res = {
     spring_mp3: "res/spring-boing.mp3",
     slot_machine_mp3: "res/slot-machine.mp3",
     cash_register_mp3: "res/cash-register.mp3",
+    dizzy_mp3: "res/dizzy.mp3",
+    kiss_mp3: "res/kiss.mp3",
+    slow_down_mp3: "res/slow-down.mp3",
+    speed_up_mp3: "res/speed-up.mp3",
 
     ready_mp3: "res/ready.mp3",
     fight_mp3: "res/fight.mp3",
@@ -55,7 +59,19 @@ var texts_locale = {
             "no-card": "没牌"
         },
 
-        letMeSee: "让我看看"
+        letMeSee: "让我看看",
+        player1 : "玩家1",
+        player2 : "玩家2",
+        deck: "使用的牌堆",
+        token: "出现筹码",
+        item: "出现道具",
+        none: "无",
+        few: "少量",
+        normal: "普通",
+        many: "很多",
+        mania: "疯狂",
+
+        startGame: "开始游戏"
     },
     en:{
         win:"WIN",
@@ -75,7 +91,19 @@ var texts_locale = {
             "no-card": "no card"
         },
 
-        letMeSee: "Let me see"
+        letMeSee: "Let me see",
+        player1 : "player1",
+        player2 : "player2",
+        deck: "Using Deck",
+        token: "Flying Token",
+        item: "Flying Item",
+        none: "none",
+        few: "few",
+        normal: "normal",
+        many: "many",
+        mania: "mania",
+
+        startGame: "START GAME"
     }
 };
 
@@ -141,5 +169,44 @@ var dimens = {
         "one-pair": 2,
         "high-card": 1,
         "no-card": 1
+    },
+
+    //mode-select
+
+    player1NamePosition: {
+        x: 20,
+        y: 700
+    },
+    player2NamePosition: {
+        x: 20,
+        y: 760
+    },
+    player1InitMoneyPosition: {
+        x: 170,
+        y: 700
+    },
+    player2InitMoneyPosition: {
+        x: 170,
+        y: 760
+    },
+    player1TargetMoneyPosition: {
+        x: 350,
+        y: 700
+    },
+    player2TargetMoneyPosition: {
+        x: 350,
+        y: 760
+    },
+    usingDeckPosition:{
+        x: 150,
+        y: 640
+    },
+    flyingMoney:{
+        x: 50,
+        y: 580
+    },
+    flyingItem:{
+        x: 50,
+        y: 520
     }
 };

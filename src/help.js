@@ -22,20 +22,10 @@ var PlayerRotateLayer = cc.LayerColor.extend({
 //            anchorY: 1
 //        });
 
-        var exitItem = new cc.MenuItemImage(
-            cc.spriteFrameCache.getSpriteFrame("exit-default.png"),
-            cc.spriteFrameCache.getSpriteFrame("exit-press.png"),
-            function () {
-                cc.director.popScene();
-            }, this);
-        exitItem.attr({
-            scaleX: 0.5,
-            scaleY: 0.5,
-            x: 30,
-            y: 30
-        });
+        this.menuArray = [];
+        this.initMenu();
 
-        var menu = new cc.Menu([/*this.letMeSeeItem,*/ exitItem]);
+        var menu = new cc.Menu(this.menuArray);
         menu.x = 0;
         menu.y = 0;
         this.addChild(menu);
@@ -72,6 +62,21 @@ var PlayerRotateLayer = cc.LayerColor.extend({
         } else {
             cc.log("ACCELEROMETER not supported");
         }
+    },
+    initMenu:function(){
+        var exitItem = new cc.MenuItemImage(
+            cc.spriteFrameCache.getSpriteFrame("exit-default.png"),
+            cc.spriteFrameCache.getSpriteFrame("exit-press.png"),
+            function () {
+                cc.director.popScene();
+            }, this);
+        exitItem.attr({
+            scaleX: 0.5,
+            scaleY: 0.5,
+            x: 30,
+            y: 30
+        });
+        this.menuArray.push(exitItem);
     },
     rotateLayer:function(){
  //       this.letMeSeeItem.setEnabled(false);
@@ -171,6 +176,13 @@ var HelpPokerLayer = PlayerRotateLayer.extend({
             "one-pair" );
         this.renderFeature( [{ suit:0, number: 13}, { suit:1, number: 11}, { suit:2, number: 8}],
             "high-card" );
+
+        var suitOrderSprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("suit-order.png"));
+        suitOrderSprite.attr({
+            x: cc.winSize.width/2,
+            y: 50
+        });
+        this.addChild(suitOrderSprite);
     }
 });
 

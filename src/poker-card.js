@@ -17,19 +17,6 @@ var PokerCardModel = Backbone.Model.extend({
     }
 });
 
-function newDeck(){
-    var deck = [];
-    for ( var number = 8; number <= 14; number ++ ) {
-        for ( var suit = 0; suit <= 3; suit ++ ) {
-            deck.push(new PokerCardModel({ number: number,
-                suit: suit,
-                isRare: number == 14
-            }));
-        }
-    }
-    return _.shuffle( deck );
-}
-
 var MIN_SPEED = 100;
 var MAX_SPEED = 400;
 
