@@ -20,8 +20,8 @@ var setting = {};
 
 var ModeSelectLayer = PlayerRotateLayer.extend({
     ctor:function(){
-        dimens.player2NamePosition.x = dimens.player1NamePosition.x = cc.winSize.width/6;
-        dimens.player2InitMoneyPosition.x = dimens.player1InitMoneyPosition.x = cc.winSize.width/3 + 40;
+        dimens.player2NamePosition.x = dimens.player1NamePosition.x = cc.winSize.width/6-30;
+        dimens.player2InitMoneyPosition.x = dimens.player1InitMoneyPosition.x = cc.winSize.width/3;
         dimens.player2TargetMoneyPosition.x = dimens.player1TargetMoneyPosition.x = cc.winSize.width*2/3+40;
 
         this._super();
@@ -72,16 +72,17 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
 
         this.addChild(this.makeLabel(texts.deck, dimens.usingDeckPosition.x, dimens.usingDeckPosition.y,28));
 
+        var offset = 30;
         var sprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("token-green.png"))
         sprite.attr({
-            x: cc.winSize.width/2 - 215,
+            x: cc.winSize.width/2 - 215+offset,
             y: dimens.flyingMoney.y
         });
         this.addChild(sprite);
 
         var sprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("card-item.png"))
         sprite.attr({
-            x: cc.winSize.width/2 - 215,
+            x: cc.winSize.width/2 - 215+offset,
             y: dimens.flyingItem.y
         });
         this.addChild(sprite);
@@ -206,49 +207,50 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
         this.addChild( this.makeLabel("8～A", dimens.usingDeckPosition.x + 150, dimens.usingDeckPosition.y, 25));
         this.addChild( this.makeLabel("2～A", dimens.usingDeckPosition.x + 150+90, dimens.usingDeckPosition.y, 25));
 
-        this.selectToken0 = this.renderButtonGroup( cc.winSize.width/2 - 135, dimens.flyingMoney.y, 0, function(){
+        var offset = 30;
+        this.selectToken0 = this.renderButtonGroup( cc.winSize.width/2 - 135+offset, dimens.flyingMoney.y, 0, function(){
             setting.tokenAppearRate = TOKEN_APPEAR_LEVEL0;
             this.renderTokenAppear();
         });
-        this.selectToken1 = this.renderButtonGroup( cc.winSize.width/2 - 45, dimens.flyingMoney.y, 1, function(){
+        this.selectToken1 = this.renderButtonGroup( cc.winSize.width/2 - 45+offset, dimens.flyingMoney.y, 1, function(){
             setting.tokenAppearRate = TOKEN_APPEAR_LEVEL1;
             this.renderTokenAppear();
         });
-        this.selectToken2 = this.renderButtonGroup( cc.winSize.width/2 + 45, dimens.flyingMoney.y, 1, function(){
+        this.selectToken2 = this.renderButtonGroup( cc.winSize.width/2 + 45+offset, dimens.flyingMoney.y, 1, function(){
             setting.tokenAppearRate = TOKEN_APPEAR_LEVEL2;
             this.renderTokenAppear();
         });
-        this.selectToken3 = this.renderButtonGroup( cc.winSize.width/2 + 135, dimens.flyingMoney.y, 2, function(){
+        this.selectToken3 = this.renderButtonGroup( cc.winSize.width/2 + 135+offset, dimens.flyingMoney.y, 2, function(){
             setting.tokenAppearRate = TOKEN_APPEAR_LEVEL3;
             this.renderTokenAppear();
         });
 
-        this.addChild( this.makeLabel(texts.none, cc.winSize.width/2 - 135, dimens.flyingMoney.y, 25));
-        this.addChild( this.makeLabel(texts.few, cc.winSize.width/2 - 45, dimens.flyingMoney.y, 25));
-        this.addChild( this.makeLabel(texts.normal, cc.winSize.width/2 + 45, dimens.flyingMoney.y, 25));
-        this.addChild( this.makeLabel(texts.many, cc.winSize.width/2 + 135, dimens.flyingMoney.y, 25));
+        this.addChild( this.makeLabel(texts.none, cc.winSize.width/2 - 135+offset, dimens.flyingMoney.y, 25));
+        this.addChild( this.makeLabel(texts.few, cc.winSize.width/2 - 45+offset, dimens.flyingMoney.y, 25));
+        this.addChild( this.makeLabel(texts.normal, cc.winSize.width/2 + 45+offset, dimens.flyingMoney.y, 25));
+        this.addChild( this.makeLabel(texts.many, cc.winSize.width/2 + 135+offset, dimens.flyingMoney.y, 25));
 
-        this.selectItem0 = this.renderButtonGroup( cc.winSize.width/2 - 135, dimens.flyingItem.y, 0, function(){
+        this.selectItem0 = this.renderButtonGroup( cc.winSize.width/2 - 135+offset, dimens.flyingItem.y, 0, function(){
             setting.itemAppearRate = ITEM_APPEAR_LEVEL0;
             this.renderItemAppear();
         });
-        this.selectItem1 = this.renderButtonGroup( cc.winSize.width/2 - 45, dimens.flyingItem.y, 1, function(){
+        this.selectItem1 = this.renderButtonGroup( cc.winSize.width/2 - 45+offset, dimens.flyingItem.y, 1, function(){
             setting.itemAppearRate = ITEM_APPEAR_LEVEL1;
             this.renderItemAppear();
         });
-        this.selectItem2 = this.renderButtonGroup( cc.winSize.width/2 + 45, dimens.flyingItem.y, 1, function(){
+        this.selectItem2 = this.renderButtonGroup( cc.winSize.width/2 + 45+offset, dimens.flyingItem.y, 1, function(){
             setting.itemAppearRate = ITEM_APPEAR_LEVEL2;
             this.renderItemAppear();
         });
-        this.selectItem3 = this.renderButtonGroup( cc.winSize.width/2 + 135, dimens.flyingItem.y, 2, function(){
+        this.selectItem3 = this.renderButtonGroup( cc.winSize.width/2 + 135+offset, dimens.flyingItem.y, 2, function(){
             setting.itemAppearRate = ITEM_APPEAR_LEVEL3;
             this.renderItemAppear();
         });
 
-        this.addChild( this.makeLabel(texts.none, cc.winSize.width/2 - 135, dimens.flyingItem.y, 25));
-        this.addChild( this.makeLabel(texts.few, cc.winSize.width/2 - 45, dimens.flyingItem.y, 25));
-        this.addChild( this.makeLabel(texts.normal, cc.winSize.width/2 + 45, dimens.flyingItem.y, 25));
-        this.addChild( this.makeLabel(texts.many, cc.winSize.width/2 + 135, dimens.flyingItem.y, 25));
+        this.addChild( this.makeLabel(texts.none, cc.winSize.width/2 - 135+offset, dimens.flyingItem.y, 25));
+        this.addChild( this.makeLabel(texts.few, cc.winSize.width/2 - 45+offset, dimens.flyingItem.y, 25));
+        this.addChild( this.makeLabel(texts.normal, cc.winSize.width/2 + 45+offset, dimens.flyingItem.y, 25));
+        this.addChild( this.makeLabel(texts.many, cc.winSize.width/2 + 135+offset, dimens.flyingItem.y, 25));
 
         var startGame = new cc.MenuItemImage(
             cc.spriteFrameCache.getSpriteFrame("start-game-default.png"),
