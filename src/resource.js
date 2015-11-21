@@ -72,7 +72,8 @@ var texts_locale = {
         mania: "疯狂",
 
         startGame: "开始游戏",
-        useDefault: "默认"
+        useDefault: "默认",
+        returnToIntro: "返回"
     },
     en:{
         win:"WIN",
@@ -105,7 +106,8 @@ var texts_locale = {
         mania: "mania",
 
         startGame: "START GAME",
-        useDefault: "Default"
+        useDefault: "DEFAULT",
+        returnToIntro: "RETURN"
     }
 };
 

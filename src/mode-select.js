@@ -131,7 +131,11 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
         setting = JSON.parse(JSON.stringify(this.defaultSetting));
     },
     initMenu:function(){
-        this._super();
+        this.renderButtonGroup( 45, dimens.startGame.y, 2, function(){
+            cc.director.runScene(new IntroScene());
+        });
+        this.addChild( this.makeLabel(texts.returnToIntro, 45, dimens.startGame.y, 25));
+
         this.playerInitMoneyLeft = [];
         this.playerInitMoneyRight = [];
 
