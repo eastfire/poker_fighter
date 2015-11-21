@@ -68,10 +68,7 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
         this.addChild(this.playerTargetMoneyLabel[1] = this.makeLabel("", dimens.player2TargetMoneyPosition.x+45, dimens.player2TargetMoneyPosition.y));
 
 
-        this.renderPlayerInitMoney(0);
-        this.renderPlayerInitMoney(1);
-        this.renderPlayerTargetMoney(0);
-        this.renderPlayerTargetMoney(1);
+
 
         this.addChild(this.makeLabel(texts.deck, dimens.usingDeckPosition.x, dimens.usingDeckPosition.y,28));
 
@@ -89,10 +86,15 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
         });
         this.addChild(sprite);
 
+        this.render();
+    },
+    render:function(){
+        this.renderPlayerInitMoney(0);
+        this.renderPlayerInitMoney(1);
+        this.renderPlayerTargetMoney(0);
+        this.renderPlayerTargetMoney(1);
         this.renderDeckSetting();
-
         this.renderTokenAppear();
-
         this.renderItemAppear();
     },
     makeLabel:function(text, x, y, fontSize){
@@ -121,8 +123,11 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
         if ( store != null ) {
             setting = JSON.parse(store);
         } else {
-            setting = this.defaultSetting;
+            this.useDefaultSetting();
         }
+    },
+    useDefaultSetting:function(){
+        setting = JSON.parse(JSON.stringify(this.defaultSetting));
     },
     initMenu:function(){
         this._super();
@@ -249,18 +254,26 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
             cc.spriteFrameCache.getSpriteFrame("start-game-default.png"),
             cc.spriteFrameCache.getSpriteFrame("start-game-press.png"),
             function(){
-                //TODO save setting
-
-
+                this.saveSetting();
                 cc.director.runScene(new MainScene(setting));
             }, this);
         startGame.attr({
             x: cc.winSize.width/2,
-            y: 40
+            y: dimens.startGame.y
         });
         this.menuArray.push(startGame);
 
-        this.addChild( this.makeLabel(texts.startGame, cc.winSize.width/2, 40, 25));
+        this.addChild( this.makeLabel(texts.startGame, cc.winSize.width/2, dimens.startGame.y, 25));
+
+        this.renderButtonGroup( cc.winSize.width - 45, dimens.startGame.y, 0, function(){
+            this.useDefaultSetting();
+            this.render();
+            this.saveSetting();
+        });
+        this.addChild( this.makeLabel(texts.useDefault, cc.winSize.width - 45, dimens.startGame.y, 25));
+    },
+    saveSetting:function(){
+        cc.sys.localStorage.setItem("prevSetting", JSON.stringify(setting));
     },
     renderPlayerInitMoney:function(playerPosition){
         var value = setting.playerInitMoney[playerPosition];

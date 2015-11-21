@@ -71,7 +71,8 @@ var texts_locale = {
         many: "很多",
         mania: "疯狂",
 
-        startGame: "开始游戏"
+        startGame: "开始游戏",
+        useDefault: "默认"
     },
     en:{
         win:"WIN",
@@ -103,7 +104,8 @@ var texts_locale = {
         many: "many",
         mania: "mania",
 
-        startGame: "START GAME"
+        startGame: "START GAME",
+        useDefault: "Default"
     }
 };
 
@@ -208,5 +210,8 @@ var dimens = {
     flyingItem:{
         x: 50,
         y: 520
+    },
+    startGame:{
+        y: 40
     }
 };

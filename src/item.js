@@ -171,6 +171,100 @@ var FastItemModel = ItemModel.extend({
     }
 });
 
+var KissItemModel = ItemModel.extend({
+    defaults:function(){
+        return {
+            name:"kiss",
+            displayName:"kiss",
+            maxCharge: 1,
+            maxCoolDown: 1,
+            description:"吸引全场的K和J",
+            showCharge: false
+        }
+    },
+    effect:function(playerSprite, opponentPlayerSprite){
+        cc.audioEngine.playEffect(res.kiss_mp3, false);
+        var sy,playerY, rotation;
+        if ( playerSprite.model.get("position") === PLAYER_POSITION_DOWN ) {
+            sy = -NATURE_SPEED;
+            playerY = 0;
+            rotation = 0;
+        } else {
+            sy = NATURE_SPEED;
+            playerY = cc.winSize.height;
+            rotation = 180
+        }
+        var playerY = playerSprite.model.get("position") === PLAYER_POSITION_DOWN ? 0 : cc.winSize.height;
+        _.each( mainLayer.getChildren(), function(sprite) {
+            if (sprite instanceof NormalCardSprite ) {
+                if ( !sprite.alreadyTaken && ( sprite.model.get("number") == 13 || sprite.model.get("number") == 11 )
+                    && sprite.y !== playerY ){
+                    sprite.speedY = sy;
+                    sprite.speedX = sy * ( sprite.x - cc.winSize.width/2 ) / (sprite.y - playerY);
+                    sprite.onTouchRelease();
+                }
+            }
+        });
+        var lips = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("lips.png"));
+        lips.attr({
+            x: cc.winSize.width/2,
+            y: cc.winSize.height/2,
+            opacity: 0,
+            rotation: rotation
+        });
+        mainLayer.addChild(lips);
+        lips.runAction(cc.sequence(cc.spawn(cc.scaleTo(0.3,2,2), cc.fadeIn(0.3)), cc.fadeOut(0.2),cc.callFunc(function(){
+            this.removeFromParent(true);
+        },lips)));
+    }
+});
+
+var DiamondItemModel = ItemModel.extend({
+    defaults:function(){
+        return {
+            name:"diamond",
+            displayName:"diamond",
+            maxCharge: 1,
+            maxCoolDown: 1,
+            description:"吸引全场的Q",
+            showCharge: false
+        }
+    },
+    effect:function(playerSprite, opponentPlayerSprite){
+        var sy,playerY, rotation;
+        if ( playerSprite.model.get("position") === PLAYER_POSITION_DOWN ) {
+            sy = -NATURE_SPEED;
+            playerY = 0;
+            rotation = 0;
+        } else {
+            sy = NATURE_SPEED;
+            playerY = cc.winSize.height;
+            rotation = 180
+        }
+        var playerY = playerSprite.model.get("position") === PLAYER_POSITION_DOWN ? 0 : cc.winSize.height;
+        _.each( mainLayer.getChildren(), function(sprite) {
+            if (sprite instanceof NormalCardSprite ) {
+                if ( !sprite.alreadyTaken && sprite.model.get("number") == 12 && sprite.y !== playerY ){
+                    sprite.speedY = sy;
+                    sprite.speedX = sy * ( sprite.x - cc.winSize.width/2 ) / (sprite.y - playerY);
+                    sprite.onTouchRelease();
+                }
+            }
+        });
+        var diamond = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("diamond.png"));
+        diamond.attr({
+            x: cc.winSize.width/2,
+            y: cc.winSize.height/2,
+            opacity: 0,
+            rotation: rotation
+        });
+        mainLayer.addChild(diamond);
+        diamond.runAction(cc.sequence(cc.spawn(cc.scaleTo(0.3,2,2), cc.fadeIn(0.3)), cc.fadeOut(0.2),cc.callFunc(function(){
+            this.removeFromParent(true);
+        },diamond)));
+    }
+});
+
 var SlowItemModel = ItemModel.extend({
     defaults:function(){
         return {
@@ -677,9 +771,11 @@ var ITEM_MODEL_CLASS_MAP = {
     "ace": AceItemModel,
     "bomb": BombItemModel,
     "cloud": CloudItemModel,
+    "diamond": DiamondItemModel,
     "dizzy": DizzyItemModel,
     "enlarge":EnlargeItemModel,
     "fast": FastItemModel,
+    "kiss": KissItemModel,
     "leaf": LeafItemModel,
     "nuke": NukeItemModel,
     "shrink":ShrinkItemModel,
