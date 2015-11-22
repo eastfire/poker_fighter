@@ -202,6 +202,21 @@ var KissItemModel = ItemModel.extend({
                     sprite.speedY = sy;
                     sprite.speedX = sy * ( sprite.x - cc.winSize.width/2 ) / (sprite.y - playerY);
                     sprite.onTouchRelease();
+
+                    var loveSprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame( sprite.model.get("number") == 13 ? "k-in-love.png" : "j-in-love.png"));
+                    loveSprite.attr({
+                        x: sprite.width/2,
+                        y: sprite.height/2
+                    })
+                    sprite.addChild(loveSprite);
+                    loveSprite.runAction(cc.sequence(
+                        cc.scaleTo(0.3,1.3,1.3),
+                        cc.scaleTo(0.1,1,1),
+                        cc.delayTime(0.5),
+                        cc.callFunc(function(){
+                            this.removeFromParent(true);
+                        },loveSprite)
+                    ))
                 }
             }
         });
@@ -248,6 +263,21 @@ var DiamondItemModel = ItemModel.extend({
                     sprite.speedY = sy;
                     sprite.speedX = sy * ( sprite.x - cc.winSize.width/2 ) / (sprite.y - playerY);
                     sprite.onTouchRelease();
+
+                    var loveSprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("q-in-love.png"));
+                    loveSprite.attr({
+                        x: sprite.width/2,
+                        y: sprite.height/2
+                    })
+                    sprite.addChild(loveSprite);
+                    loveSprite.runAction(cc.sequence(
+                        cc.scaleTo(0.3,1.3,1.3),
+                        cc.scaleTo(0.1,1,1),
+                        cc.delayTime(0.5),
+                        cc.callFunc(function(){
+                            this.removeFromParent(true);
+                        },loveSprite)
+                    ))
                 }
             }
         });

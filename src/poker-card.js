@@ -63,7 +63,7 @@ var NormalCardSprite = cc.Sprite.extend({
                     //dizzy
                     if ( gameModel.player2.get("dizzy") )
                         this.dizzy();
-                    else this.rotation = 0;
+                    else this.rotation = 180;
                     //touchable change
                     this.touchable = (gameModel.player2.get("type") !== "ai");
                 }, target);
@@ -101,7 +101,7 @@ var NormalCardSprite = cc.Sprite.extend({
                     //dizzy
                     if ( gameModel.player1.get("dizzy") )
                         this.dizzy();
-                    else this.rotation = 180;
+                    else this.rotation = 0;
                     //touchable change
                     this.touchable = (gameModel.player1.get("type") !== "ai");
                 }, target);

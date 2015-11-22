@@ -480,7 +480,7 @@ var MainLayer = cc.LayerColor.extend({
                     if (Math.random() < self.model.get("itemAppearRate")) {
                         self.generateItems.call(self);
                     }
-                    self.model.generateItemCountDown = GENERATE_ITEM_INTERVAL;
+                    self.model.generateItemCountDown = GENERATE_ITEM_INTERVAL-1+Math.round(Math.random()*3);
                 }
                 self.model.generateItemCountDown--;
 
@@ -755,7 +755,7 @@ var GameModel = Backbone.Model.extend({
             new ItemPattern4Model()
         ];
 
-        this.itemPool = ["ace","bomb","cloud","diamond", "dizzy","enlarge","fast","leaf","nuke", "shrink","spy","slow","thief", "two"];
+        this.itemPool = ["ace","bomb","cloud","diamond", "dizzy","enlarge","fast","kiss","leaf","nuke", "shrink","spy","slow","thief", "two"];
         //this.itemPool = ["diamond","kiss"];
     },
     newDeck:function(){
