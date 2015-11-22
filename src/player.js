@@ -275,7 +275,7 @@ var PlayerSprite = cc.Sprite.extend({
         this._super();
         this.model = options.model;
 
-        this.showHand = false;
+        this.model.set("showHand", false);
         this.lookHand = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("show-hand.png"));
         var y;
         if ( this.model.get("position") == PLAYER_POSITION_DOWN ) {
@@ -376,7 +376,7 @@ var PlayerSprite = cc.Sprite.extend({
 
                 //Check the click area
                 if (cc.rectContainsPoint(rect, locationInNode)) {
-                    //target.opacity = 180;
+                    self.showHand();
                     return true;
                 }
                 return false;
@@ -386,8 +386,7 @@ var PlayerSprite = cc.Sprite.extend({
             },
             //Process the touch end event
             onTouchEnded: function (touch, event) {
-                var target = event.getCurrentTarget();
-                self.toggleHand();
+                self.hideHand();
             }
         }), this.lookHand);
     },
@@ -410,11 +409,13 @@ var PlayerSprite = cc.Sprite.extend({
         this.model.on("change:hands",this.onHandChange, this);
         this.model.on("change:money",this.onMoneyChange, this);
         this.model.on("change:spy",this.onSpyChange,this);
+        this.model.on("change:showHand",this.onShowHandChange,this);
     },
     closeEvent:function(){
         this.model.off("change:hands",this.onHandChange);
         this.model.off("change:money",this.onMoneyChange);
         this.model.off("change:spy",this.onSpyChange);
+        this.model.off("change:showHand",this.onShowHandChange,this);
     },
     renderMoney:function(){
         this.moneyLabel.setString(this.model.get("money"));
@@ -426,8 +427,7 @@ var PlayerSprite = cc.Sprite.extend({
         var prev = this.model.previous("spy");
         var current = this.model.get("spy");
         if ( !prev && current ) {
-            this.showHand = true;
-            this.forceShowHand();
+            this.onShowHandChange();
             this.eyeSprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("eye.png"));
             var y;
             var rotation;
@@ -445,9 +445,35 @@ var PlayerSprite = cc.Sprite.extend({
             })
             this.addChild(this.eyeSprite);
         } else if ( prev && !current ) {
-            this.hideHand();
+            this.onShowHandChange();
             this.eyeSprite.removeFromParent(true);
             this.eyeSprite = null;
+        }
+    },
+    isHandVisible:function(){
+        return this.model.get("showHand") || this.model.get("spy");
+    },
+    onShowHandChange:function(){
+        var cards = this.model.get("hands");
+
+        if ( this.isHandVisible() ) {
+            _.each(cards,function(cardModel){
+                var sprite = this.getParent().getChildByName(cardModel.cid);
+                if ( sprite != null ) {
+                    if ( sprite.model.get("side") === "back") {
+                        sprite.runAction(sprite.getFlipToFrontSequence());
+                    }
+                }
+            }, this);
+        } else {
+            _.each(cards,function(cardModel){
+                var sprite = this.getParent().getChildByName(cardModel.cid);
+                if ( sprite != null ) {
+                    if ( sprite.model.get("side") === "front") {
+                        sprite.runAction(sprite.getFlipToBackSequence());
+                    }
+                }
+            }, this);
         }
     },
     onHandChange:function(){
@@ -497,7 +523,7 @@ var PlayerSprite = cc.Sprite.extend({
                     sprite.stopActionByTag(ACTION_TAG_MOVING);
                     sprite.runAction( new cc.Spawn(new cc.MoveTo(times.card_sort, realX, realY), new cc.RotateTo(times.card_sort, cardAngle, cardAngle)) ).setTag(ACTION_TAG_MOVING);
                     if ( sprite.isNewHand ) {
-                        if ( !this.showHand ) {
+                        if ( !this.isHandVisible() ) {
                             sprite.runAction(sprite.getFlipToBackSequence());
                         } else {
                             sprite.runAction(cc.scaleTo(times.flip,1,1));
@@ -516,22 +542,11 @@ var PlayerSprite = cc.Sprite.extend({
         }
     },
     toggleHand:function(){
-        if ( gameModel.get("status") === "compare" || this.model.get("spy") )
+        if ( gameModel.get("status") === "compare" )
             return;
 
-        this.showHand = !this.showHand;
-        var cards = this.model.get("hands");
+        this.model.set("showHand", !this.model.get("showHand"));
 
-        _.each(cards,function(cardModel){
-            var sprite = this.getParent().getChildByName(cardModel.cid);
-            if ( sprite != null ) {
-                if ( this.showHand ) {
-                    sprite.runAction(sprite.getFlipToFrontSequence());
-                } else {
-                    sprite.runAction(sprite.getFlipToBackSequence());
-                }
-            }
-        }, this);
     },
     forceShowHand:function(){
         var cards = this.model.get("hands");
@@ -540,13 +555,15 @@ var PlayerSprite = cc.Sprite.extend({
             if ( !sprite.numberSprite.isVisible() ) sprite.runAction(sprite.getFlipToFrontSequence());
         }, this);
     },
+    showHand:function(){
+        if ( gameModel.get("status") === "compare" )
+            return;
+        this.model.set("showHand", true);
+    },
     hideHand:function(){
-        this.showHand = false;
-        var cards = this.model.get("hands");
-        _.each(cards,function(cardModel){
-            var sprite = this.getParent().getChildByName(cardModel.cid);
-            if ( sprite != null && sprite.numberSprite.isVisible() ) sprite.runAction(sprite.getFlipToBackSequence());
-        }, this);
+        if ( gameModel.get("status") === "compare" )
+            return;
+        this.model.set("showHand", false);
     },
     render:function(){
 
