@@ -32,12 +32,23 @@ var IntroLayer = cc.Layer.extend({
             x: cc.winSize.width/2,
             y: cc.winSize.height/2 - 200
         });
-        var menu = new cc.Menu([vsItem, quickVsItem]);
+
+        var vsAIItem = new cc.MenuItemImage(
+            cc.spriteFrameCache.getSpriteFrame("menu-quick-vs-default-"+lang+".png"),
+            cc.spriteFrameCache.getSpriteFrame("menu-quick-vs-press-"+lang+".png"),
+            function () {
+                cc.director.runScene(new MainScene({
+                    mode: "vs-ai"
+                }));
+            }, this);
+        vsAIItem.attr({
+            x: cc.winSize.width/2,
+            y: cc.winSize.height/2 - 300
+        });
+        var menu = new cc.Menu([vsItem, quickVsItem, vsAIItem]);
         menu.x = 0;
         menu.y = 0;
         this.addChild(menu);
-
-
     }
 });
 

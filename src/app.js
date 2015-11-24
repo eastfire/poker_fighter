@@ -211,6 +211,7 @@ var MainLayer = cc.LayerColor.extend({
             onTouchMoved: function (touch, event) {
                 var target = event.getCurrentTarget();
                 var locationInNode = target.convertToNodeSpace(touch.getLocation());
+                if ( gameModel.player2.get("type") === PLAYER_TYPE_AI && locationInNode.y > cc.winSize.height/2 ) return;
                 var touchId = cc.sys.isNative ? touch.getID() : touch.__instanceId;
                 _.each( target.getChildren(), function(sprite){
                     if ( sprite instanceof NormalCardSprite && sprite.canBeTouch() && (!target._touchInstanceUsed[touchId] || sprite.touchingInstanceId === touchId ) ) {
@@ -314,48 +315,50 @@ var MainLayer = cc.LayerColor.extend({
         this.model.set("status", "compare");
         this.unschedule(this.schedulePerSec);
 
-        this.player1Sprite.forceShowHand();
-        this.player2Sprite.forceShowHand();
-        var player1Feature = this.player1.getFeature();
-        var player2Feature = this.player2.getFeature();
-        this.handTypeLabel1.setVisible(true);
-        this.handTypeLabel1.setString( texts.handTypeDisplayName[player1Feature.type] );
-        this.handTypeLabel2.setVisible(true);
-        this.handTypeLabel2.setString( texts.handTypeDisplayName[player2Feature.type] );
+        this.scheduleOnce(function() {
+            this.player1Sprite.forceShowHand();
+            this.player2Sprite.forceShowHand();
+            var player1Feature = this.player1.getFeature();
+            var player2Feature = this.player2.getFeature();
+            this.handTypeLabel1.setVisible(true);
+            this.handTypeLabel1.setString(texts.handTypeDisplayName[player1Feature.type]);
+            this.handTypeLabel2.setVisible(true);
+            this.handTypeLabel2.setString(texts.handTypeDisplayName[player2Feature.type]);
 
-        this.winLoseLabel1.setVisible(true);
-        this.winLoseLabel2.setVisible(true);
-        var money = this.model.get("betRate") * (player1Feature.rate + player2Feature.rate);
-        var winner = 0;
-        if ( player1Feature.power > player2Feature.power ) {
-            this.winLoseLabel1.setString(texts.win);
-            this.winLoseLabel2.setString(texts.lose);
-            this.giveMoney(money, this.player2Sprite, this.player1Sprite);
-            cc.audioEngine.playEffect(res[player1Feature.type], false);
-            winner = 1;
-        } else if ( player2Feature.power > player1Feature.power ) {
-            this.winLoseLabel1.setString(texts.lose);
-            this.winLoseLabel2.setString(texts.win);
-            this.giveMoney(money, this.player1Sprite, this.player2Sprite);
-            cc.audioEngine.playEffect(res[player2Feature.type], false);
-            winner = 2;
-        } else {
-            this.winLoseLabel1.setString(texts.tie);
-            this.winLoseLabel2.setString(texts.tie);
-            cc.audioEngine.playEffect(res.tie, false);
-        }
-        this.scheduleOnce(function(){
-            this.model.set("betRate", this.model.get("betRate") + 1);
-            if ( this.player1.get("money") <= 0 || ( this.player2.get("money") >= this.player2.get("targetMoney") && winner === 2 ) ) {
-                this.gameOver();
-            } else if ( this.player2.get("money") <= 0 || ( this.player1.get("money") >= this.player1.get("targetMoney") && winner === 1) ) {
-                this.gameOver();
+            this.winLoseLabel1.setVisible(true);
+            this.winLoseLabel2.setVisible(true);
+            var money = this.model.get("betRate") * (player1Feature.rate + player2Feature.rate);
+            var winner = 0;
+            if (player1Feature.power > player2Feature.power) {
+                this.winLoseLabel1.setString(texts.win);
+                this.winLoseLabel2.setString(texts.lose);
+                this.giveMoney(money, this.player2Sprite, this.player1Sprite);
+                cc.audioEngine.playEffect(res[player1Feature.type], false);
+                winner = 1;
+            } else if (player2Feature.power > player1Feature.power) {
+                this.winLoseLabel1.setString(texts.lose);
+                this.winLoseLabel2.setString(texts.win);
+                this.giveMoney(money, this.player1Sprite, this.player2Sprite);
+                cc.audioEngine.playEffect(res[player2Feature.type], false);
+                winner = 2;
             } else {
-                this.player1.cleanStatus();
-                this.player2.cleanStatus();
-                this.startNewRound();
+                this.winLoseLabel1.setString(texts.tie);
+                this.winLoseLabel2.setString(texts.tie);
+                cc.audioEngine.playEffect(res.tie, false);
             }
-        }, times.compare)
+            this.scheduleOnce(function () {
+                this.model.set("betRate", this.model.get("betRate") + 1);
+                if (this.player1.get("money") <= 0 || ( this.player2.get("money") >= this.player2.get("targetMoney") && winner === 2 )) {
+                    this.gameOver();
+                } else if (this.player2.get("money") <= 0 || ( this.player1.get("money") >= this.player1.get("targetMoney") && winner === 1)) {
+                    this.gameOver();
+                } else {
+                    this.player1.cleanStatus();
+                    this.player2.cleanStatus();
+                    this.startNewRound();
+                }
+            }, times.compare);
+        }, times.takeCard+0.1);
     },
     giveMoney:function(money, fromPlayerSprite, toPlayerSprite ){
         var token100 = Math.min( 10, Math.floor(money / 100) );
@@ -736,7 +739,8 @@ var GameModel = Backbone.Model.extend({
             money: this.get("playerInitMoney")[1],
             targetMoney: this.get("playerTargetMoney")[1],
             position : PLAYER_POSITION_UP,
-            playerType: "player"
+            playerType: "player",
+            type: this.get("mode") === "vs-ai" ? PLAYER_TYPE_AI : PLAYER_TYPE_PLAYER
         });
 
         this.patternPool = [
@@ -756,7 +760,7 @@ var GameModel = Backbone.Model.extend({
         ];
 
         this.itemPool = ["ace","bomb","cloud","diamond", "dizzy","enlarge","fast","kiss","leaf","nuke", "shrink","spy","slow","thief", "two"];
-        //this.itemPool = ["diamond","kiss"];
+        //this.itemPool = ["spy"];
     },
     newDeck:function(){
         var deck = [];

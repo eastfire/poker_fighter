@@ -41,10 +41,15 @@ var PLAYER_POSITION_UP = 1;
 
 var MAX_HAND = 5;
 var ACTION_TAG_MOVING = 111;
+var ACTION_TAG_FLIPPING = 112;
+
+var PLAYER_TYPE_PLAYER = 0;
+var PLAYER_TYPE_AI = 1;
 
 var PlayerModel = Backbone.Model.extend({
     defaults:function(){
         return {
+            type: PLAYER_TYPE_PLAYER,
             money : 500,
             targetMoney: 1000,
             hands: [],
@@ -427,7 +432,6 @@ var PlayerSprite = cc.Sprite.extend({
         var prev = this.model.previous("spy");
         var current = this.model.get("spy");
         if ( !prev && current ) {
-            this.onShowHandChange();
             this.eyeSprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("eye.png"));
             var y;
             var rotation;
@@ -445,33 +449,43 @@ var PlayerSprite = cc.Sprite.extend({
             })
             this.addChild(this.eyeSprite);
         } else if ( prev && !current ) {
-            this.onShowHandChange();
             this.eyeSprite.removeFromParent(true);
             this.eyeSprite = null;
+        }
+        prev = prev || this.model.previous("showHand");
+        current = current || this.model.get("showHand");
+        if ( !prev && current || prev && !current ) {
+            this.onHandVisibilityChange();
         }
     },
     isHandVisible:function(){
         return this.model.get("showHand") || this.model.get("spy");
     },
-    onShowHandChange:function(){
+    onShowHandChange:function() {
+        var prev = this.model.previous("spy") || this.model.previous("showHand");
+        var current = this.model.get("spy") || this.model.get("showHand");
+        if ( !prev && current || prev && !current ) {
+            this.onHandVisibilityChange();
+        }
+    },
+    onHandVisibilityChange:function() {
         var cards = this.model.get("hands");
-
         if ( this.isHandVisible() ) {
             _.each(cards,function(cardModel){
                 var sprite = this.getParent().getChildByName(cardModel.cid);
                 if ( sprite != null ) {
-                    if ( sprite.model.get("side") === "back") {
-                        sprite.runAction(sprite.getFlipToFrontSequence());
-                    }
+                    sprite.stopActionByTag(ACTION_TAG_FLIPPING);
+                    sprite.runAction(sprite.getFlipToFrontSequence()).setTag(ACTION_TAG_FLIPPING);
+
                 }
             }, this);
         } else {
             _.each(cards,function(cardModel){
                 var sprite = this.getParent().getChildByName(cardModel.cid);
                 if ( sprite != null ) {
-                    if ( sprite.model.get("side") === "front") {
-                        sprite.runAction(sprite.getFlipToBackSequence());
-                    }
+                    sprite.stopActionByTag(ACTION_TAG_FLIPPING);
+                    sprite.runAction(sprite.getFlipToBackSequence()).setTag(ACTION_TAG_FLIPPING);
+
                 }
             }, this);
         }
@@ -524,7 +538,8 @@ var PlayerSprite = cc.Sprite.extend({
                     sprite.runAction( new cc.Spawn(new cc.MoveTo(times.card_sort, realX, realY), new cc.RotateTo(times.card_sort, cardAngle, cardAngle)) ).setTag(ACTION_TAG_MOVING);
                     if ( sprite.isNewHand ) {
                         if ( !this.isHandVisible() ) {
-                            sprite.runAction(sprite.getFlipToBackSequence());
+                            sprite.stopActionByTag(ACTION_TAG_FLIPPING);
+                            sprite.runAction(sprite.getFlipToBackSequence()).setTag(ACTION_TAG_FLIPPING);
                         } else {
                             sprite.runAction(cc.scaleTo(times.flip,1,1));
                         }
