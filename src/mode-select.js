@@ -20,6 +20,9 @@ var setting = {};
 
 var ITEM_PER_LINE = 5;
 
+var INIT_ITEMS = ["ace","bomb","cloud","diamond", "dizzy","enlarge","fast","kiss","leaf", "shrink","spy","slow","sniper","thief", "two"];
+var UNLOCKABLE_ITEMS = [ "magnet","nuke" ];
+
 var ModeSelectLayer = PlayerRotateLayer.extend({
     ctor:function(){
         dimens.player2NamePosition.x = dimens.player1NamePosition.x = cc.winSize.width/6-30;
@@ -133,12 +136,8 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
         }
         this.itemMenus = []
 
-        this.initItems = [
-            "ace","bomb","cloud","diamond", "dizzy","enlarge","fast","kiss","leaf", "shrink","spy","slow","thief", "two"
-        ];
-        this.unlockableItems = [
-            "magnet","nuke"
-        ];
+        this.initItems = INIT_ITEMS;
+        this.unlockableItems = UNLOCKABLE_ITEMS;
         this.unlockedItems = [
 
         ];
@@ -281,6 +280,7 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
             cc.spriteFrameCache.getSpriteFrame("start-game-press.png"),
             function(){
                 this.saveSetting();
+                setting.itemPool = _.difference(this.allItems, _.keys(setting.itemOff));
                 cc.director.runScene(new MainScene(setting));
             }, this);
         startGame.attr({

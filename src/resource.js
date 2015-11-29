@@ -13,6 +13,7 @@ var res = {
     magnet_mp3: "res/magnet.mp3",
     slow_down_mp3: "res/slow-down.mp3",
     speed_up_mp3: "res/speed-up.mp3",
+    sniper_mp3: "res/sniper.mp3",
 
     ready_mp3: "res/ready.mp3",
     fight_mp3: "res/fight.mp3",

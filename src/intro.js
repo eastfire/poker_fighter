@@ -26,7 +26,14 @@ var IntroLayer = cc.Layer.extend({
             cc.spriteFrameCache.getSpriteFrame("menu-quick-vs-default-"+lang+".png"),
             cc.spriteFrameCache.getSpriteFrame("menu-quick-vs-press-"+lang+".png"),
             function () {
-                cc.director.runScene(new MainScene());
+                var store = cc.sys.localStorage.getItem("unlocked");
+                var unlocked = [];
+                if ( store ) {
+                    unlocked = JSON.parse(store);
+                }
+                cc.director.runScene(new MainScene({
+                    itemPool : _.union(INIT_ITEMS, unlocked)
+                }));
             }, this);
         quickVsItem.attr({
             x: cc.winSize.width/2,

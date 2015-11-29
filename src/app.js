@@ -1,5 +1,5 @@
 var GENERATE_CARD_INTERVAL = 5;
-var GENERATE_ITEM_INTERVAL = 7;
+var GENERATE_ITEM_INTERVAL = 5;
 
 var RARE_SPEED_RATE = 2;
 var MAIN_ACTION_TAG = 1;
@@ -726,7 +726,7 @@ var GameModel = Backbone.Model.extend({
         this.maxCountDown = 60;
         this.countDown = this.maxCountDown;
         this.generateCardCountDown = 0;
-        this.generateItemCountDown = GENERATE_ITEM_INTERVAL;
+        this.generateItemCountDown = GENERATE_ITEM_INTERVAL-1+Math.round(Math.random()*3);
 
         this.set("betRate", 1);
         this.set("status", "ready");
@@ -764,9 +764,9 @@ var GameModel = Backbone.Model.extend({
             new ItemPattern4Model()
         ];
 
-        this.itemPool = ["ace","bomb","cloud","diamond", "dizzy","enlarge","fast","kiss","leaf","magnet","nuke", "shrink","spy","slow","thief", "two"];
-        if ( this.get("itemOff") ) {
-            this.itemPool = _.difference(this.itemPool, _.keys(this.get("itemOff")));
+        this.itemPool = this.get("itemPool");
+        if ( this.itemPool.length === 0 ) {
+            this.set("itemAppearRate", 0 );
         }
 //        cc.log(this.itemPool)
 //        cc.log(this.get("tokenAppearRate"))

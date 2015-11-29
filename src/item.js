@@ -286,7 +286,7 @@ var DiamondItemModel = ItemModel.extend({
     defaults:function(){
         return {
             name:"diamond",
-            displayName:"diamond",
+            displayName:"钻戒",
             maxCharge: 1,
             maxCoolDown: 1,
             description:"吸引全场的Q",
@@ -368,6 +368,58 @@ var SlowItemModel = ItemModel.extend({
                 }
             }
         });
+    }
+});
+
+var SniperItemModel = ItemModel.extend({
+    defaults:function(){
+        return {
+            name:"sniper",
+            displayName:"狙击手",
+            maxCharge: 3,
+            maxCoolDown: 2,
+            description:"消灭对手场上一张最大的牌",
+            showCharge: true
+        }
+    },
+    effect:function(playerSprite, opponentPlayerSprite){
+        var currentSprite = null;
+        var currentValue = 0;
+        _.each( mainLayer.getChildren(), function(sprite) {
+            if (sprite instanceof NormalCardSprite ) {
+                if ( !sprite.alreadyTaken && cc.rectContainsPoint(opponentPlayerSprite.getEffectRect(), {
+                    x:sprite.x,
+                    y:sprite.y
+                }) ){
+                    var value = sprite.model.get("number")*100+10-sprite.model.get("suit");
+                    if ( value > currentValue ) {
+                        currentValue = value;
+                        currentSprite = sprite;
+                    }
+                }
+            }
+        });
+        if ( currentSprite ) {
+            var sniperSprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("crosshair.png"));
+            sniperSprite.attr({
+                x: cc.winSize.width/2 - currentSprite.x,
+                y: ( opponentPlayerSprite.model.get("position") === PLAYER_POSITION_DOWN ? 1 : -1 ) * (cc.winSize.height/2 - currentSprite.y)
+            })
+            currentSprite.addChild(sniperSprite);
+            sniperSprite.runAction(cc.sequence(
+                cc.moveTo(0.4, currentSprite.width/2, currentSprite.height/2),
+                cc.delayTime(0.4),
+                cc.callFunc(function(){
+                    if ( !sniperSprite.alreadyTaken ) {
+                        cc.audioEngine.playEffect(res.sniper_mp3, false);
+
+                        gameModel.destroyCard(currentSprite.model);
+                    } else {
+                        sniperSprite.removeFromParent(true);
+                    }
+                })
+            ))
+        }
     }
 });
 
@@ -859,6 +911,7 @@ var ITEM_MODEL_CLASS_MAP = {
     "nuke": NukeItemModel,
     "shrink":ShrinkItemModel,
     "slow": SlowItemModel,
+    "sniper": SniperItemModel,
     "spy": SpyItemModel,
     "thief": ThiefItemModel,
     "two": TwoItemModel
