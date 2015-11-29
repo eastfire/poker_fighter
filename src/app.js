@@ -680,6 +680,8 @@ var MainLayer = cc.LayerColor.extend({
 
         gameModel.off();
 
+        this.saveStatistic();
+
         cc.eventManager.removeListener(this.listener);
         cc.eventManager.addListener(cc.EventListener.create({
             event: cc.EventListener.TOUCH_ONE_BY_ONE,
@@ -701,6 +703,9 @@ var MainLayer = cc.LayerColor.extend({
                 gameModel = null;
             }
         }), this);
+    },
+    saveStatistic:function(){
+        cc.sys.localStorage.setItem("statistic",JSON.stringify(statistic));
     }
 });
 
@@ -759,8 +764,13 @@ var GameModel = Backbone.Model.extend({
             new ItemPattern4Model()
         ];
 
-        this.itemPool = ["ace","bomb","cloud","diamond", "dizzy","enlarge","fast","kiss","leaf","nuke", "shrink","spy","slow","thief", "two"];
-        //this.itemPool = ["spy"];
+        this.itemPool = ["ace","bomb","cloud","diamond", "dizzy","enlarge","fast","kiss","leaf","magnet","nuke", "shrink","spy","slow","thief", "two"];
+        if ( this.get("itemOff") ) {
+            this.itemPool = _.difference(this.itemPool, _.keys(this.get("itemOff")));
+        }
+//        cc.log(this.itemPool)
+//        cc.log(this.get("tokenAppearRate"))
+//        cc.log(this.get("itemAppearRate"))
     },
     newDeck:function(){
         var deck = [];

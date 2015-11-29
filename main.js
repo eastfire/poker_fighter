@@ -47,6 +47,7 @@
  *
  */
 var texts;
+var statistic;
 
 cc.game.onStart = function(){
     if(!cc.sys.isNative && document.getElementById("cocosLoading")) //If referenced loading.js, please remove it
@@ -65,6 +66,17 @@ cc.game.onStart = function(){
         texts = texts_locale[cc.sys.language];
         if ( !texts )
             texts = texts_locale["en"];
+
+        //loadStatistic;
+        var store = cc.sys.localStorage.getItem("statistic");
+        if ( store ) {
+            cc.log(store)
+            statistic = JSON.parse(store);
+        } else {
+            statistic = {
+
+            }
+        }
 
         cc.spriteFrameCache.addSpriteFrames(res.game_plist);
         cc.director.runScene(new IntroScene());

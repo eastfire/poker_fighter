@@ -10,6 +10,7 @@ var res = {
     cash_register_mp3: "res/cash-register.mp3",
     dizzy_mp3: "res/dizzy.mp3",
     kiss_mp3: "res/kiss.mp3",
+    magnet_mp3: "res/magnet.mp3",
     slow_down_mp3: "res/slow-down.mp3",
     speed_up_mp3: "res/speed-up.mp3",
 
@@ -212,6 +213,10 @@ var dimens = {
     flyingItem:{
         x: 50,
         y: 520
+    },
+    itemList: {
+        y: 445,
+        stepY: 90
     },
     startGame:{
         y: 40

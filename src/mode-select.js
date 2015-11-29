@@ -18,15 +18,17 @@ var ITEM_APPEAR_LEVEL3 = 0.9;
 
 var setting = {};
 
+var ITEM_PER_LINE = 5;
+
 var ModeSelectLayer = PlayerRotateLayer.extend({
     ctor:function(){
         dimens.player2NamePosition.x = dimens.player1NamePosition.x = cc.winSize.width/6-30;
         dimens.player2InitMoneyPosition.x = dimens.player1InitMoneyPosition.x = cc.winSize.width/3;
         dimens.player2TargetMoneyPosition.x = dimens.player1TargetMoneyPosition.x = cc.winSize.width*2/3+40;
 
-        this._super();
-
         this.initData();
+
+        this._super();
 
         this.addChild(this.player2Label = this.makeLabel(texts.player2, dimens.player2NamePosition.x, dimens.player2NamePosition.y, 28));
         this.addChild(this.player1Label = this.makeLabel(texts.player1, dimens.player1NamePosition.x, dimens.player1NamePosition.y, 28));
@@ -97,6 +99,7 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
         this.renderDeckSetting();
         this.renderTokenAppear();
         this.renderItemAppear();
+        this.renderItemMenus();
     },
     makeLabel:function(text, x, y, fontSize){
         var fontSize = fontSize || 30;
@@ -118,14 +121,31 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
             deck: 8,
             tokenAppearRate: 0.2,
             itemAppearRate: 0.5,
-            mode: "vs"
+            mode: "vs",
+            itemOff: {}
         };
         var store = cc.sys.localStorage.getItem("prevSetting");
         if ( store != null ) {
             setting = JSON.parse(store);
+            setting.itemOff = setting.itemOff || {};
         } else {
             this.useDefaultSetting();
         }
+        this.itemMenus = []
+
+        this.initItems = [
+            "ace","bomb","cloud","diamond", "dizzy","enlarge","fast","kiss","leaf", "shrink","spy","slow","thief", "two"
+        ];
+        this.unlockableItems = [
+            "magnet","nuke"
+        ];
+        this.unlockedItems = [
+
+        ];
+        this.usedItems = [
+
+        ];
+        this.allItems = _.union( this.initItems, this.unlockableItems  )
     },
     useDefaultSetting:function(){
         setting = JSON.parse(JSON.stringify(this.defaultSetting));
@@ -277,7 +297,38 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
             this.saveSetting();
         });
         this.addChild( this.makeLabel(texts.useDefault, cc.winSize.width - 45, dimens.startGame.y, 25));
+
+        var itemX = cc.winSize.width/ITEM_PER_LINE/2;
+        var itemY = dimens.itemList.y;
+        _.each(this.allItems,function(item){
+            this.itemMenus[item] = new cc.MenuItemImage(
+                cc.spriteFrameCache.getSpriteFrame("item-"+item+".png"),
+                cc.spriteFrameCache.getSpriteFrame("item-"+item+".png"),
+                function(){
+//                    if ( this.usedItems[item] ) {
+                        if ( !this.isItemOff(item) )
+                            setting.itemOff[item] = true;
+                        else delete setting.itemOff[item];
+                        this.renderItemMenu(item);
+                    //}
+                }, this);
+            this.itemMenus[item].attr({
+                x: itemX,
+                y: itemY
+            });
+
+            this.menuArray.push(this.itemMenus[item]);
+            itemX += cc.winSize.width/ITEM_PER_LINE;
+            if ( itemX > cc.winSize.width ) {
+                itemX = cc.winSize.width/ITEM_PER_LINE/2;
+                itemY -= dimens.itemList.stepY
+            }
+        },this);
     },
+    isItemOff:function(item){
+        return setting.itemOff[item] !== undefined && setting.itemOff[item];
+    },
+
     saveSetting:function(){
         cc.sys.localStorage.setItem("prevSetting", JSON.stringify(setting));
     },
@@ -380,6 +431,26 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
                 this.selectItem3.setNormalSpriteFrame(cc.spriteFrameCache.getSpriteFrame("left-button-group-selected-default.png"))
                 break;
         }
+    },
+    renderItemMenu:function(item){
+        if ( this.isItemOff(item) ) {
+            this.itemMenus[item].attr({
+                opacity: 100,
+                scaleX: 0.8,
+                scaleY: 0.8
+            })
+        } else {
+            this.itemMenus[item].attr({
+                opacity: 255,
+                scaleX: 1,
+                scaleY: 1
+            })
+        }
+    },
+    renderItemMenus:function(){
+        _.each(this.allItems,function(item) {
+            this.renderItemMenu(item);
+        },this);
     }
 });
 

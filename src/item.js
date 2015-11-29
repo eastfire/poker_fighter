@@ -234,6 +234,54 @@ var KissItemModel = ItemModel.extend({
     }
 });
 
+var MagnetItemModel = ItemModel.extend({
+    defaults:function(){
+        return {
+            name:"magnet",
+            displayName:"磁铁",
+            maxCharge: 1,
+            maxCoolDown: 1,
+            description:"吸引全场的筹码(包括假的)",
+            showCharge: false
+        }
+    },
+    effect:function(playerSprite, opponentPlayerSprite){
+        cc.audioEngine.playEffect(res.magnet_mp3, false);
+        var sy,playerY, rotation;
+        if ( playerSprite.model.get("position") === PLAYER_POSITION_DOWN ) {
+            sy = -NATURE_SPEED;
+            playerY = 0;
+            rotation = 0;
+        } else {
+            sy = NATURE_SPEED;
+            playerY = cc.winSize.height;
+            rotation = 180
+        }
+        var playerY = playerSprite.model.get("position") === PLAYER_POSITION_DOWN ? 0 : cc.winSize.height;
+        _.each( mainLayer.getChildren(), function(sprite) {
+            if (sprite instanceof MoneySpecialCardSprite || sprite instanceof ThiefSpecialCardSprite ) {
+                if ( !sprite.alreadyTaken && sprite.y !== playerY ){
+                    sprite.speedY = sy;
+                    sprite.speedX = sy * ( sprite.x - cc.winSize.width/2 ) / (sprite.y - playerY);
+                    sprite.onTouchRelease();
+                }
+            }
+        });
+
+        var magnet = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("magnet.png"));
+        magnet.attr({
+            x: cc.winSize.width/2,
+            y: cc.winSize.height/2,
+            opacity: 0,
+            rotation: rotation
+        });
+        mainLayer.addChild(magnet);
+        magnet.runAction(cc.sequence(cc.spawn(cc.scaleTo(0.3,2,2), cc.fadeIn(0.3)), cc.fadeOut(0.2),cc.callFunc(function(){
+            this.removeFromParent(true);
+        },magnet)));
+    }
+});
+
 var DiamondItemModel = ItemModel.extend({
     defaults:function(){
         return {
@@ -807,6 +855,7 @@ var ITEM_MODEL_CLASS_MAP = {
     "fast": FastItemModel,
     "kiss": KissItemModel,
     "leaf": LeafItemModel,
+    "magnet": MagnetItemModel,
     "nuke": NukeItemModel,
     "shrink":ShrinkItemModel,
     "slow": SlowItemModel,
