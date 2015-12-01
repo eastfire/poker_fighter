@@ -14,6 +14,9 @@ var res = {
     slow_down_mp3: "res/slow-down.mp3",
     speed_up_mp3: "res/speed-up.mp3",
     sniper_mp3: "res/sniper.mp3",
+    shrink_mp3: "res/shrink.mp3",
+    enlarge_mp3: "res/enlarge.mp3",
+    forbid_mp3: "res/forbid.mp3",
 
     ready_mp3: "res/ready.mp3",
     fight_mp3: "res/fight.mp3",
@@ -132,7 +135,8 @@ var times = {
     getMoney: 0.25,
     gameOver: 0.9,
     letMeSee: 0.5,
-    slot_machine: 2.2
+    slot_machine: 2.2,
+    forbid: 0.4
 };
 
 var dimens = {

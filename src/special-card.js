@@ -57,6 +57,10 @@ var ItemSpecialCardSprite = NormalCardSprite.extend({
     playerTakeCard:function(player){
         if ( this.alreadyTaken )
             return;
+        if (player.get("forbid")) {
+            this.bounceBack();
+            return;
+        }
         this.stopAllActions();
         this.setTag(0);
 

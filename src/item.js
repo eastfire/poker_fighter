@@ -489,6 +489,7 @@ var ShrinkItemModel = ItemModel.extend({
         }
     },
     effect:function(playerSprite, opponentPlayerSprite){
+        cc.audioEngine.playEffect(res.shrink_mp3, false);
         opponentPlayerSprite.model.set({
             "sizeUp":0,
             "sizeDown":this.get("effectTime")
@@ -516,6 +517,7 @@ var EnlargeItemModel = ItemModel.extend({
         }
     },
     effect:function(playerSprite, opponentPlayerSprite){
+        cc.audioEngine.playEffect(res.enlarge_mp3, false);
         playerSprite.model.set({
             "sizeDown":0,
             "sizeUp":this.get("effectTime")
@@ -527,6 +529,24 @@ var EnlargeItemModel = ItemModel.extend({
                 }
             }
         });
+    }
+});
+
+var ForbidItemModel = ItemModel.extend({
+    defaults:function(){
+        return {
+            name:"forbid",
+            displayName:"禁令",
+            maxCharge: 1,
+            maxCoolDown: 1,
+            description:"对手不能使用道具，也不能获得道具。",
+            showCharge: false,
+            effectTime: 10
+        }
+    },
+    effect:function(playerSprite, opponentPlayerSprite){
+        cc.audioEngine.playEffect(res.forbid_mp3, false);
+        opponentPlayerSprite.model.set({ "forbid":this.get("effectTime") } );
     }
 });
 
@@ -759,14 +779,6 @@ var ItemSlotSprite = cc.Sprite.extend({
         clipper.setAlphaThreshold(0);
         clipper.addChild(this.foreground);
 
-//        var test = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("item-cloud.png"))
-//        test.attr({
-//            x: x,
-//            y: y*3
-//        })
-//        this.foreground.addChild(test);
-//        test.runAction(new cc.MoveTo(1,x,y));
-
         this.chargeLabel = new ccui.Text("", "Arial", 30 );
         this.chargeLabel.enableOutline(cc.color.WHITE, 2);
         this.chargeLabel.setTextColor(cc.color.BLACK);
@@ -838,6 +850,11 @@ var ItemSlotSprite = cc.Sprite.extend({
         this.chargeLabel.setString(this.model.get("charge"));
     },
     useItem:function(){
+        if ( ( this.owner === PLAYER_POSITION_DOWN && gameModel.player1.get("forbid") ) ||
+            ( this.owner === PLAYER_POSITION_UP && gameModel.player2.get("forbid") ) ) {
+            cc.audioEngine.playEffect(res.forbid_mp3, false);
+            return;
+        }
         this.model.set("coolDown", this.model.get("maxCoolDown") );
         this.model.set("charge", this.model.get("charge") - 1);
         if ( this.owner === PLAYER_POSITION_DOWN ) {
@@ -905,6 +922,7 @@ var ITEM_MODEL_CLASS_MAP = {
     "dizzy": DizzyItemModel,
     "enlarge":EnlargeItemModel,
     "fast": FastItemModel,
+    "forbid": ForbidItemModel,
     "kiss": KissItemModel,
     "leaf": LeafItemModel,
     "magnet": MagnetItemModel,

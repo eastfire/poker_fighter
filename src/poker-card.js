@@ -172,6 +172,16 @@ var NormalCardSprite = cc.Sprite.extend({
     canBeTouch:function(){
         return !this.alreadyTaken && this.touchable;
     },
+    bounceBack:function(){
+        cc.audioEngine.playEffect(res.spring_mp3, false);
+        this.stopAllActions();
+        if ( this.y < cc.winSize.height/2 ) {
+            this.y = dimens.player1Y + 1;
+        } else this.y = dimens.player2Y - 1;
+
+        this.speedY = -this.speedY;
+        this.onTouchRelease();
+    },
     playerTakeCard:function(player){
         if ( this.alreadyTaken )
             return;
@@ -182,14 +192,7 @@ var NormalCardSprite = cc.Sprite.extend({
             player.addHand(this.model);
             this.alreadyTaken = true;
         } else {
-            cc.audioEngine.playEffect(res.spring_mp3, false);
-            this.stopAllActions();
-            if ( this.y < cc.winSize.height/2 ) {
-                this.y = dimens.player1Y + 1;
-            } else this.y = dimens.player2Y - 1;
-
-            this.speedY = -this.speedY;
-            this.onTouchRelease();
+            this.bounceBack();
         }
     },
     moveToPoint:function(x,y, callback, context){

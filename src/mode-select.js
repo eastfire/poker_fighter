@@ -20,7 +20,7 @@ var setting = {};
 
 var ITEM_PER_LINE = 5;
 
-var INIT_ITEMS = ["ace","bomb","cloud","diamond", "dizzy","enlarge","fast","kiss","leaf", "shrink","spy","slow","sniper","thief", "two"];
+var INIT_ITEMS = ["ace","bomb","cloud","diamond", "dizzy","enlarge","fast","forbid","kiss","leaf", "shrink","spy","slow","sniper","thief", "two"];
 var UNLOCKABLE_ITEMS = [ "magnet","nuke" ];
 
 var ModeSelectLayer = PlayerRotateLayer.extend({

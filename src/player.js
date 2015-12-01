@@ -59,6 +59,7 @@ var PlayerModel = Backbone.Model.extend({
             sizeDown: 0,
             dizzy: 0,
             spy: 0,
+            forbid: 0,
             needItem: true,
             item: null
         }
@@ -256,7 +257,7 @@ var PlayerModel = Backbone.Model.extend({
         return sizeScale;
     },
     maintain:function(){
-        _.each( ["speedUp","speedDown","sizeUp","sizeDown","dizzy","spy"],function(attr){
+        _.each( ["speedUp","speedDown","sizeUp","sizeDown","dizzy","spy","forbid"],function(attr){
             var value = this.get(attr);
             if ( value > 0 ) {
                 this.set(attr, value - 1);
@@ -270,7 +271,8 @@ var PlayerModel = Backbone.Model.extend({
             speedUp: 0,
             speedDown: 0,
             dizzy: 0,
-            spy: 0
+            spy: 0,
+            forbid: 0
         })
     }
 });
@@ -415,12 +417,14 @@ var PlayerSprite = cc.Sprite.extend({
         this.model.on("change:money",this.onMoneyChange, this);
         this.model.on("change:spy",this.onSpyChange,this);
         this.model.on("change:showHand",this.onShowHandChange,this);
+        this.model.on("change:forbid",this.onForbidChange,this);
     },
     closeEvent:function(){
         this.model.off("change:hands",this.onHandChange);
         this.model.off("change:money",this.onMoneyChange);
         this.model.off("change:spy",this.onSpyChange);
         this.model.off("change:showHand",this.onShowHandChange,this);
+        this.model.off("change:forbid",this.onForbidChange);
     },
     renderMoney:function(){
         this.moneyLabel.setString(this.model.get("money"));
@@ -456,6 +460,25 @@ var PlayerSprite = cc.Sprite.extend({
         current = current || this.model.get("showHand");
         if ( !prev && current || prev && !current ) {
             this.onHandVisibilityChange();
+        }
+    },
+    onForbidChange:function(){
+        var prev = this.model.previous("forbid");
+        var current = this.model.get("forbid");
+        if ( !prev && current ) {
+            this.forbidSprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("forbid.png"));
+            this.forbidSprite.attr({
+                x: this.itemSlotSprite.x,
+                y: this.itemSlotSprite.y,
+                scaleX: 2,
+                scaleY: 2,
+                zIndex: 100
+            })
+            this.addChild(this.forbidSprite);
+            this.forbidSprite.runAction(cc.spawn(cc.fadeIn(times.forbid), cc.scaleTo(times.forbid, 1.5,1.5)));
+        } else if ( prev && !current ) {
+            this.forbidSprite.removeFromParent(true);
+            this.forbidSprite = null;
         }
     },
     isHandVisible:function(){
