@@ -49,6 +49,10 @@
 var texts;
 var statistic;
 
+var saveStatistic = function(){
+    cc.sys.localStorage.setItem("statistic",JSON.stringify(statistic));
+}
+
 cc.game.onStart = function(){
     if(!cc.sys.isNative && document.getElementById("cocosLoading")) //If referenced loading.js, please remove it
         document.body.removeChild(document.getElementById("cocosLoading"));

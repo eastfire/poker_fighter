@@ -125,6 +125,29 @@ var MainLayer = cc.LayerColor.extend({
         this.addChild(this.winLoseLabel2, 0);
         this.winLoseLabel2.setVisible(false);
 
+        this.betMoneyLabel1 = new ccui.Text("", "Arial", 40 );
+        this.betMoneyLabel1.enableOutline(colors.tableLabelOutline, 2);
+        this.betMoneyLabel1.setTextColor(colors.tableLabel);
+        this.betMoneyLabel1.attr({
+            //color: colors.tableLabel,
+            x: cc.winSize.width/2,
+            y: 180
+        });
+        this.addChild(this.betMoneyLabel1, 0);
+        this.betMoneyLabel1.setVisible(false);
+
+        this.betMoneyLabel2 = new ccui.Text("", "Arial", 40 );
+        this.betMoneyLabel2.enableOutline(colors.tableLabelOutline, 2);
+        this.betMoneyLabel2.setTextColor(colors.tableLabel);
+        this.betMoneyLabel2.attr({
+            //color: colors.tableLabel,
+            x: cc.winSize.width/2,
+            y: cc.winSize.height - 180,
+            rotation: 180
+        });
+        this.addChild(this.betMoneyLabel2, 0);
+        this.betMoneyLabel2.setVisible(false);
+
         this.countDownLabel = new ccui.Text("", "Arial", 70 );
         this.countDownLabel.enableOutline(colors.tableLabelOutline, 2);
         this.countDownLabel.setTextColor(colors.tableLabel);
@@ -335,23 +358,35 @@ var MainLayer = cc.LayerColor.extend({
 
             this.winLoseLabel1.setVisible(true);
             this.winLoseLabel2.setVisible(true);
+            this.betMoneyLabel1.setVisible(true);
+            this.betMoneyLabel2.setVisible(true);
             var money = this.model.get("betRate") * (player1Feature.rate + player2Feature.rate);
             var winner = 0;
             if (player1Feature.power > player2Feature.power) {
                 this.winLoseLabel1.setString(texts.win);
                 this.winLoseLabel2.setString(texts.lose);
-                this.giveMoney(money, this.player2Sprite, this.player1Sprite);
+                this.betMoneyLabel1.setString("$"+(player1Feature.rate+player2Feature.rate)+"×"+this.model.get("betRate")+"= +$"+money);
+                this.betMoneyLabel2.setString("$"+(player1Feature.rate+player2Feature.rate)+"×"+this.model.get("betRate")+"= -$"+money);
+                this.scheduleOnce(function() {
+                    this.giveMoney(money, this.player2Sprite, this.player1Sprite);
+                },times.readResult);
                 cc.audioEngine.playEffect(res[player1Feature.type], false);
                 winner = 1;
             } else if (player2Feature.power > player1Feature.power) {
                 this.winLoseLabel1.setString(texts.lose);
                 this.winLoseLabel2.setString(texts.win);
-                this.giveMoney(money, this.player1Sprite, this.player2Sprite);
+                this.betMoneyLabel1.setString("$"+(player1Feature.rate+player2Feature.rate)+"×"+this.model.get("betRate")+"= +$"+money);
+                this.betMoneyLabel2.setString("$"+(player1Feature.rate+player2Feature.rate)+"×"+this.model.get("betRate")+"= -$"+money);
+                this.scheduleOnce(function() {
+                    this.giveMoney(money, this.player1Sprite, this.player2Sprite);
+                },times.readResult);
                 cc.audioEngine.playEffect(res[player2Feature.type], false);
                 winner = 2;
             } else {
                 this.winLoseLabel1.setString(texts.tie);
                 this.winLoseLabel2.setString(texts.tie);
+                this.betMoneyLabel1.setVisible(false);
+                this.betMoneyLabel2.setVisible(false);
                 cc.audioEngine.playEffect(res.tie, false);
             }
             this.scheduleOnce(function () {
@@ -369,15 +404,19 @@ var MainLayer = cc.LayerColor.extend({
         }, times.takeCard+0.1);
     },
     giveMoney:function(money, fromPlayerSprite, toPlayerSprite ){
+        cc.log(money);
+        var mp3 = res["chips"+ _.sample([0,1,2,3,4])+"_mp3"];
+        cc.audioEngine.playEffect(mp3, false);
         var token100 = Math.min( 10, Math.floor(money / 100) );
         var token10 = 0;
         if ( token100 < 10 ) {
-            token10 = Math.min( 10, (money % 100)/10 );
+            token10 = Math.min( 10, Math.floor((money % 100)/10) );
         }
         var token1 = 0;
         if ( token10 + token100 < 10 ) {
             token1 = Math.min( 10, money % 10 );
         }
+        cc.log("token100"+token100+", token10"+token10+" token10"+token1);
         var restMoney = money - token1 - token10 * 10 - token100 * 100;
         var time = 0;
         for ( var i = 0; i < token100; i++ ) {
@@ -458,6 +497,8 @@ var MainLayer = cc.LayerColor.extend({
         this.handTypeLabel2.setVisible(false);
         this.winLoseLabel1.setVisible(false);
         this.winLoseLabel2.setVisible(false);
+        this.betMoneyLabel1.setVisible(false);
+        this.betMoneyLabel2.setVisible(false);
 
         this.player1.set("hands", []);
         this.player2.set("hands", []);
@@ -701,7 +742,11 @@ var MainLayer = cc.LayerColor.extend({
 
         gameModel.off();
 
-        this.saveStatistic();
+        statistic.game = statistic.game || {};
+        statistic.game[gameModel.get("mode")] = statistic.game[gameModel.get("mode")] || 0;
+        statistic.game[gameModel.get("mode")]++;
+
+        saveStatistic();
 
         cc.eventManager.removeListener(this.listener);
         cc.eventManager.addListener(cc.EventListener.create({
@@ -723,9 +768,6 @@ var MainLayer = cc.LayerColor.extend({
                 gameModel = null;
             }
         }), this);
-    },
-    saveStatistic:function(){
-        cc.sys.localStorage.setItem("statistic",JSON.stringify(statistic));
     },
     getPlayerSpriteByModel:function(player){
         if ( player === this.model.player1 ) return this.player1Sprite;

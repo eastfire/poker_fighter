@@ -35,7 +35,8 @@ var MoneySpecialCardSprite = NormalCardSprite.extend({
         var playerSprite = player == gameModel.player1 ? mainLayer.player1Sprite : mainLayer.player2Sprite;
         this.runAction(new cc.Sequence( new cc.MoveTo(times.getMoney, playerSprite.moneyLabel.x, playerSprite.moneyLabel.y) ,
             new cc.CallFunc(function(){
-                cc.audioEngine.playEffect(res.cash_register_mp3, false);
+                var mp3 = res["chip"+ _.sample([0,1,2,3])+"_mp3"];
+                cc.audioEngine.playEffect(mp3, false);
                 player.set("money", player.get("money") + this.model.get("money"));
                 gameModel.destroyCard(this.model);
             },this)

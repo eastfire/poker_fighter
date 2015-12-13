@@ -122,8 +122,8 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
     },
     initData:function(){
         this.defaultSetting = {
-            playerInitMoney : [500,500],
-            playerTargetMoney : [1000,1000],
+            playerInitMoney : [DEFAULT_INIT_MONEY,DEFAULT_INIT_MONEY],
+            playerTargetMoney : [DEFAULT_TARGET_MONEY,DEFAULT_TARGET_MONEY],
             deck: 8,
             tokenAppearRate: 0.2,
             itemAppearRate: 0.5,

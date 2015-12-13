@@ -34,6 +34,7 @@ var PauseMenuLayer = cc.LayerColor.extend({
             cc.spriteFrameCache.getSpriteFrame("restart-press.png"),
             function () {
                 cc.audioEngine.playEffect(res.click_mp3,false);
+                saveStatistic();
                 window.gameModel = null;
                 cc.director.runScene(new MainScene(setting));
             }, this);
@@ -47,6 +48,7 @@ var PauseMenuLayer = cc.LayerColor.extend({
             cc.spriteFrameCache.getSpriteFrame("exit-press.png"),
             function () {
                 cc.audioEngine.playEffect(res.click_mp3,false);
+                saveStatistic();
                 window.gameModel = null;
                 cc.director.runScene(new IntroScene());
             }, this);

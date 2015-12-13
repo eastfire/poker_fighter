@@ -46,12 +46,15 @@ var ACTION_TAG_FLIPPING = 112;
 var PLAYER_TYPE_PLAYER = 0;
 var PLAYER_TYPE_AI = 1;
 
+var DEFAULT_INIT_MONEY = 300;
+var DEFAULT_TARGET_MONEY = 300;
+
 var PlayerModel = Backbone.Model.extend({
     defaults:function(){
         return {
             type: PLAYER_TYPE_PLAYER,
-            money : 500,
-            targetMoney: 1000,
+            money : DEFAULT_INIT_MONEY,
+            targetMoney: DEFAULT_TARGET_MONEY,
             hands: [],
             speedDown: 0,
             speedUp: 0,
