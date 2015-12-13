@@ -40,6 +40,7 @@ var MainLayer = cc.LayerColor.extend({
             cc.spriteFrameCache.getSpriteFrame("pause-default.png"),
             cc.spriteFrameCache.getSpriteFrame("pause-press.png"),
             function () {
+                cc.audioEngine.playEffect(res.click_mp3,false);
                 cc.director.pushScene(new PauseMenuScene());
             }, this);
         pauseItem.attr({
@@ -198,8 +199,10 @@ var MainLayer = cc.LayerColor.extend({
                             sprite.touchingInstanceId = touchId;
                             if (sprite.y >= cc.winSize.height / 2) {
                                 sprite.speedY = NATURE_SPEED;
+                                sprite.lastTouchBy = PLAYER_POSITION_UP;
                             } else {
                                 sprite.speedY = -NATURE_SPEED;
+                                sprite.lastTouchBy = PLAYER_POSITION_DOWN;
                             }
                             sprite.speedX = 0;
                         }
@@ -302,6 +305,8 @@ var MainLayer = cc.LayerColor.extend({
         } else {
             rotation = 180
         }
+        gameModel.player1.onStartCountDown();
+        gameModel.player2.onStartCountDown();
 
         this.countDownLabel.setVisible(true);
 
@@ -314,6 +319,9 @@ var MainLayer = cc.LayerColor.extend({
     compareHands:function(){
         this.model.set("status", "compare");
         this.unschedule(this.schedulePerSec);
+        if ( this.aiSchedule ) {
+            this.unschedule(this.aiSchedule);
+        }
 
         this.scheduleOnce(function() {
             this.player1Sprite.forceShowHand();
@@ -491,6 +499,19 @@ var MainLayer = cc.LayerColor.extend({
             }
         }
         this.schedule(this.schedulePerSec, 1);
+
+        if ( this.player2.get("type") === PLAYER_TYPE_AI || this.player1.get("type") === PLAYER_TYPE_AI ) {
+            this.player1.onStartNewRound();
+            this.player2.onStartNewRound();
+            if (this.aiSchedule == null) {
+                this.aiSchedule = function () {
+                    if ( self.model.get("status") !== "game" && self.model.get("status") !== "countDown" ) return;
+                    self.player1.onAskStrategy();
+                    self.player2.onAskStrategy();
+                }
+            }
+            this.schedule(this.aiSchedule, this.player2.scheduleLength);
+        }
     },
     generateItems:function(){
         var pattern = this.model.getItemPattern().get("pattern");
@@ -694,18 +715,22 @@ var MainLayer = cc.LayerColor.extend({
             },
             //Process the touch end event
             onTouchEnded: function (touch, event) {
-                if ( gameModel.get("mode") == "vs" ) {
-                    cc.director.runScene(new ModeSelectScene());
-                } else if ( gameModel.get("mode") == "quick-vs" ) {
+                if ( gameModel.get("quickMode") ) {
                     cc.director.runScene(new IntroScene());
+                } else {
+                    cc.director.runScene(new ModeSelectScene({mode: gameModel.get("mode")}));
                 }
-
                 gameModel = null;
             }
         }), this);
     },
     saveStatistic:function(){
         cc.sys.localStorage.setItem("statistic",JSON.stringify(statistic));
+    },
+    getPlayerSpriteByModel:function(player){
+        if ( player === this.model.player1 ) return this.player1Sprite;
+        if ( player === this.model.player2 ) return this.player2Sprite;
+        return null;
     }
 });
 
@@ -738,15 +763,23 @@ var GameModel = Backbone.Model.extend({
             money: this.get("playerInitMoney")[0],
             targetMoney: this.get("playerTargetMoney")[0],
             position : PLAYER_POSITION_DOWN,
-            playerType: "player"
+            type: PLAYER_TYPE_PLAYER
         });
-        this.player2 = new PlayerModel({
-            money: this.get("playerInitMoney")[1],
-            targetMoney: this.get("playerTargetMoney")[1],
-            position : PLAYER_POSITION_UP,
-            playerType: "player",
-            type: this.get("mode") === "vs-ai" ? PLAYER_TYPE_AI : PLAYER_TYPE_PLAYER
-        });
+        if ( this.get("mode") === "vs-ai" ) {
+            this.player2 = new SimpleAIPlayerModel({
+                money: this.get("playerInitMoney")[1],
+                targetMoney: this.get("playerTargetMoney")[1],
+                position: PLAYER_POSITION_UP,
+                type: PLAYER_TYPE_AI
+            });
+        } else {
+            this.player2 = new PlayerModel({
+                money: this.get("playerInitMoney")[1],
+                targetMoney: this.get("playerTargetMoney")[1],
+                position: PLAYER_POSITION_UP,
+                type: PLAYER_TYPE_PLAYER
+            });
+        }
 
         this.patternPool = [
             new PatternModel(),
@@ -771,6 +804,16 @@ var GameModel = Backbone.Model.extend({
 //        cc.log(this.itemPool)
 //        cc.log(this.get("tokenAppearRate"))
 //        cc.log(this.get("itemAppearRate"))
+    },
+    getPlayerByPosition:function(position){
+        if ( position === PLAYER_POSITION_DOWN ) {
+            return this.player1;
+        } return this.player2;
+    },
+    getOpponentPlayer:function(playerModel){
+        if ( playerModel.get("position") === PLAYER_POSITION_DOWN ) {
+            return this.player2;
+        } return this.player1;
     },
     newDeck:function(){
         var deck = [];

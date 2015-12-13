@@ -20,20 +20,23 @@ var setting = {};
 
 var ITEM_PER_LINE = 5;
 
-var INIT_ITEMS = ["ace","bomb","cloud","diamond", "dizzy","enlarge","fast","forbid","kiss","leaf", "shrink","spy","slow","sniper","thief", "two"];
+var INIT_ITEMS = ["ace","bomb","cloud","diamond", "dizzy","enlarge","fast","forbid","kiss","leaf", "shrink","spy","slow","sniper","thief", "tornado", "two"];
 var UNLOCKABLE_ITEMS = [ "magnet","nuke" ];
 
 var ModeSelectLayer = PlayerRotateLayer.extend({
-    ctor:function(){
+    ctor:function(options){
+        this.options = options || {};
+        statistic.useItem = statistic.useItem || {};
+
         dimens.player2NamePosition.x = dimens.player1NamePosition.x = cc.winSize.width/6-30;
         dimens.player2InitMoneyPosition.x = dimens.player1InitMoneyPosition.x = cc.winSize.width/3;
         dimens.player2TargetMoneyPosition.x = dimens.player1TargetMoneyPosition.x = cc.winSize.width*2/3+40;
 
         this.initData();
 
-        this._super();
+        this._super({disableRotate:this.options.mode == "vs-ai"});
 
-        this.addChild(this.player2Label = this.makeLabel(texts.player2, dimens.player2NamePosition.x, dimens.player2NamePosition.y, 28));
+        this.addChild(this.player2Label = this.makeLabel(this.options.mode == "vs-ai" ? texts.aiPlayer : texts.player2, dimens.player2NamePosition.x, dimens.player2NamePosition.y, 28));
         this.addChild(this.player1Label = this.makeLabel(texts.player1, dimens.player1NamePosition.x, dimens.player1NamePosition.y, 28));
 
         var tokenSprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("token-black.png"));
@@ -159,6 +162,7 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
         this.playerInitMoneyRight = [];
 
         this.playerInitMoneyLeft[0] = this.renderNumberArrow(dimens.player1InitMoneyPosition.x, dimens.player1InitMoneyPosition.y, false, function(){
+            cc.audioEngine.playEffect(res.click_mp3,false);
             if ( setting.playerInitMoney[0] > MIN_INIT_MONEY ) {
                 setting.playerInitMoney[0] -= MONEY_STEP;
                 setting.playerTargetMoney[0] = setting.playerInitMoney[0]*2;
@@ -167,6 +171,7 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
             }
         });
         this.playerInitMoneyRight[0] = this.renderNumberArrow(dimens.player1InitMoneyPosition.x+90, dimens.player1InitMoneyPosition.y, true, function(){
+            cc.audioEngine.playEffect(res.click_mp3,false);
             if ( setting.playerInitMoney[0] < MAX_INIT_MONEY ) {
                 setting.playerInitMoney[0] += MONEY_STEP;
                 setting.playerTargetMoney[0] = setting.playerInitMoney[0]*2;
@@ -175,6 +180,7 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
             }
         });
         this.playerInitMoneyLeft[1] = this.renderNumberArrow(dimens.player2InitMoneyPosition.x, dimens.player2InitMoneyPosition.y, false, function(){
+            cc.audioEngine.playEffect(res.click_mp3,false);
             if ( setting.playerInitMoney[1] > MIN_INIT_MONEY ) {
                 setting.playerInitMoney[1] -= MONEY_STEP;
                 setting.playerTargetMoney[1] = setting.playerInitMoney[1]*2;
@@ -183,6 +189,7 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
             }
         });
         this.playerInitMoneyRight[1] = this.renderNumberArrow(dimens.player2InitMoneyPosition.x+90, dimens.player2InitMoneyPosition.y, true, function(){
+            cc.audioEngine.playEffect(res.click_mp3,false);
             if ( setting.playerInitMoney[1] < MAX_INIT_MONEY ) {
                 setting.playerInitMoney[1] += MONEY_STEP;
                 setting.playerTargetMoney[1] = setting.playerInitMoney[1]*2;
@@ -195,24 +202,28 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
         this.playerTargetMoneyRight = [];
 
         this.playerTargetMoneyLeft[0] = this.renderNumberArrow(dimens.player1TargetMoneyPosition.x, dimens.player1TargetMoneyPosition.y, false, function(){
+            cc.audioEngine.playEffect(res.click_mp3,false);
             if ( setting.playerTargetMoney[0] > setting.playerInitMoney[0]+MONEY_STEP ) {
                 setting.playerTargetMoney[0] -= MONEY_STEP;
                 this.renderPlayerTargetMoney(0);
             }
         });
         this.playerTargetMoneyRight[0] = this.renderNumberArrow(dimens.player1TargetMoneyPosition.x+90, dimens.player1TargetMoneyPosition.y, true, function(){
+            cc.audioEngine.playEffect(res.click_mp3,false);
             if ( setting.playerTargetMoney[0] < MAX_TARGET_MONEY ) {
                 setting.playerTargetMoney[0] += MONEY_STEP;
                 this.renderPlayerTargetMoney(0);
             }
         });
         this.playerTargetMoneyLeft[1] = this.renderNumberArrow(dimens.player2TargetMoneyPosition.x, dimens.player2TargetMoneyPosition.y, false, function(){
+            cc.audioEngine.playEffect(res.click_mp3,false);
             if ( setting.playerTargetMoney[1] > setting.playerInitMoney[1]+MONEY_STEP ) {
                 setting.playerTargetMoney[1] -= MONEY_STEP;
                 this.renderPlayerTargetMoney(1);
             }
         });
         this.playerTargetMoneyRight[1] = this.renderNumberArrow(dimens.player2TargetMoneyPosition.x+90, dimens.player2TargetMoneyPosition.y, true, function(){
+            cc.audioEngine.playEffect(res.click_mp3,false);
             if ( setting.playerTargetMoney[1] < MAX_TARGET_MONEY ) {
                 setting.playerTargetMoney[1] += MONEY_STEP;
                 this.renderPlayerTargetMoney(1);
@@ -220,10 +231,12 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
         });
 
         this.selectDeck8 = this.renderButtonGroup(dimens.usingDeckPosition.x + 150, dimens.usingDeckPosition.y, 0, function(){
+            cc.audioEngine.playEffect(res.click_mp3,false);
             setting.deck = 8;
             this.renderDeckSetting();
         });
         this.selectDeck2 = this.renderButtonGroup(dimens.usingDeckPosition.x + 150 + 90, dimens.usingDeckPosition.y, 2, function(){
+            cc.audioEngine.playEffect(res.click_mp3,false);
             setting.deck = 2;
             this.renderDeckSetting();
         });
@@ -232,18 +245,22 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
 
         var offset = 30;
         this.selectToken0 = this.renderButtonGroup( cc.winSize.width/2 - 135+offset, dimens.flyingMoney.y, 0, function(){
+            cc.audioEngine.playEffect(res.click_mp3,false);
             setting.tokenAppearRate = TOKEN_APPEAR_LEVEL0;
             this.renderTokenAppear();
         });
         this.selectToken1 = this.renderButtonGroup( cc.winSize.width/2 - 45+offset, dimens.flyingMoney.y, 1, function(){
+            cc.audioEngine.playEffect(res.click_mp3,false);
             setting.tokenAppearRate = TOKEN_APPEAR_LEVEL1;
             this.renderTokenAppear();
         });
         this.selectToken2 = this.renderButtonGroup( cc.winSize.width/2 + 45+offset, dimens.flyingMoney.y, 1, function(){
+            cc.audioEngine.playEffect(res.click_mp3,false);
             setting.tokenAppearRate = TOKEN_APPEAR_LEVEL2;
             this.renderTokenAppear();
         });
         this.selectToken3 = this.renderButtonGroup( cc.winSize.width/2 + 135+offset, dimens.flyingMoney.y, 2, function(){
+            cc.audioEngine.playEffect(res.click_mp3,false);
             setting.tokenAppearRate = TOKEN_APPEAR_LEVEL3;
             this.renderTokenAppear();
         });
@@ -254,18 +271,22 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
         this.addChild( this.makeLabel(texts.many, cc.winSize.width/2 + 135+offset, dimens.flyingMoney.y, 25));
 
         this.selectItem0 = this.renderButtonGroup( cc.winSize.width/2 - 135+offset, dimens.flyingItem.y, 0, function(){
+            cc.audioEngine.playEffect(res.click_mp3,false);
             setting.itemAppearRate = ITEM_APPEAR_LEVEL0;
             this.renderItemAppear();
         });
         this.selectItem1 = this.renderButtonGroup( cc.winSize.width/2 - 45+offset, dimens.flyingItem.y, 1, function(){
+            cc.audioEngine.playEffect(res.click_mp3,false);
             setting.itemAppearRate = ITEM_APPEAR_LEVEL1;
             this.renderItemAppear();
         });
         this.selectItem2 = this.renderButtonGroup( cc.winSize.width/2 + 45+offset, dimens.flyingItem.y, 1, function(){
+            cc.audioEngine.playEffect(res.click_mp3,false);
             setting.itemAppearRate = ITEM_APPEAR_LEVEL2;
             this.renderItemAppear();
         });
         this.selectItem3 = this.renderButtonGroup( cc.winSize.width/2 + 135+offset, dimens.flyingItem.y, 2, function(){
+            cc.audioEngine.playEffect(res.click_mp3,false);
             setting.itemAppearRate = ITEM_APPEAR_LEVEL3;
             this.renderItemAppear();
         });
@@ -279,8 +300,10 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
             cc.spriteFrameCache.getSpriteFrame("start-game-default.png"),
             cc.spriteFrameCache.getSpriteFrame("start-game-press.png"),
             function(){
+                cc.audioEngine.playEffect(res.click_mp3,false);
                 this.saveSetting();
                 setting.itemPool = _.difference(this.allItems, _.keys(setting.itemOff));
+                setting.mode = this.options.mode;
                 cc.director.runScene(new MainScene(setting));
             }, this);
         startGame.attr({
@@ -292,6 +315,7 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
         this.addChild( this.makeLabel(texts.startGame, cc.winSize.width/2, dimens.startGame.y, 25));
 
         this.renderButtonGroup( cc.winSize.width - 45, dimens.startGame.y, 0, function(){
+            cc.audioEngine.playEffect(res.click_mp3,false);
             this.useDefaultSetting();
             this.render();
             this.saveSetting();
@@ -301,17 +325,24 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
         var itemX = cc.winSize.width/ITEM_PER_LINE/2;
         var itemY = dimens.itemList.y;
         _.each(this.allItems,function(item){
-            this.itemMenus[item] = new cc.MenuItemImage(
-                cc.spriteFrameCache.getSpriteFrame("item-"+item+".png"),
-                cc.spriteFrameCache.getSpriteFrame("item-"+item+".png"),
-                function(){
-//                    if ( this.usedItems[item] ) {
-                        if ( !this.isItemOff(item) )
+            if ( statistic.useItem[item] ) {
+                this.itemMenus[item] = new cc.MenuItemImage(
+                    cc.spriteFrameCache.getSpriteFrame("item-" + item + ".png"),
+                    cc.spriteFrameCache.getSpriteFrame("item-" + item + ".png"),
+                    function () {
+                        cc.audioEngine.playEffect(res.click_mp3, false);
+                        if (!this.isItemOff(item))
                             setting.itemOff[item] = true;
                         else delete setting.itemOff[item];
                         this.renderItemMenu(item);
-                    //}
-                }, this);
+                    }, this);
+            } else {
+                this.itemMenus[item] = new cc.MenuItemImage(
+                    cc.spriteFrameCache.getSpriteFrame("unknown-item.png"),
+                    cc.spriteFrameCache.getSpriteFrame("unknown-item.png"),
+                    function () {
+                    }, this);
+            }
             this.itemMenus[item].attr({
                 x: itemX,
                 y: itemY
@@ -433,6 +464,7 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
         }
     },
     renderItemMenu:function(item){
+        if ( !statistic.useItem[item] ) return;
         if ( this.isItemOff(item) ) {
             this.itemMenus[item].attr({
                 opacity: 100,
@@ -455,10 +487,14 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
 });
 
 var ModeSelectScene = cc.Scene.extend({
+    ctor:function(options){
+        this._super();
+        this.options = options;
+    },
     onEnter:function () {
         this._super();
 
-        var layer = new ModeSelectLayer();
+        var layer = new ModeSelectLayer(this.options);
         this.addChild(layer);
     }
 });

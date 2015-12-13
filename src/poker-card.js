@@ -180,11 +180,40 @@ var NormalCardSprite = cc.Sprite.extend({
         } else this.y = dimens.player2Y - 1;
 
         this.speedY = -this.speedY;
+        this.lastTouchBy = null;
         this.onTouchRelease();
+    },
+    blowAway:function(tornadoX, tornadoW){
+        cc.audioEngine.playEffect(res.tornado_mp3, false);
+        this.stopAllActions();
+        var delta;
+        if ( this.y < cc.winSize.height/2 ) {
+            this.y = dimens.player1Y + 1;
+            delta = 10;
+        } else {
+            this.y = dimens.player2Y - 1;
+            delta = -10;
+        }
+
+        var actions = [];
+        actions.push( cc.moveTo(0.05, tornadoX, this.y) );
+        actions.push( cc.moveTo(0.15, tornadoX+tornadoW/3, this.y + delta) );
+        actions.push( cc.moveTo(0.15, tornadoX-tornadoW/2, this.y + delta * 2) );
+        actions.push( cc.moveTo(0.1, tornadoX+tornadoW/2, this.y + delta * 3) );
+        actions.push( cc.callFunc(function(){
+            this.lastTouchBy = null;
+            this.speedX = NATURE_SPEED * 2 * Math.random();
+            this.speedY = NATURE_SPEED * delta / 10;
+            this.onTouchRelease();
+        }, this) );
+        this.runAction(cc.sequence(actions));
     },
     playerTakeCard:function(player){
         if ( this.alreadyTaken )
             return;
+        if ( mainLayer.getPlayerSpriteByModel(player).checkBlowAway(this) ) {
+            return;
+        }
         if ( player.canTakeCard() ) {
             this.stopAllActions();
             this.isNewHand = true;

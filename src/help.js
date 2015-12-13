@@ -6,9 +6,9 @@ var ACCELERATE_THRESHOLD_X = 0.2;
 var ACCELERATE_THRESHOLD_Y = 0.2;
 
 var PlayerRotateLayer = cc.LayerColor.extend({
-    ctor: function () {
+    ctor: function (options) {
         this._super(colors.table);
-
+        options = options || {}
 //        this.letMeSeeItem = new cc.MenuItemImage(
 //            cc.spriteFrameCache.getSpriteFrame("let-me-see-default.png"),
 //            cc.spriteFrameCache.getSpriteFrame("let-me-see-press.png"),
@@ -40,7 +40,7 @@ var PlayerRotateLayer = cc.LayerColor.extend({
 //        });
 //        this.addChild(letMeSeeLabel);
 
-        if( 'accelerometer' in cc.sys.capabilities ) {
+        if( 'accelerometer' in cc.sys.capabilities && !options.disableRotate ) {
             var self = this;
             // call is called 30 times per second
             cc.inputManager.setAccelerometerInterval(1/30);

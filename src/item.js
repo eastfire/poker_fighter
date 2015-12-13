@@ -113,6 +113,7 @@ var AceItemModel = ItemModel.extend({
         cardSprite.runAction(cc.sequence(
             cc.fadeIn(0.5),
             cc.callFunc(function(){
+                this.lastTouchBy = playerSprite.model.get("position")
                 this.onTouchRelease()
             },cardSprite)).speed(speedScale));
     }
@@ -201,6 +202,7 @@ var KissItemModel = ItemModel.extend({
                     && sprite.y !== playerY ){
                     sprite.speedY = sy;
                     sprite.speedX = sy * ( sprite.x - cc.winSize.width/2 ) / (sprite.y - playerY);
+                    sprite.lastTouchBy = playerSprite.model.get("position");
                     sprite.onTouchRelease();
 
                     var loveSprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame( sprite.model.get("number") == 13 ? "k-in-love.png" : "j-in-love.png"));
@@ -263,6 +265,8 @@ var MagnetItemModel = ItemModel.extend({
                 if ( !sprite.alreadyTaken && sprite.y !== playerY ){
                     sprite.speedY = sy;
                     sprite.speedX = sy * ( sprite.x - cc.winSize.width/2 ) / (sprite.y - playerY);
+                    if ( sprite instanceof MoneySpecialCardSprite )
+                        sprite.lastTouchBy = playerSprite.model.get("position");
                     sprite.onTouchRelease();
                 }
             }
@@ -310,6 +314,7 @@ var DiamondItemModel = ItemModel.extend({
                 if ( !sprite.alreadyTaken && sprite.model.get("number") == 12 && sprite.y !== playerY ){
                     sprite.speedY = sy;
                     sprite.speedX = sy * ( sprite.x - cc.winSize.width/2 ) / (sprite.y - playerY);
+                    sprite.lastTouchBy = playerSprite.model.get("position");
                     sprite.onTouchRelease();
 
                     var loveSprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("q-in-love.png"));
@@ -574,7 +579,7 @@ var TwoItemModel = ItemModel.extend({
             displayName:"2",
             maxCharge: 1,
             maxCoolDown: 0,
-            description:"为对手召唤一张无花色的2",
+            description:"召唤一张无花色的2飞向对手",
             showCharge: false,
             moveTime: 5
         }
@@ -611,6 +616,7 @@ var TwoItemModel = ItemModel.extend({
         cardSprite.runAction(cc.sequence(
             cc.fadeIn(0.5),
             cc.callFunc(function(){
+                this.lastTouchBy = playerSprite.model.get("position");
                 this.onTouchRelease()
             },cardSprite)).speed(speedScale));
     }
@@ -655,6 +661,7 @@ var BombItemModel = ItemModel.extend({
         cardSprite.runAction(cc.sequence(
             cc.fadeIn(0.5),
             cc.callFunc(function(){
+                this.lastTouchBy = playerSprite.model.get("position");
                 this.onTouchRelease()
             },cardSprite)).speed(speedScale));
     }
@@ -748,8 +755,29 @@ var ThiefItemModel = ItemModel.extend({
         cardSprite.runAction(cc.sequence(
             cc.fadeIn(0.5),
             cc.callFunc(function(){
+                this.lastTouchBy = playerSprite.model.get("position");
                 this.onTouchRelease()
             },cardSprite)).speed(speedScale));
+    }
+});
+
+//Tornado
+var TornadoItemModel = ItemModel.extend({
+    defaults:function(){
+        return {
+            name:"tornado",
+            displayName:"龙卷风",
+            maxCharge: 1,
+            maxCoolDown: 1,
+            description:"在对手的区域产生龙卷风干扰其拿牌",
+            showCharge: false,
+            effectTime: 10
+        }
+    },
+    effect:function(playerSprite, opponentPlayerSprite){
+        cc.audioEngine.playEffect(res.tornado_mp3, false);
+        opponentPlayerSprite.model.set("tornado", this.get("effectTime"));
+
     }
 });
 
@@ -788,38 +816,40 @@ var ItemSlotSprite = cc.Sprite.extend({
         })
         this.addChild(this.chargeLabel);
 
-        this.listener = cc.EventListener.create({
-            event: cc.EventListener.TOUCH_ONE_BY_ONE,
-            swallowTouches: true,
-            onTouchBegan: function (touch, event) {
-                var target = event.getCurrentTarget();
+        if ( gameModel.getPlayerByPosition(this.owner).get("type") == PLAYER_TYPE_PLAYER ) {
+            this.listener = cc.EventListener.create({
+                event: cc.EventListener.TOUCH_ONE_BY_ONE,
+                swallowTouches: true,
+                onTouchBegan: function (touch, event) {
+                    var target = event.getCurrentTarget();
 
-                var locationInNode = target.convertToNodeSpace(touch.getLocation());
-                var s = target.getContentSize();
-                var rect = cc.rect(0, 0, s.width, s.height);
+                    var locationInNode = target.convertToNodeSpace(touch.getLocation());
+                    var s = target.getContentSize();
+                    var rect = cc.rect(0, 0, s.width, s.height);
 
-                //Check the click area
-                if (cc.rectContainsPoint(rect, locationInNode)) {
-                    var gameStatus = gameModel.get("status");
-                    if ( (gameStatus === "game" || gameStatus === "countDown") && target.status === "usable" && target.model && target.model.canUse.call(target.model) ) {
-                        target.foreground.opacity = 200;
-                        return true;
+                    //Check the click area
+                    if (cc.rectContainsPoint(rect, locationInNode)) {
+                        var gameStatus = gameModel.get("status");
+                        if ((gameStatus === "game" || gameStatus === "countDown") && target.status === "usable" && target.model && target.model.canUse.call(target.model)) {
+                            target.foreground.opacity = 200;
+                            return true;
+                        }
                     }
+                    return false;
+                },
+                //Trigger when moving touch
+                onTouchMoved: function (touch, event) {
+                },
+                //Process the touch end event
+                onTouchEnded: function (touch, event) {
+                    var target = event.getCurrentTarget();
+                    target.foreground.opacity = 255;
+                    target.useItem.call(target);
                 }
-                return false;
-            },
-            //Trigger when moving touch
-            onTouchMoved: function (touch, event) {
-            },
-            //Process the touch end event
-            onTouchEnded: function (touch, event) {
-                var target = event.getCurrentTarget();
-                target.foreground.opacity = 255;
-                target.useItem.call(target);
-            }
-        });
+            });
 
-        this.initEvent();
+            this.initEvent();
+        }
     },
     initEvent:function(){
         cc.eventManager.addListener( this.listener, this);
@@ -835,6 +865,7 @@ var ItemSlotSprite = cc.Sprite.extend({
         this.model = model;
 
         if ( this.model ) {
+            this.getItemStatistic();
             this.status = "usable"
             this.foreground.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame("item-" + this.model.get("name") + ".png"));
             this.chargeLabel.setVisible(this.model.get("showCharge"));
@@ -850,11 +881,11 @@ var ItemSlotSprite = cc.Sprite.extend({
         this.chargeLabel.setString(this.model.get("charge"));
     },
     useItem:function(){
-        if ( ( this.owner === PLAYER_POSITION_DOWN && gameModel.player1.get("forbid") ) ||
-            ( this.owner === PLAYER_POSITION_UP && gameModel.player2.get("forbid") ) ) {
+        if ( gameModel.getPlayerByPosition(this.owner).get("forbid") ) {
             cc.audioEngine.playEffect(res.forbid_mp3, false);
             return;
         }
+        this.useItemStatistic();
         this.model.set("coolDown", this.model.get("maxCoolDown") );
         this.model.set("charge", this.model.get("charge") - 1);
         if ( this.owner === PLAYER_POSITION_DOWN ) {
@@ -873,6 +904,12 @@ var ItemSlotSprite = cc.Sprite.extend({
                     this.foreground.opacity = 255;
                 }, this)));
         }
+    },
+    useItemStatistic:function(){
+        statistic.useItem = statistic.useItem || {};
+        var itemName = this.model.get("name");
+        statistic.useItem[itemName] = statistic.useItem[itemName] || 0;
+        statistic.useItem[itemName]++;
     },
     getAnItem:function(name){
         if ( this.status == "rolling" ) return;
@@ -907,12 +944,23 @@ var ItemSlotSprite = cc.Sprite.extend({
             if ( i == DUMMY_ITEM_COUNT ) {
                 actionArray.push(cc.callFunc(function(){
                     this.setItemModel(new ITEM_MODEL_CLASS_MAP[itemName]());
+                    gameModel.getPlayerByPosition(this.owner).onGetItem(itemName);
                 },this));
             }
             sprite.runAction(cc.sequence(actionArray));
         }
+    },
+    getItemStatistic:function(){
+        statistic.getItem = statistic.getItem || {};
+        var itemName = this.model.get("name");
+        statistic.getItem[itemName] = statistic.getItem[itemName] || 0;
+        statistic.getItem[itemName]++;
     }
 });
+
+
+//fog
+
 
 var ITEM_MODEL_CLASS_MAP = {
     "ace": AceItemModel,
@@ -932,6 +980,7 @@ var ITEM_MODEL_CLASS_MAP = {
     "sniper": SniperItemModel,
     "spy": SpyItemModel,
     "thief": ThiefItemModel,
+    "tornado": TornadoItemModel,
     "two": TwoItemModel
 
 }

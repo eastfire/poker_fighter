@@ -9,6 +9,7 @@ var PauseMenuLayer = cc.LayerColor.extend({
             cc.spriteFrameCache.getSpriteFrame("resume-default.png"),
             cc.spriteFrameCache.getSpriteFrame("resume-press.png"),
             function () {
+                cc.audioEngine.playEffect(res.click_mp3,false);
                 cc.director.popScene();
             }, this);
         resumeItem.attr({
@@ -20,6 +21,7 @@ var PauseMenuLayer = cc.LayerColor.extend({
             cc.spriteFrameCache.getSpriteFrame("info-default.png"),
             cc.spriteFrameCache.getSpriteFrame("info-press.png"),
             function () {
+                cc.audioEngine.playEffect(res.click_mp3,false);
                 cc.director.pushScene( new HelpScene() );
             }, this);
         infoItem.attr({
@@ -31,6 +33,7 @@ var PauseMenuLayer = cc.LayerColor.extend({
             cc.spriteFrameCache.getSpriteFrame("restart-default.png"),
             cc.spriteFrameCache.getSpriteFrame("restart-press.png"),
             function () {
+                cc.audioEngine.playEffect(res.click_mp3,false);
                 window.gameModel = null;
                 cc.director.runScene(new MainScene(setting));
             }, this);
@@ -43,6 +46,7 @@ var PauseMenuLayer = cc.LayerColor.extend({
             cc.spriteFrameCache.getSpriteFrame("exit-default.png"),
             cc.spriteFrameCache.getSpriteFrame("exit-press.png"),
             function () {
+                cc.audioEngine.playEffect(res.click_mp3,false);
                 window.gameModel = null;
                 cc.director.runScene(new IntroScene());
             }, this);
@@ -55,6 +59,7 @@ var PauseMenuLayer = cc.LayerColor.extend({
             cc.spriteFrameCache.getSpriteFrame("mute-default.png"),
             cc.spriteFrameCache.getSpriteFrame("mute-press.png"),
             function () {
+                cc.audioEngine.playEffect(res.click_mp3,false);
                 var store = cc.sys.localStorage.getItem("sound");
                 var sound = 0;
                 if ( store != null ) {
@@ -86,7 +91,6 @@ var PauseMenuLayer = cc.LayerColor.extend({
         } else {
             sound = 0;
         }
-        cc.log("renderMuteItem"+sound);
         if ( sound != 0 ) { //"0"?
             this.muteItem.setNormalSpriteFrame(cc.spriteFrameCache.getSpriteFrame("mute-default.png"));
             this.muteItem.setSelectedSpriteFrame(cc.spriteFrameCache.getSpriteFrame("mute-press.png"));

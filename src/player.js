@@ -58,6 +58,7 @@ var PlayerModel = Backbone.Model.extend({
             sizeUp: 0,
             sizeDown: 0,
             dizzy: 0,
+            tornado: 0,
             spy: 0,
             forbid: 0,
             needItem: true,
@@ -69,6 +70,8 @@ var PlayerModel = Backbone.Model.extend({
         var cards = this.get("hands");
         cards.push(cardModel);
         this.sortHand();
+        this.onGetCard(cardModel);
+        gameModel.getOpponentPlayer(this).onOpponentGetCard(cardModel);
     },
     discardRandomCard:function(){
         var hands = this.get("hands");
@@ -257,7 +260,7 @@ var PlayerModel = Backbone.Model.extend({
         return sizeScale;
     },
     maintain:function(){
-        _.each( ["speedUp","speedDown","sizeUp","sizeDown","dizzy","spy","forbid"],function(attr){
+        _.each( ["speedUp","speedDown","sizeUp","sizeDown","dizzy","spy","forbid","tornado"],function(attr){
             var value = this.get(attr);
             if ( value > 0 ) {
                 this.set(attr, value - 1);
@@ -271,9 +274,23 @@ var PlayerModel = Backbone.Model.extend({
             speedUp: 0,
             speedDown: 0,
             dizzy: 0,
+            tornado: 0,
             spy: 0,
             forbid: 0
         })
+    },
+
+    onStartNewRound:function(){
+    },
+    onGetCard:function(cardModel){
+    },
+    onOpponentGetCard:function(cardModel){
+    },
+    onAskStrategy:function(){
+    },
+    onGetItem:function(itemName){
+    },
+    onStartCountDown:function(){
     }
 });
 
@@ -418,13 +435,15 @@ var PlayerSprite = cc.Sprite.extend({
         this.model.on("change:spy",this.onSpyChange,this);
         this.model.on("change:showHand",this.onShowHandChange,this);
         this.model.on("change:forbid",this.onForbidChange,this);
+        this.model.on("change:tornado",this.onTornadoChange,this);
     },
     closeEvent:function(){
         this.model.off("change:hands",this.onHandChange);
         this.model.off("change:money",this.onMoneyChange);
         this.model.off("change:spy",this.onSpyChange);
-        this.model.off("change:showHand",this.onShowHandChange,this);
+        this.model.off("change:showHand",this.onShowHandChange);
         this.model.off("change:forbid",this.onForbidChange);
+        this.model.off("change:tornado",this.onTornadoChange);
     },
     renderMoney:function(){
         this.moneyLabel.setString(this.model.get("money"));
@@ -479,6 +498,47 @@ var PlayerSprite = cc.Sprite.extend({
         } else if ( prev && !current ) {
             this.forbidSprite.removeFromParent(true);
             this.forbidSprite = null;
+        }
+    },
+    onTornadoChange:function(){
+        var prev = this.model.previous("tornado");
+        var current = this.model.get("tornado");
+        if ( !prev && current ) {
+            var y;
+            var rotation;
+            if ( this.model.get("position") == PLAYER_POSITION_DOWN ) {
+                y = dimens.player1Y ;
+                rotation = 0;
+            } else {
+                y = dimens.player2Y ;
+                rotation = 180;
+            }
+
+            this.tornadoSprites = [];
+            for ( var i = 0; i < MAX_TORNADO_NUMBER; i++ ) {
+                var x = (0.1 + 0.8 * Math.random()) * cc.winSize.width;
+                var tornadoSprite = new TornadoSprite();
+                tornadoSprite.attr({
+                    x: x,
+                    y: y,
+
+                    rotation: rotation
+                });
+                tornadoSprite.moveRandomly();
+                this.addChild(tornadoSprite);
+                this.tornadoSprites[i] = tornadoSprite;
+            }
+
+        } else if ( prev && !current ) {
+            if ( this.tornadoSprites ) {
+                _.each(this.tornadoSprites, function (tornadoSprite) {
+                    tornadoSprite.runAction(cc.sequence(cc.fadeOut(0.3), cc.callFunc(function () {
+                        tornadoSprite.removeFromParent(true);
+                        tornadoSprite = null;
+                    }, this)));
+                }, this);
+                this.tornadoSprites = [];
+            }
         }
     },
     isHandVisible:function(){
@@ -608,5 +668,54 @@ var PlayerSprite = cc.Sprite.extend({
     },
     getAnItem:function(){
         this.itemSlotSprite.getAnItem();
+    },
+    checkBlowAway:function(sprite) {
+        if ( !this.model.get("tornado") ) return false;
+        if ( this.tornadoSprites ) {
+            var x = sprite.x;
+            return _.any(this.tornadoSprites,function(tornado){
+                if ( x >= tornado.x - tornado.width/2 && tornado.x + tornado.width/2 >= x ) {
+                    sprite.blowAway(tornado.x, tornado.width );
+                    return true;
+                }
+                return false;
+            },this);
+        } else return false;
     }
 })
+
+var MAX_TORNADO_NUMBER = 4;
+var TornadoSprite = cc.Sprite.extend({
+    ctor:function(){
+        this._super();
+
+        this.attr({
+            scaleX: 1,
+            scaleY: 1
+        })
+        var animateFrames = [];
+        for (var i = 0; i < 8; i++) {
+            var frame = cc.spriteFrameCache.getSpriteFrame("tornado-"+i+".png");
+            animateFrames.push(frame);
+        }
+        var animation = new cc.Animation(animateFrames, 0.1,true);
+        var tornadoAction = new cc.Animate(animation);
+        this.runAction(tornadoAction).repeatForever();
+
+    },
+    moveRandomly:function(){
+        var actions = [];
+        var y = this.y;
+        var padding = 50;
+        var movement = 200;
+        for ( i = 0; i < 10; i++ ) {
+            var time = Math.random()*0.5;
+            var scale = Math.random()*0.5+1;
+            actions.push(cc.delayTime(time));
+            var newx = Math.random()*movement - movement/2 + this.x;
+            newx = Math.min(cc.winSize.width - padding, Math.max( padding, newx ) );
+            actions.push(cc.spawn(cc.scaleTo(1-time, scale,scale),cc.moveTo(1-time, newx, y)));
+        }
+        this.runAction(cc.sequence(actions));
+    }
+});

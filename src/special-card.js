@@ -24,6 +24,9 @@ var MoneySpecialCardSprite = NormalCardSprite.extend({
     playerTakeCard:function(player){
         if ( this.alreadyTaken )
             return;
+        if ( mainLayer.getPlayerSpriteByModel(player).checkBlowAway(this) ) {
+            return;
+        }
         this.stopAllActions();
         this.setTag(0);
 
@@ -32,6 +35,7 @@ var MoneySpecialCardSprite = NormalCardSprite.extend({
         var playerSprite = player == gameModel.player1 ? mainLayer.player1Sprite : mainLayer.player2Sprite;
         this.runAction(new cc.Sequence( new cc.MoveTo(times.getMoney, playerSprite.moneyLabel.x, playerSprite.moneyLabel.y) ,
             new cc.CallFunc(function(){
+                cc.audioEngine.playEffect(res.cash_register_mp3, false);
                 player.set("money", player.get("money") + this.model.get("money"));
                 gameModel.destroyCard(this.model);
             },this)
@@ -57,6 +61,9 @@ var ItemSpecialCardSprite = NormalCardSprite.extend({
     playerTakeCard:function(player){
         if ( this.alreadyTaken )
             return;
+        if ( mainLayer.getPlayerSpriteByModel(player).checkBlowAway(this) ) {
+            return;
+        }
         if (player.get("forbid")) {
             this.bounceBack();
             return;
@@ -93,6 +100,9 @@ var BombSpecialCardSprite = NormalCardSprite.extend({
     playerTakeCard:function(player){
         if ( this.alreadyTaken )
             return;
+        if ( mainLayer.getPlayerSpriteByModel(player).checkBlowAway(this) ) {
+            return;
+        }
         this.stopAllActions();
         this.setTag(0);
 
@@ -144,6 +154,9 @@ var ThiefSpecialCardSprite = NormalCardSprite.extend({
     playerTakeCard:function(player){
         if ( this.alreadyTaken )
             return;
+        if ( mainLayer.getPlayerSpriteByModel(player).checkBlowAway(this) ) {
+            return;
+        }
         this.stopAllActions();
         this.setTag(0);
 
@@ -153,7 +166,7 @@ var ThiefSpecialCardSprite = NormalCardSprite.extend({
         this.runAction(new cc.Sequence( new cc.MoveTo(times.getMoney, playerSprite.moneyLabel.x, playerSprite.moneyLabel.y) ,
             new cc.CallFunc(function(){
                 player.set("money", Math.max(1, player.get("money") - this.model.power * gameModel.get("betRate")));
-                cc.audioEngine.playEffect(res.cash_register_mp3, false);
+                cc.audioEngine.playEffect(res.thief_mp3, false);
             },this),
             cc.moveTo( 0.1, player == gameModel.player1 ? - dimens.card_size.width : cc.winSize.width + dimens.card_size.width, playerSprite.moneyLabel.y ),
             cc.callFunc(function(){
