@@ -39,14 +39,14 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
         this.addChild(this.player2Label = this.makeLabel(this.options.mode == "vs-ai" ? texts.aiPlayer : texts.player2, dimens.player2NamePosition.x, dimens.player2NamePosition.y, 28));
         this.addChild(this.player1Label = this.makeLabel(texts.player1, dimens.player1NamePosition.x, dimens.player1NamePosition.y, 28));
 
-        var tokenSprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("token-black.png"));
+        var tokenSprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("token-green.png"));
         tokenSprite.attr({
             x: dimens.player2InitMoneyPosition.x - 40,
             y: dimens.player2InitMoneyPosition.y
             });
         this.addChild(tokenSprite);
 
-        var tokenSprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("token-black.png"));
+        var tokenSprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("token-green.png"));
         tokenSprite.attr({
             x: dimens.player1InitMoneyPosition.x - 40,
             y: dimens.player1InitMoneyPosition.y

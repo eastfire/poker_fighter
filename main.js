@@ -70,7 +70,7 @@ cc.game.onStart = function(){
         //loadStatistic;
         var store = cc.sys.localStorage.getItem("statistic");
         if ( store ) {
-            cc.log(store)
+            //cc.log(store)
             statistic = JSON.parse(store);
         } else {
             statistic = {
