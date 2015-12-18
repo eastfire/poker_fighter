@@ -17,17 +17,17 @@ var PauseMenuLayer = cc.LayerColor.extend({
             y: cc.winSize.height/8
         });
 
-        var infoItem = new cc.MenuItemImage(
-            cc.spriteFrameCache.getSpriteFrame("info-default.png"),
-            cc.spriteFrameCache.getSpriteFrame("info-press.png"),
-            function () {
-                cc.audioEngine.playEffect(res.click_mp3,false);
-                cc.director.pushScene( new HelpScene() );
-            }, this);
-        infoItem.attr({
-            x: cc.winSize.width/2,
-            y: cc.winSize.height*3/8
-        });
+//        var infoItem = new cc.MenuItemImage(
+//            cc.spriteFrameCache.getSpriteFrame("info-default.png"),
+//            cc.spriteFrameCache.getSpriteFrame("info-press.png"),
+//            function () {
+//                cc.audioEngine.playEffect(res.click_mp3,false);
+//                cc.director.pushScene( new HelpScene() );
+//            }, this);
+//        infoItem.attr({
+//            x: cc.winSize.width/2,
+//            y: cc.winSize.height*3/8
+//        });
 
         var restartItem = new cc.MenuItemImage(
             cc.spriteFrameCache.getSpriteFrame("restart-default.png"),
@@ -39,8 +39,8 @@ var PauseMenuLayer = cc.LayerColor.extend({
                 cc.director.runScene(new MainScene(setting));
             }, this);
         restartItem.attr({
-            x: cc.winSize.width*2/3,
-            y: cc.winSize.height*5/8
+            x: cc.winSize.width/2,
+            y: cc.winSize.height*3/8
         });
 
         var exitItem = new cc.MenuItemImage(
@@ -53,7 +53,7 @@ var PauseMenuLayer = cc.LayerColor.extend({
                 cc.director.runScene(new IntroScene());
             }, this);
         exitItem.attr({
-            x: cc.winSize.width/3,
+            x: cc.winSize.width/2,
             y: cc.winSize.height*5/8
         });
 
@@ -80,7 +80,7 @@ var PauseMenuLayer = cc.LayerColor.extend({
         });
 
 
-        var menu = new cc.Menu([exitItem, restartItem, infoItem, resumeItem, this.muteItem ]);
+        var menu = new cc.Menu([exitItem, restartItem, resumeItem, this.muteItem ]);
         menu.x = 0;
         menu.y = 0;
         this.addChild(menu);

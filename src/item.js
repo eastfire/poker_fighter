@@ -415,7 +415,7 @@ var SniperItemModel = ItemModel.extend({
                 cc.moveTo(0.4, currentSprite.width/2, currentSprite.height/2),
                 cc.delayTime(0.4),
                 cc.callFunc(function(){
-                    if ( !sniperSprite.alreadyTaken ) {
+                    if ( !currentSprite.alreadyTaken ) {
                         cc.audioEngine.playEffect(res.sniper_mp3, false);
 
                         gameModel.destroyCard(currentSprite.model);
@@ -830,7 +830,7 @@ var ItemSlotSprite = cc.Sprite.extend({
                     //Check the click area
                     if (cc.rectContainsPoint(rect, locationInNode)) {
                         var gameStatus = gameModel.get("status");
-                        if ((gameStatus === "game" || gameStatus === "countDown") && target.status === "usable" && target.model && target.model.canUse.call(target.model)) {
+                        if (target.canPressItem()) {
                             target.foreground.opacity = 200;
                             return true;
                         }
@@ -850,6 +850,13 @@ var ItemSlotSprite = cc.Sprite.extend({
 
             this.initEvent();
         }
+    },
+    canPressItem:function(){
+        var gameStatus = gameModel.get("status");
+        if ((gameStatus === "game" || gameStatus === "countDown") && this.status === "usable" && this.model && this.model.canUse()) {
+            return true;
+        }
+        return false;
     },
     initEvent:function(){
         cc.eventManager.addListener( this.listener, this);
@@ -876,6 +883,11 @@ var ItemSlotSprite = cc.Sprite.extend({
             this.chargeLabel.setVisible(false);
             this.foreground.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame("no-item.png"));
         }
+    },
+    getCurrentItemName:function(){
+        if ( this.model ) {
+            return this.model.get("name")
+        } else return null;
     },
     renderCharge:function(){
         this.chargeLabel.setString(this.model.get("charge"));

@@ -49,7 +49,20 @@ var MainLayer = cc.LayerColor.extend({
             anchorX: 0,
             anchorY: 0.5
         });
-        var menu = new cc.Menu([pauseItem]);
+        var helpItem = new cc.MenuItemImage(
+            cc.spriteFrameCache.getSpriteFrame("help-default.png"),
+            cc.spriteFrameCache.getSpriteFrame("help-press.png"),
+            function () {
+                cc.audioEngine.playEffect(res.click_mp3,false);
+                cc.director.pushScene(new HelpScene());
+            }, this);
+        helpItem.attr({
+            x: cc.winSize.width,
+            y: cc.winSize.height/2,
+            anchorX: 1,
+            anchorY: 0.5
+        });
+        var menu = new cc.Menu([pauseItem, helpItem]);
         menu.x = 0;
         menu.y = 0;
         this.addChild(menu, 100);
@@ -342,8 +355,11 @@ var MainLayer = cc.LayerColor.extend({
     compareHands:function(){
         this.model.set("status", "compare");
         this.unschedule(this.schedulePerSec);
-        if ( this.aiSchedule ) {
-            this.unschedule(this.aiSchedule);
+        if ( this.aiSchedule1 ) {
+            this.unschedule(this.aiSchedule1);
+        }
+        if ( this.aiSchedule2 ) {
+            this.unschedule(this.aiSchedule2);
         }
 
         this.scheduleOnce(function() {
@@ -365,8 +381,8 @@ var MainLayer = cc.LayerColor.extend({
             if (player1Feature.power > player2Feature.power) {
                 this.winLoseLabel1.setString(texts.win);
                 this.winLoseLabel2.setString(texts.lose);
-                this.betMoneyLabel1.setString("$"+(player1Feature.rate+player2Feature.rate)+"×"+this.model.get("betRate")+"= +$"+money);
-                this.betMoneyLabel2.setString("$"+(player1Feature.rate+player2Feature.rate)+"×"+this.model.get("betRate")+"= -$"+money);
+                this.betMoneyLabel1.setString("$"+(player1Feature.rate+player2Feature.rate)+" × "+this.model.get("betRate")+" = +$"+money);
+                this.betMoneyLabel2.setString("$"+(player1Feature.rate+player2Feature.rate)+" × "+this.model.get("betRate")+" = -$"+money);
                 this.scheduleOnce(function() {
                     this.giveMoney(money, this.player2Sprite, this.player1Sprite);
                 },times.readResult);
@@ -375,8 +391,8 @@ var MainLayer = cc.LayerColor.extend({
             } else if (player2Feature.power > player1Feature.power) {
                 this.winLoseLabel1.setString(texts.lose);
                 this.winLoseLabel2.setString(texts.win);
-                this.betMoneyLabel1.setString("$"+(player1Feature.rate+player2Feature.rate)+"×"+this.model.get("betRate")+"= +$"+money);
-                this.betMoneyLabel2.setString("$"+(player1Feature.rate+player2Feature.rate)+"×"+this.model.get("betRate")+"= -$"+money);
+                this.betMoneyLabel1.setString("$"+(player1Feature.rate+player2Feature.rate)+" × "+this.model.get("betRate")+" = -$"+money);
+                this.betMoneyLabel2.setString("$"+(player1Feature.rate+player2Feature.rate)+" × "+this.model.get("betRate")+" = +$"+money);
                 this.scheduleOnce(function() {
                     this.giveMoney(money, this.player1Sprite, this.player2Sprite);
                 },times.readResult);
@@ -404,7 +420,6 @@ var MainLayer = cc.LayerColor.extend({
         }, times.takeCard+0.1);
     },
     giveMoney:function(money, fromPlayerSprite, toPlayerSprite ){
-        cc.log(money);
         var mp3 = res["chips"+ _.sample([0,1,2,3,4])+"_mp3"];
         cc.audioEngine.playEffect(mp3, false);
         var token100 = Math.min( 10, Math.floor(money / 100) );
@@ -416,7 +431,7 @@ var MainLayer = cc.LayerColor.extend({
         if ( token10 + token100 < 10 ) {
             token1 = Math.min( 10, money % 10 );
         }
-        cc.log("token100"+token100+", token10"+token10+" token10"+token1);
+
         var restMoney = money - token1 - token10 * 10 - token100 * 100;
         var time = 0;
         for ( var i = 0; i < token100; i++ ) {
@@ -541,17 +556,25 @@ var MainLayer = cc.LayerColor.extend({
         }
         this.schedule(this.schedulePerSec, 1);
 
-        if ( this.player2.get("type") === PLAYER_TYPE_AI || this.player1.get("type") === PLAYER_TYPE_AI ) {
-            this.player1.onStartNewRound();
+        if ( this.player2.get("type") === PLAYER_TYPE_AI ) {
             this.player2.onStartNewRound();
-            if (this.aiSchedule == null) {
-                this.aiSchedule = function () {
+            if (this.aiSchedule2 == null) {
+                this.aiSchedule2 = function () {
                     if ( self.model.get("status") !== "game" && self.model.get("status") !== "countDown" ) return;
-                    self.player1.onAskStrategy();
                     self.player2.onAskStrategy();
                 }
             }
-            this.schedule(this.aiSchedule, this.player2.scheduleLength);
+            this.schedule(this.aiSchedule2, this.player2.scheduleLength+Math.random()*0.3);
+        }
+        if ( this.player1.get("type") === PLAYER_TYPE_AI ) {
+            this.player1.onStartNewRound();
+            if (this.aiSchedule1 == null) {
+                this.aiSchedule1 = function () {
+                    if ( self.model.get("status") !== "game" && self.model.get("status") !== "countDown" ) return;
+                    self.player1.onAskStrategy();
+                }
+            }
+            this.schedule(this.aiSchedule1, this.player2.scheduleLength+Math.random()*0.3);
         }
     },
     generateItems:function(){
@@ -734,6 +757,8 @@ var MainLayer = cc.LayerColor.extend({
             new cc.ScaleTo(times.gameOver, 2,2)));
         this.handTypeLabel1.setVisible(false);
         this.handTypeLabel2.setVisible(false);
+        this.betMoneyLabel1.setVisible(false);
+        this.betMoneyLabel2.setVisible(false);
 
         this.player1Sprite.moneyLabel.runAction(new cc.Spawn(new cc.MoveTo(times.gameOver, cc.winSize.width/2, cc.winSize.height/2 - 250),
             new cc.ScaleTo(times.gameOver, 2,2)));
@@ -782,7 +807,7 @@ var GameModel = Backbone.Model.extend({
             playerInitMoney: [500,500],
             playerTargetMoney: [1000,1000],
             tokenAppearRate: 0.2,
-            bigMoneyRate: 0.1,
+            bigMoneyRate: 0.05,
             itemAppearRate: 0.5, //0, 0.25, 0.5, 0.75, 1
             gameSpeed: 1,
             deck: 8,
@@ -801,13 +826,20 @@ var GameModel = Backbone.Model.extend({
 
         this.cidToModel = {};
 
-        this.player1 = new PlayerModel({
-            money: this.get("playerInitMoney")[0],
-            targetMoney: this.get("playerTargetMoney")[0],
-            position : PLAYER_POSITION_DOWN,
-            type: PLAYER_TYPE_PLAYER
-        });
+
         if ( this.get("mode") === "vs-ai" ) {
+//            this.player1 = new AIPlayerModel({
+//                money: this.get("playerInitMoney")[0],
+//                targetMoney: this.get("playerTargetMoney")[0],
+//                position : PLAYER_POSITION_DOWN,
+//                type: PLAYER_TYPE_AI
+//            });
+            this.player1 = new PlayerModel({
+                money: this.get("playerInitMoney")[0],
+                targetMoney: this.get("playerTargetMoney")[0],
+                position : PLAYER_POSITION_DOWN,
+                type: PLAYER_TYPE_PLAYER
+            });
             this.player2 = new SimpleAIPlayerModel({
                 money: this.get("playerInitMoney")[1],
                 targetMoney: this.get("playerTargetMoney")[1],
@@ -815,6 +847,12 @@ var GameModel = Backbone.Model.extend({
                 type: PLAYER_TYPE_AI
             });
         } else {
+            this.player1 = new PlayerModel({
+                money: this.get("playerInitMoney")[0],
+                targetMoney: this.get("playerTargetMoney")[0],
+                position : PLAYER_POSITION_DOWN,
+                type: PLAYER_TYPE_PLAYER
+            });
             this.player2 = new PlayerModel({
                 money: this.get("playerInitMoney")[1],
                 targetMoney: this.get("playerTargetMoney")[1],

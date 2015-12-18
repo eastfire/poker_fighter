@@ -190,44 +190,44 @@ var PlayerModel = Backbone.Model.extend({
 
         var power, type, theCard, rate;
         if ( this.is5ofAKind(cards) ) {
-            power = 11000 + cards[0].get("number") * 20 + (19 - cards[0].get("suit"));
+            power = 11000 + cards[0].get("number") * 20// + (19 - cards[0].get("suit"));
             type = "five-of-a-kind"
             rate = 100;
             cc.sys.localStorage.setItem("fiveOfAKindAppeared",true);
         } else if ( this.isFlushStraight(cards) ) {
-            power = 10000 + cards[0].get("number") * 20 + (19 - cards[0].get("suit"));
+            power = 10000 + cards[0].get("number") * 20// + (19 - cards[0].get("suit"));
             type = "straight-flush"
             rate = 50;
         } else if ( theCard = this.is4ofAKind(cards) ) {
-            power = 9000 + theCard.get("number") * 20 + (19 - theCard.get("suit"));
+            power = 9000 + theCard.get("number") * 20// + (19 - theCard.get("suit"));
             type = "four-of-a-kind";
             rate = 40;
         } else if ( theCard = this.isFullHouse(cards) ) {
-            power = 8000 + theCard.get("number") * 20 + (19 - theCard.get("suit"));
+            power = 8000 + theCard.get("number") * 20// + (19 - theCard.get("suit"));
             type = "full-house";
             rate = 30;
         } else if ( this.isFlush(cards) ) {
-            power = 7000 + cards[0].get("number") * 20 + (19 - cards[0].get("suit"));
+            power = 7000 + cards[0].get("number") * 20// + (19 - cards[0].get("suit"));
             type = "flush";
             rate = 20;
         } else if ( this.isStraight(cards) ) {
-            power = 6000 + cards[0].get("number") * 20 + (19 - cards[0].get("suit"));
+            power = 6000 + cards[0].get("number") * 20// + (19 - cards[0].get("suit"));
             type = "straight";
             rate = 15;
         } else if ( theCard = this.is3ofAKind(cards) ) {
-            power = 5000 + theCard.get("number") * 20 + (19 -theCard.get("suit"));
+            power = 5000 + theCard.get("number") * 20// + (19 -theCard.get("suit"));
             type = "three-of-a-kind";
             rate = 10;
         } else if ( theCard = this.is2Pair(cards) ) {
-            power = 4000 + theCard.get("number") * 20 + (19 -theCard.get("suit"));
+            power = 4000 + theCard.get("number") * 20// + (19 -theCard.get("suit"));
             type = "two-pair";
             rate = 4;
         } else if ( theCard = this.isPair(cards) ) {
-            power = 3000 + theCard.get("number") * 20 + (19 -theCard.get("suit"));
+            power = 3000 + theCard.get("number") * 20// + (19 -theCard.get("suit"));
             type = "one-pair";
             rate = 2;
         } else if ( cards[0].get("number") > 0 ) {
-            power = 2000 + cards[0].get("number") * 20 + (19 -cards[0].get("suit"));
+            power = 2000 + cards[0].get("number") * 20// + (19 -cards[0].get("suit"));
             type = "high-card";
             rate = 1;
         } else {
@@ -331,21 +331,42 @@ var PlayerSprite = cc.Sprite.extend({
         });
         this.addChild(bound,0);
 
-        var moneySprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("money.png"))
+        var moneySprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("token-black.png"))
         if ( this.model.get("position") == PLAYER_POSITION_DOWN ) {
             moneySprite.attr({
-                x: 0,
-                y: 0,
-                anchorX: 0,
-                anchorY: 0
+                x: 30,
+                y: 60
             });
         } else {
             moneySprite.attr({
-                x:cc.winSize.width,
-                y: cc.winSize.height,
-                anchorX: 0,
-                anchorY: 0,
-                rotation: 180
+                x: cc.winSize.width-30,
+                y: cc.winSize.height-60
+            });
+        }
+        this.addChild(moneySprite);
+        var moneySprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("token-red.png"))
+        if ( this.model.get("position") == PLAYER_POSITION_DOWN ) {
+            moneySprite.attr({
+                x: 30,
+                y: 65
+            });
+        } else {
+            moneySprite.attr({
+                x: cc.winSize.width-30,
+                y: cc.winSize.height-65
+            });
+        }
+        this.addChild(moneySprite);
+        var moneySprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("token-green.png"))
+        if ( this.model.get("position") == PLAYER_POSITION_DOWN ) {
+            moneySprite.attr({
+                x: 30,
+                y: 70
+            });
+        } else {
+            moneySprite.attr({
+                x: cc.winSize.width-30,
+                y: cc.winSize.height-70
             });
         }
         this.addChild(moneySprite);
@@ -377,24 +398,62 @@ var PlayerSprite = cc.Sprite.extend({
             this.moneyLabel.attr({
                 //color: colors.tableLabel,
                 x: 45,
-                y: 25
+                y: 65
             });
         } else {
             this.moneyLabel.attr({
                 //color: colors.tableLabel,
                 x: cc.winSize.width - 45,
-                y: cc.winSize.height - 25,
+                y: cc.winSize.height - 65,
                 rotation: 180
             });
         }
         this.addChild(this.moneyLabel, 0);
 
+        var targetMoneySprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("token-win.png"))
+        if ( this.model.get("position") == PLAYER_POSITION_DOWN ) {
+            targetMoneySprite.attr({
+                x: 30,
+                y: 20,
+                scaleX: 0.5,
+                scaleY: 0.5
+            });
+        } else {
+            targetMoneySprite.attr({
+                x: cc.winSize.width-30,
+                y: cc.winSize.height-20,
+                scaleX: 0.5,
+                scaleY: 0.5,
+                rotation: 180
+            });
+        }
+        this.addChild(targetMoneySprite);
+
+        var targetMoneyLabel = new ccui.Text(this.model.get("targetMoney"), "Arial", 30 );
+        targetMoneyLabel.enableOutline(cc.color.WHITE, 1);
+        targetMoneyLabel.setTextColor(cc.color.BLACK);
+        if ( this.model.get("position") == PLAYER_POSITION_DOWN ) {
+            targetMoneyLabel.attr({
+                //color: colors.tableLabel,
+                x: 70,
+                y: 15
+            });
+        } else {
+            targetMoneyLabel.attr({
+                //color: colors.tableLabel,
+                x: cc.winSize.width - 70,
+                y: cc.winSize.height - 15,
+                rotation: 180
+            });
+        }
+        this.addChild(targetMoneyLabel, 0);
 
         var self = this;
         cc.eventManager.addListener( cc.EventListener.create({
             event: cc.EventListener.TOUCH_ONE_BY_ONE,
             swallowTouches: true,
             onTouchBegan: function (touch, event) {
+                if ( self.model.get("type") === PLAYER_TYPE_AI ) return;
                 var target = event.getCurrentTarget();
 
                 var locationInNode = target.convertToNodeSpace(touch.getLocation());
@@ -684,6 +743,9 @@ var PlayerSprite = cc.Sprite.extend({
                 return false;
             },this);
         } else return false;
+    },
+    canUseItem:function(){
+        return this.itemSlotSprite.canPressItem() && !this.model.get("forbid");
     }
 })
 

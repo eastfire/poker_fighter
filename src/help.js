@@ -68,6 +68,7 @@ var PlayerRotateLayer = cc.LayerColor.extend({
             cc.spriteFrameCache.getSpriteFrame("exit-default.png"),
             cc.spriteFrameCache.getSpriteFrame("exit-press.png"),
             function () {
+                cc.audioEngine.playEffect(res.click_mp3,false);
                 cc.director.popScene();
             }, this);
         exitItem.attr({
@@ -177,19 +178,19 @@ var HelpPokerLayer = PlayerRotateLayer.extend({
         this.renderFeature( [{ suit:0, number: 13}, { suit:1, number: 11}, { suit:2, number: 8}],
             "high-card" );
 
-        var suitOrderSprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("suit-order.png"));
-        suitOrderSprite.attr({
-            x: cc.winSize.width/2,
-            y: 50
-        });
-        this.addChild(suitOrderSprite);
+//        var suitOrderSprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("suit-order.png"));
+//        suitOrderSprite.attr({
+//            x: cc.winSize.width/2,
+//            y: 50
+//        });
+//        this.addChild(suitOrderSprite);
     }
 });
 
 var HelpScene = cc.Scene.extend({
     onEnter:function () {
         this._super();
-        var layer = new HelpPokerLayer();
+        var layer = new HelpPokerLayer({disableRotate:gameModel.get("mode") == "vs-ai"});
         this.addChild(layer);
     }
 });
