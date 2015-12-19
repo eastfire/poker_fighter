@@ -165,26 +165,29 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
             cc.audioEngine.playEffect(res.click_mp3,false);
             if ( setting.playerInitMoney[0] > MIN_INIT_MONEY ) {
                 setting.playerInitMoney[0] -= MONEY_STEP;
-                setting.playerTargetMoney[0] = setting.playerInitMoney[0]*2;
+                setting.playerTargetMoney[0] = setting.playerTargetMoney[1] = setting.playerInitMoney[0]+setting.playerInitMoney[1];
                 this.renderPlayerInitMoney(0);
                 this.renderPlayerTargetMoney(0);
+                this.renderPlayerTargetMoney(1);
             }
         });
         this.playerInitMoneyRight[0] = this.renderNumberArrow(dimens.player1InitMoneyPosition.x+90, dimens.player1InitMoneyPosition.y, true, function(){
             cc.audioEngine.playEffect(res.click_mp3,false);
             if ( setting.playerInitMoney[0] < MAX_INIT_MONEY ) {
                 setting.playerInitMoney[0] += MONEY_STEP;
-                setting.playerTargetMoney[0] = setting.playerInitMoney[0]*2;
+                setting.playerTargetMoney[0] = setting.playerTargetMoney[1] = setting.playerInitMoney[0]+setting.playerInitMoney[1];
                 this.renderPlayerInitMoney(0);
                 this.renderPlayerTargetMoney(0);
+                this.renderPlayerTargetMoney(1);
             }
         });
         this.playerInitMoneyLeft[1] = this.renderNumberArrow(dimens.player2InitMoneyPosition.x, dimens.player2InitMoneyPosition.y, false, function(){
             cc.audioEngine.playEffect(res.click_mp3,false);
             if ( setting.playerInitMoney[1] > MIN_INIT_MONEY ) {
                 setting.playerInitMoney[1] -= MONEY_STEP;
-                setting.playerTargetMoney[1] = setting.playerInitMoney[1]*2;
+                setting.playerTargetMoney[0] = setting.playerTargetMoney[1] = setting.playerInitMoney[0]+setting.playerInitMoney[1];
                 this.renderPlayerInitMoney(1);
+                this.renderPlayerTargetMoney(0);
                 this.renderPlayerTargetMoney(1);
             }
         });
@@ -192,8 +195,9 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
             cc.audioEngine.playEffect(res.click_mp3,false);
             if ( setting.playerInitMoney[1] < MAX_INIT_MONEY ) {
                 setting.playerInitMoney[1] += MONEY_STEP;
-                setting.playerTargetMoney[1] = setting.playerInitMoney[1]*2;
+                setting.playerTargetMoney[0] = setting.playerTargetMoney[1] = setting.playerInitMoney[0]+setting.playerInitMoney[1];
                 this.renderPlayerInitMoney(1);
+                this.renderPlayerTargetMoney(0);
                 this.renderPlayerTargetMoney(1);
             }
         });

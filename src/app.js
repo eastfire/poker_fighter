@@ -229,7 +229,7 @@ var MainLayer = cc.LayerColor.extend({
                 var locationInNode = target.convertToNodeSpace(touch.getLocation());
                 var touchId = cc.sys.isNative ? touch.getID() : touch.__instanceId;
                 _.each( target.getChildren(), function(sprite) {
-                    if (sprite instanceof NormalCardSprite && sprite.canBeTouch() && (!target._touchInstanceUsed[touchId] || sprite.touchingInstanceId === touchId )) {
+                    if (sprite instanceof NormalCardSprite && sprite.canBeTouch(locationInNode) && (!target._touchInstanceUsed[touchId] || sprite.touchingInstanceId === touchId )) {
                         var rect = cc.rect(sprite.x - sprite.width / 2, sprite.y - sprite.height / 2, sprite.width, sprite.height);
                         if (cc.rectContainsPoint(rect, locationInNode)){
                             sprite.touchingInstanceId = touchId;
@@ -253,7 +253,7 @@ var MainLayer = cc.LayerColor.extend({
                 if ( gameModel.player2.get("type") === PLAYER_TYPE_AI && locationInNode.y > cc.winSize.height/2 ) return;
                 var touchId = cc.sys.isNative ? touch.getID() : touch.__instanceId;
                 _.each( target.getChildren(), function(sprite){
-                    if ( sprite instanceof NormalCardSprite && sprite.canBeTouch() && (!target._touchInstanceUsed[touchId] || sprite.touchingInstanceId === touchId ) ) {
+                    if ( sprite instanceof NormalCardSprite && sprite.canBeTouch(locationInNode) && (!target._touchInstanceUsed[touchId] || sprite.touchingInstanceId === touchId ) ) {
                         var padding = 0;
                         var rect = cc.rect(sprite.x-sprite.width/2+padding, sprite.y-sprite.height/2+padding, sprite.width-2*padding,sprite.height-2*padding);
 
@@ -290,7 +290,7 @@ var MainLayer = cc.LayerColor.extend({
                 var prevLocationInNode = target.convertToNodeSpace(touch.getPreviousLocation());
                 var touchId = cc.sys.isNative ? touch.getID() : touch.__instanceId;
                 _.each( target.getChildren(), function(sprite){
-                    if ( sprite instanceof NormalCardSprite && sprite.canBeTouch() ) {
+                    if ( sprite instanceof NormalCardSprite && sprite.canBeTouch(locationInNode) ) {
                         var rect = cc.rect(sprite.x-sprite.width/2, sprite.y-sprite.height/2, sprite.width,sprite.height);
 
                         //Check the click area
@@ -867,9 +867,21 @@ var GameModel = Backbone.Model.extend({
             new Pattern3Model(),
             new Pattern4Model(),
             new Pattern5Model(),
-            new Pattern6Model()
+            new Pattern6Model(),
+            new Pattern7Model(),
+            new Pattern8Model(),
+            new Pattern9Model(),
+            new Pattern10Model(),
+            new Pattern11Model(),
+            new Pattern12Model(),
+            new Pattern13Model(),
+            new Pattern14Model(),
+            new Pattern15Model(),
+            new Pattern16Model(),
+            new Pattern17Model(),
+            new Pattern18Model()
         ];
-
+        
         this.itemPatternPool = [
             new ItemPattern1Model(),
             new ItemPattern2Model(),

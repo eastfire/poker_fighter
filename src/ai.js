@@ -43,6 +43,29 @@ var AIPlayerModel = PlayerModel.extend({
         return ( this.get("position") === PLAYER_POSITION_UP && sprite.y > midY+padding || this.get("position") === PLAYER_POSITION_DOWN && sprite.y < midY-padding ) &&
             ( sprite.x > dimens.card_size.width/2 && sprite.x < cc.winSize.width - dimens.card_size.width/2 ) ;
     },
+    countSprite:function(){
+        return _.countBy( mainLayer.getChildren(), function(sprite) {
+            if (sprite.x < 0 || sprite.x > cc.winSize.width)
+                return "nothing";
+            if (sprite instanceof MoneySpecialCardSprite) {
+                if (!sprite.alreadyTaken) {
+                    return "money";
+                }
+            } else if (sprite instanceof PokerCardSprite ) {
+                if ( !sprite.alreadyTaken ) {
+                    var number = sprite.model.get("number");
+                    if ( number === 12 ) {
+                        return "q";
+                    } else if ( number === 11 ) {
+                        return "j";
+                    } else if ( number === 13 ) {
+                        return "k";
+                    }
+                }
+            }
+            return "nothing";
+        });
+    },
     onAskStrategy:function(){
         var candidates = [];
         _.each( mainLayer.getChildren(), function(sprite) {
@@ -163,6 +186,7 @@ var SimpleAIPlayerModel = AIPlayerModel.extend({
     evaluateBomb:function(sprite){
         return 45;
     },
+
     evaluateUseItem:function(itemName){
         var playerSprite, opponentSprite;
         if ( this.get("position") == PLAYER_POSITION_UP ) {
@@ -172,6 +196,7 @@ var SimpleAIPlayerModel = AIPlayerModel.extend({
             playerSprite = mainLayer.player1Sprite;
             opponentSprite = mainLayer.player2Sprite;
         }
+        var counts = this.countSprite();
         switch ( itemName ) {
             case "ace":case "cloud":case "two":case "dizzy":case "enlarge":case "fast":case "forbid":
             case"leaf":case"shrink":case"slow":case "sniper":case"thief":case"tornado":
@@ -181,10 +206,29 @@ var SimpleAIPlayerModel = AIPlayerModel.extend({
             case "spy":
                 return opponentSprite.model.get("hands").length >= 1 ? 30 : 0;
             case "kiss":
+                if (!this.get("hands").length >= 4)
+                    return 0;
+                if ( (counts.j >= 2 && counts.k <= 1) || (counts.j <= 1 && counts.k >= 2) ) {
+                    return 30
+                } else {
+                    return 0;
+                }
                 break;
             case "diamond":
+                if (!this.get("hands").length >= 4)
+                    return 0;
+                if ( counts.q >= 2 ) {
+                    return 30
+                } else {
+                    return 0;
+                }
                 break;
             case "magnet":
+                if ( counts.money >= 2 ) {
+                    return 30
+                } else {
+                    return 0;
+                }
                 break;
             case "nuke":
                 return opponentSprite.model.get("hands").length > playerSprite.model.get("hands").length + 1 ? 50 : 0;

@@ -12,8 +12,8 @@ var IntroLayer = cc.Layer.extend({
         if ( lang != "zh" ) lang = "en";
 
         var vsItem = new cc.MenuItemImage(
-            cc.spriteFrameCache.getSpriteFrame("menu-vs-default-"+lang+".png"),
-            cc.spriteFrameCache.getSpriteFrame("menu-vs-press-"+lang+".png"),
+            cc.spriteFrameCache.getSpriteFrame("2player-menu.png"),
+            cc.spriteFrameCache.getSpriteFrame("2player-menu.png"),
             function () {
                 //TODO if played once
                 cc.audioEngine.playEffect(res.click_mp3,false);
@@ -22,8 +22,11 @@ var IntroLayer = cc.Layer.extend({
 
             }, this);
         vsItem.attr({
-            x: cc.winSize.width/2,
-            y: cc.winSize.height/2 - 200
+            x: cc.winSize.width/2 - 55,
+            y: cc.winSize.height/2 - 100,
+            scaleX: 1.1,
+            scaleY: 1.1,
+            rotation: -5
         });
 
 //        var quickVsItem = new cc.MenuItemImage(
@@ -46,15 +49,18 @@ var IntroLayer = cc.Layer.extend({
 //        });
 
         var vsAIItem = new cc.MenuItemImage(
-            cc.spriteFrameCache.getSpriteFrame("menu-vs-ai-default-"+lang+".png"),
-            cc.spriteFrameCache.getSpriteFrame("menu-vs-ai-press-"+lang+".png"),
+            cc.spriteFrameCache.getSpriteFrame("vs-ai-menu.png"),
+            cc.spriteFrameCache.getSpriteFrame("vs-ai-menu.png"),
             function () {
                 cc.audioEngine.playEffect(res.click_mp3,false);
                 cc.director.runScene(new ModeSelectScene({mode:"vs-ai"}));
             }, this);
         vsAIItem.attr({
-            x: cc.winSize.width/2,
-            y: cc.winSize.height/2 - 300
+            x: cc.winSize.width/2+55,
+            y: cc.winSize.height/2 - 100,
+            scaleX: 1.1,
+            scaleY: 1.1,
+            rotation: 5
         });
         var menu = new cc.Menu([vsItem, vsAIItem]);
         menu.x = 0;

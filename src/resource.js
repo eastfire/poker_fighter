@@ -17,6 +17,7 @@ var res = {
     shrink_mp3: "res/shrink.mp3",
     enlarge_mp3: "res/enlarge.mp3",
     forbid_mp3: "res/forbid.mp3",
+    tornado_mp3: "res/tornado.mp3",
     click_mp3: "res/click-button.mp3",
     thief_mp3: "res/thief.mp3",
     chip0_mp3: "res/chip0.mp3",

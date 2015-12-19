@@ -27,7 +27,6 @@ var NormalCardSprite = cc.Sprite.extend({
         this.model = options.model;
 
         this.setName(this.model.cid);
-        this.touchable = true;
 
         this.initView();
     },
@@ -64,8 +63,6 @@ var NormalCardSprite = cc.Sprite.extend({
                     if ( gameModel.player2.get("dizzy") )
                         this.dizzy();
                     else this.rotation = 180;
-                    //touchable change
-                    this.touchable = (gameModel.player2.get("type") !== PLAYER_TYPE_AI);
                 }, target);
                 //check size
                 var newSizeScale = gameModel.player1.getSizeAdjust();
@@ -73,8 +70,6 @@ var NormalCardSprite = cc.Sprite.extend({
                 //dizzy
                 if ( gameModel.player1.get("dizzy") )
                     this.dizzy();
-                //touchable change
-                this.touchable = (gameModel.player1.get("type") !== PLAYER_TYPE_AI);
             } else {
                 target.moveToLine.call(target, gameModel.player2, player2Y, function(){
                     target.playerTakeCard.call(target, gameModel.player2);
@@ -85,8 +80,6 @@ var NormalCardSprite = cc.Sprite.extend({
                 //dizzy
                 if ( gameModel.player2.get("dizzy") )
                     this.dizzy();
-                //touchable change
-                this.touchable = (gameModel.player2.get("type") !== PLAYER_TYPE_AI);
             }
         } else if ( target.speedY < 0 ) {
             if ( target.y >= midY ) {
@@ -102,8 +95,6 @@ var NormalCardSprite = cc.Sprite.extend({
                     if ( gameModel.player1.get("dizzy") )
                         this.dizzy();
                     else this.rotation = 0;
-                    //touchable change
-                    this.touchable = (gameModel.player1.get("type") !== PLAYER_TYPE_AI);
                 }, target);
                 //check size
                 var newSizeScale = gameModel.player2.getSizeAdjust();
@@ -111,8 +102,6 @@ var NormalCardSprite = cc.Sprite.extend({
                 //dizzy
                 if ( gameModel.player2.get("dizzy") )
                     this.dizzy();
-                //touchable change
-                this.touchable = (gameModel.player2.get("type") !== PLAYER_TYPE_AI);
             } else {
                 target.moveToLine.call(target, gameModel.player1, player1Y, function(){
                     target.playerTakeCard.call(target, gameModel.player1);
@@ -123,8 +112,6 @@ var NormalCardSprite = cc.Sprite.extend({
                 //dizzy
                 if ( gameModel.player1.get("dizzy") )
                     this.dizzy();
-                //touchable change
-                this.touchable = (gameModel.player1.get("type") !== PLAYER_TYPE_AI);
             }
         } else if ( target.speedY == 0 ) {
             var actionArray = [];
@@ -155,8 +142,6 @@ var NormalCardSprite = cc.Sprite.extend({
                 //check dizzy
                 if ( gameModel.player1.get("dizzy") )
                     this.dizzy();
-                //touchable change
-                this.touchable = (gameModel.player1.get("type") !== PLAYER_TYPE_AI);
             } else {
                 //check size
                 var newSizeScale = gameModel.player2.getSizeAdjust();
@@ -164,13 +149,16 @@ var NormalCardSprite = cc.Sprite.extend({
                 //check dizzy
                 if ( gameModel.player2.get("dizzy") )
                     this.dizzy();
-                //touchable change
-                this.touchable = (gameModel.player2.get("type") !== PLAYER_TYPE_AI);
             }
         }
     },
-    canBeTouch:function(){
-        return !this.alreadyTaken && this.touchable;
+    canBeTouch:function(locationInNode){
+        if ( this.alreadyTaken ) return false;
+        if ( gameModel.player2.get("type") == PLAYER_TYPE_AI ) {
+            if ( gameModel.player1.get("type") == PLAYER_TYPE_AI ) return false;
+            if ( this.y > cc.winSize.height/2 + this.height/2 ) return false;
+        } else if ( gameModel.player1.get("type") == PLAYER_TYPE_AI && this.y < cc.winSize.height/2 - this.height/2 ) return false;
+        return true;
     },
     bounceBack:function(){
         cc.audioEngine.playEffect(res.spring_mp3, false);
