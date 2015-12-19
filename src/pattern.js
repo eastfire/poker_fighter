@@ -316,7 +316,7 @@ var Pattern12Model = PatternModel.extend({
         });
         for ( var i = 0; i < 2; i++ ) {
             ret.push({
-                time : i*(DIVIDE_TIME+0.1),
+                time : (i+1)*(DIVIDE_TIME+0.1),
                 start : {
                     x: -dimens.card_size.width,
                     y: 150 + 50 * (1-i)
@@ -328,7 +328,7 @@ var Pattern12Model = PatternModel.extend({
                 moveTime: 3.5
             });
             ret.push({
-                time : i*(DIVIDE_TIME+0.1),
+                time : (i+1)*(DIVIDE_TIME+0.1),
                 start : {
                     x: -dimens.card_size.width,
                     y: 350 - 50 * (1-i)
@@ -348,7 +348,7 @@ var Pattern13Model = PatternModel.extend({
     generateList:function(){
         var time = 0;
         return _.map([0,1,2,3],function(i){
-            time += DIVIDE_TIME+0.2;
+            time += DIVIDE_TIME+0.15;
             return {
                 time: time,
                 start : {
@@ -369,7 +369,7 @@ var Pattern14Model = PatternModel.extend({
     generateList:function(){
         var time = 0;
         return _.map([0,1,2,3],function(i){
-            time += DIVIDE_TIME+0.2;
+            time += DIVIDE_TIME+0.15;
             return {
                 time: time,
                 start : {
@@ -390,7 +390,7 @@ var Pattern15Model = PatternModel.extend({
     generateList:function(){
         var time = 0;
         return _.map([0,1,2,3],function(i){
-            time += DIVIDE_TIME+0.2;
+            time += DIVIDE_TIME+0.15;
             return {
                 time: time,
                 start : {
@@ -411,7 +411,7 @@ var Pattern16Model = PatternModel.extend({
     generateList:function(){
         var time = 0;
         return _.map([0,1,2,3],function(i){
-            time += DIVIDE_TIME+0.2;
+            time += DIVIDE_TIME+0.15;
             return {
                 time: time,
                 start : {
@@ -434,7 +434,7 @@ var Pattern17Model = PatternModel.extend({
         var ret = [];
         for ( var i = 0; i < 2; i++ ) {
             ret.push({
-                time : (1+i)*(DIVIDE_TIME+0.1),
+                time : (1+i)*(DIVIDE_TIME+0.15),
                 start : {
                     x: -dimens.card_size.width,
                     y: 150 + 40 * i
@@ -446,7 +446,7 @@ var Pattern17Model = PatternModel.extend({
                 moveTime: 3.5
             });
             ret.push({
-                time : (1+i)*(DIVIDE_TIME+0.1),
+                time : (1+i)*(DIVIDE_TIME+0.15),
                 start : {
                     x: -dimens.card_size.width,
                     y: 350 - 40 * i
@@ -468,7 +468,7 @@ var Pattern18Model = PatternModel.extend({
         var ret = [];
         for ( var i = 0; i < 2; i++ ) {
             ret.push({
-                time : i*(DIVIDE_TIME+0.1),
+                time : i*(DIVIDE_TIME+0.15),
                 start : {
                     x: -dimens.card_size.width,
                     y: 150 + 40 * (1-i)
@@ -480,7 +480,7 @@ var Pattern18Model = PatternModel.extend({
                 moveTime: 3.5
             });
             ret.push({
-                time : i*(DIVIDE_TIME+0.1),
+                time : i*(DIVIDE_TIME+0.15),
                 start : {
                     x: -dimens.card_size.width,
                     y: 350 - 40 * (1-i)
