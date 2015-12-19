@@ -198,7 +198,8 @@ var KissItemModel = ItemModel.extend({
         var playerY = playerSprite.model.get("position") === PLAYER_POSITION_DOWN ? 0 : cc.winSize.height;
         _.each( mainLayer.getChildren(), function(sprite) {
             if (sprite instanceof NormalCardSprite ) {
-                if ( !sprite.alreadyTaken && ( sprite.model.get("number") == 13 || sprite.model.get("number") == 11 )
+                if ( !sprite.alreadyTaken && sprite.x >= 0 && sprite.x <= cc.winSize.width
+                    && ( sprite.model.get("number") == 13 || sprite.model.get("number") == 11 )
                     && sprite.y !== playerY ){
                     sprite.speedY = sy;
                     sprite.speedX = sy * ( sprite.x - cc.winSize.width/2 ) / (sprite.y - playerY);
@@ -262,7 +263,7 @@ var MagnetItemModel = ItemModel.extend({
         var playerY = playerSprite.model.get("position") === PLAYER_POSITION_DOWN ? 0 : cc.winSize.height;
         _.each( mainLayer.getChildren(), function(sprite) {
             if (sprite instanceof MoneySpecialCardSprite || sprite instanceof ThiefSpecialCardSprite ) {
-                if ( !sprite.alreadyTaken && sprite.y !== playerY ){
+                if ( !sprite.alreadyTaken && sprite.y !== playerY && sprite.x >= 0 && sprite.x <= cc.winSize.width ){
                     sprite.speedY = sy;
                     sprite.speedX = sy * ( sprite.x - cc.winSize.width/2 ) / (sprite.y - playerY);
                     if ( sprite instanceof MoneySpecialCardSprite )
@@ -311,7 +312,8 @@ var DiamondItemModel = ItemModel.extend({
         var playerY = playerSprite.model.get("position") === PLAYER_POSITION_DOWN ? 0 : cc.winSize.height;
         _.each( mainLayer.getChildren(), function(sprite) {
             if (sprite instanceof NormalCardSprite ) {
-                if ( !sprite.alreadyTaken && sprite.model.get("number") == 12 && sprite.y !== playerY ){
+                if ( !sprite.alreadyTaken && sprite.x >= 0 && sprite.x <= cc.winSize.width
+                    && sprite.model.get("number") == 12 && sprite.y !== playerY ){
                     sprite.speedY = sy;
                     sprite.speedX = sy * ( sprite.x - cc.winSize.width/2 ) / (sprite.y - playerY);
                     sprite.lastTouchBy = playerSprite.model.get("position");
