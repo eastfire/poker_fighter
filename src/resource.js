@@ -91,7 +91,9 @@ var texts_locale = {
 
         startGame: "开始游戏",
         useDefault: "默认",
-        returnToIntro: "返回"
+        returnToIntro: "返回",
+
+        gameOver: "GAME OVER"
     },
     en:{
         win:"WIN",
@@ -126,7 +128,9 @@ var texts_locale = {
 
         startGame: "START GAME",
         useDefault: "DEFAULT",
-        returnToIntro: "RETURN"
+        returnToIntro: "RETURN",
+
+        gameOver: "GAME OVER"
     }
 };
 

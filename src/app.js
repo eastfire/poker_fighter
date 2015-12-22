@@ -522,14 +522,6 @@ var MainLayer = cc.LayerColor.extend({
 
         this.model.newDeck();
 
-//        var cardModel = this.model.drawCard();
-//        var sprite = new PokerCardSprite({model: cardModel});
-//        sprite.attr({
-//            x: 300,
-//            y: 200
-//        });
-//        this.addChild(sprite);
-
         var self = this;
         if ( this.schedulePerSec == null ) {
             this.schedulePerSec = function () {
@@ -748,8 +740,9 @@ var MainLayer = cc.LayerColor.extend({
     },
     gameOver:function(){
         cc.audioEngine.playEffect(res.game_over_mp3, false);
-        this.betRateLabel1.setString("Game Over");
-        this.betRateLabel2.setString("Game Over");
+        //reuse betRateLabel to show game over
+        this.betRateLabel1.setString(texts.gameOver);
+        this.betRateLabel2.setString(texts.gameOver);
 
         this.betRateLabel1.runAction(new cc.Spawn(new cc.MoveTo(times.gameOver, cc.winSize.width/2, cc.winSize.height/2),
         new cc.ScaleTo(times.gameOver, 2,2)));
@@ -879,7 +872,16 @@ var GameModel = Backbone.Model.extend({
             new Pattern15Model(),
             new Pattern16Model(),
             new Pattern17Model(),
-            new Pattern18Model()
+            new Pattern18Model(),
+            new Pattern19Model(),
+            new Pattern20Model(),
+            new Pattern21Model(),
+            new Pattern22Model(),
+            new Pattern23Model(),
+            new Pattern24Model(),
+            new Pattern25Model(),
+            new Pattern26Model(),
+            new Pattern27Model()
         ];
         
         this.itemPatternPool = [
