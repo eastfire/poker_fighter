@@ -47,7 +47,7 @@ var PLAYER_TYPE_PLAYER = 0;
 var PLAYER_TYPE_AI = 1;
 
 var DEFAULT_INIT_MONEY = 300;
-var DEFAULT_TARGET_MONEY = 300;
+var DEFAULT_TARGET_MONEY = DEFAULT_INIT_MONEY*2;
 
 var PlayerModel = Backbone.Model.extend({
     defaults:function(){
@@ -508,6 +508,21 @@ var PlayerSprite = cc.Sprite.extend({
         this.model.off("change:tornado",this.onTornadoChange);
     },
     renderMoney:function(){
+        if ( this.model.get("money") >= this.model.get("targetMoney") && this.model.previous("money") < this.model.get("targetMoney") ) {
+            this.moneyLabel.setColor(cc.color.RED);
+            if ( !this.moneyLabelAction ) {
+                this.moneyLabelAction = cc.sequence(cc.scaleTo(0.4, 1.2, 1.2),cc.scaleTo(0.4, 1, 1)).repeatForever();
+                this.moneyLabel.runAction(this.moneyLabelAction);
+            }
+        } else if ( this.model.get("money") < this.model.get("targetMoney") && this.model.previous("money") >= this.model.get("targetMoney") ) {
+            this.moneyLabel.setColor(cc.color.WHITE);
+            if ( this.moneyLabelAction ) {
+                this.moneyLabel.stopAction(this.moneyLabelAction);
+                this.moneyLabelAction = null;
+            }
+        }
+
+
         this.moneyLabel.setString(this.model.get("money"));
     },
     onMoneyChange:function(){

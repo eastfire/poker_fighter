@@ -62,14 +62,14 @@ var PauseMenuLayer = cc.LayerColor.extend({
             cc.spriteFrameCache.getSpriteFrame("mute-press.png"),
             function () {
                 cc.audioEngine.playEffect(res.click_mp3,false);
-                var store = cc.sys.localStorage.getItem("sound");
+                var store = cc.sys.localStorage.getItem("poker_fighter.sound");
                 var sound = 0;
                 if ( store != null ) {
                     sound = 1-store;
                 } else {
                     sound = 0;
                 }
-                cc.sys.localStorage.setItem("sound",sound);
+                cc.sys.localStorage.setItem("poker_fighter.sound",sound);
                 cc.audioEngine.setEffectsVolume(sound);
                 this.renderMuteItem();
             }, this);
@@ -86,7 +86,7 @@ var PauseMenuLayer = cc.LayerColor.extend({
         this.addChild(menu);
     },
     renderMuteItem:function(){
-        var store = cc.sys.localStorage.getItem("sound");
+        var store = cc.sys.localStorage.getItem("poker_fighter.sound");
         var sound = 1;
         if ( store != null ) {
             sound = store;

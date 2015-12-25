@@ -730,7 +730,7 @@ var MainLayer = cc.LayerColor.extend({
         },this);
     },
     initAudio:function(){
-        var store = cc.sys.localStorage.getItem("sound");
+        var store = cc.sys.localStorage.getItem("poker_fighter.sound");
         if ( store != null ) {
             this.sound = store;
         } else {
@@ -753,8 +753,10 @@ var MainLayer = cc.LayerColor.extend({
         this.betMoneyLabel1.setVisible(false);
         this.betMoneyLabel2.setVisible(false);
 
+        this.player1Sprite.moneyLabel.stopAllActions()
         this.player1Sprite.moneyLabel.runAction(new cc.Spawn(new cc.MoveTo(times.gameOver, cc.winSize.width/2, cc.winSize.height/2 - 250),
             new cc.ScaleTo(times.gameOver, 2,2)));
+        this.player2Sprite.moneyLabel.stopAllActions()
         this.player2Sprite.moneyLabel.runAction(new cc.Spawn(new cc.MoveTo(times.gameOver, cc.winSize.width/2, cc.winSize.height/2 + 250),
             new cc.ScaleTo(times.gameOver, 2,2)));
 
@@ -763,6 +765,7 @@ var MainLayer = cc.LayerColor.extend({
         statistic.game = statistic.game || {};
         statistic.game[gameModel.get("mode")] = statistic.game[gameModel.get("mode")] || 0;
         statistic.game[gameModel.get("mode")]++;
+
 
         saveStatistic();
 
@@ -797,8 +800,8 @@ var MainLayer = cc.LayerColor.extend({
 var GameModel = Backbone.Model.extend({
     defaults:function(){
         return {
-            playerInitMoney: [500,500],
-            playerTargetMoney: [1000,1000],
+            playerInitMoney: [DEFAULT_INIT_MONEY,DEFAULT_INIT_MONEY],
+            playerTargetMoney: [DEFAULT_TARGET_MONEY,DEFAULT_TARGET_MONEY],
             tokenAppearRate: 0.2,
             bigMoneyRate: 0.05,
             itemAppearRate: 0.5, //0, 0.25, 0.5, 0.75, 1

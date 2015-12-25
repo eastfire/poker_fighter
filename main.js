@@ -50,7 +50,7 @@ var texts;
 var statistic;
 
 var saveStatistic = function(){
-    cc.sys.localStorage.setItem("statistic",JSON.stringify(statistic));
+    cc.sys.localStorage.setItem("poker_fighter.statistic",JSON.stringify(statistic));
 }
 
 cc.game.onStart = function(){
@@ -76,7 +76,7 @@ cc.game.onStart = function(){
             texts = texts_locale["en"];
 
         //loadStatistic;
-        var store = cc.sys.localStorage.getItem("statistic");
+        var store = cc.sys.localStorage.getItem("poker_fighter.statistic");
         if ( store ) {
             //cc.log(store)
             statistic = JSON.parse(store);

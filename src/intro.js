@@ -15,11 +15,16 @@ var IntroLayer = cc.Layer.extend({
             cc.spriteFrameCache.getSpriteFrame("2player-menu.png"),
             cc.spriteFrameCache.getSpriteFrame("2player-menu.png"),
             function () {
-                //TODO if played once
-                cc.audioEngine.playEffect(res.click_mp3,false);
-                cc.director.runScene(new ModeSelectScene({mode:"vs"}));
-                //TODO else quickMode
-
+                cc.audioEngine.playEffect(res.click_mp3, false);
+                statistic.game = statistic.game || {};
+                var playedOnce = statistic.game.vs || statistic.game["vs-ai"]
+                if ( playedOnce ) {
+                    cc.director.runScene(new ModeSelectScene({mode: "vs"}));
+                } else {
+                    cc.director.runScene(new MainScene({
+                        itemPool : INIT_ITEMS
+                    }));
+                }
             }, this);
         vsItem.attr({
             x: cc.winSize.width/2 - 55,
@@ -29,31 +34,21 @@ var IntroLayer = cc.Layer.extend({
             rotation: -5
         });
 
-//        var quickVsItem = new cc.MenuItemImage(
-//            cc.spriteFrameCache.getSpriteFrame("menu-quick-vs-default-"+lang+".png"),
-//            cc.spriteFrameCache.getSpriteFrame("menu-quick-vs-press-"+lang+".png"),
-//            function () {
-//                cc.audioEngine.playEffect(res.click_mp3,false);
-//                var store = cc.sys.localStorage.getItem("unlocked");
-//                var unlocked = [];
-//                if ( store ) {
-//                    unlocked = JSON.parse(store);
-//                }
-//                cc.director.runScene(new MainScene({
-//                    itemPool : _.union(INIT_ITEMS, unlocked)
-//                }));
-//            }, this);
-//        quickVsItem.attr({
-//            x: cc.winSize.width/2,
-//            y: cc.winSize.height/2 - 200
-//        });
-
         var vsAIItem = new cc.MenuItemImage(
             cc.spriteFrameCache.getSpriteFrame("vs-ai-menu.png"),
             cc.spriteFrameCache.getSpriteFrame("vs-ai-menu.png"),
             function () {
                 cc.audioEngine.playEffect(res.click_mp3,false);
-                cc.director.runScene(new ModeSelectScene({mode:"vs-ai"}));
+                statistic.game = statistic.game || {};
+                var playedOnce = statistic.game.vs || statistic.game["vs-ai"]
+                if ( playedOnce ) {
+                    cc.director.runScene(new ModeSelectScene({mode: "vs-ai"}));
+                } else {
+                    cc.director.runScene(new MainScene({
+                        mode: "vs-ai",
+                        itemPool : INIT_ITEMS
+                    }));
+                }
             }, this);
         vsAIItem.attr({
             x: cc.winSize.width/2+55,
