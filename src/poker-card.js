@@ -208,6 +208,7 @@ var NormalCardSprite = cc.Sprite.extend({
             this.setTag(0);
             player.addHand(this.model);
             this.alreadyTaken = true;
+            this.model.alreadyTaken = true;
         } else {
             this.bounceBack();
         }

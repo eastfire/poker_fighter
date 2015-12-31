@@ -53,7 +53,12 @@ var saveStatistic = function(){
     cc.sys.localStorage.setItem("poker_fighter.statistic",JSON.stringify(statistic));
 }
 
+var isWebIOS = false;
 cc.game.onStart = function(){
+    if(!cc.sys.isNative ) {
+        isWebIOS = /iPad|iPhone|iPod/.test(navigator.platform);
+    }
+    //isWebIOS = true;
     if(!cc.sys.isNative && document.getElementById("cocosLoading")) //If referenced loading.js, please remove it
         document.body.removeChild(document.getElementById("cocosLoading"));
 

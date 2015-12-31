@@ -36,6 +36,16 @@ var MainLayer = cc.LayerColor.extend({
         });
         this.addChild(bound);
 
+        if ( isWebIOS ) {
+            var lineSprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("protect-line.png"))
+            lineSprite.attr({
+                x: 13,
+                y: cc.winSize.height/2,
+                zIndex: 90
+            })
+            this.addChild(lineSprite)
+        }
+
         var pauseItem = new cc.MenuItemImage(
             cc.spriteFrameCache.getSpriteFrame("pause-default.png"),
             cc.spriteFrameCache.getSpriteFrame("pause-press.png"),
@@ -946,7 +956,7 @@ var GameModel = Backbone.Model.extend({
     clearNotOwnedCards:function(){
         var deleteList = [];
         _.each( this.cidToModel, function(cardModel){
-            if ( cardModel !=null && ! cardModel._owned ) {
+            if ( cardModel !=null && ! cardModel._owned && !cardModel.alreadyTaken) {
                 deleteList.push(cardModel);
             }
         },this);

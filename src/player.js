@@ -330,16 +330,16 @@ var PlayerSprite = cc.Sprite.extend({
             y: y
         });
         this.addChild(bound,0);
-
+        var offsetX = 30;
         var moneySprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("token-black.png"))
         if ( this.model.get("position") == PLAYER_POSITION_DOWN ) {
             moneySprite.attr({
-                x: 30,
+                x: 30+(isWebIOS ? offsetX : 0),
                 y: 60
             });
         } else {
             moneySprite.attr({
-                x: cc.winSize.width-30,
+                x: isWebIOS?(30+offsetX):(cc.winSize.width-30),
                 y: cc.winSize.height-60
             });
         }
@@ -347,12 +347,12 @@ var PlayerSprite = cc.Sprite.extend({
         var moneySprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("token-red.png"))
         if ( this.model.get("position") == PLAYER_POSITION_DOWN ) {
             moneySprite.attr({
-                x: 30,
+                x: 30+(isWebIOS ? offsetX : 0),
                 y: 65
             });
         } else {
             moneySprite.attr({
-                x: cc.winSize.width-30,
+                x: isWebIOS?(30+offsetX):(cc.winSize.width-30),
                 y: cc.winSize.height-65
             });
         }
@@ -360,12 +360,12 @@ var PlayerSprite = cc.Sprite.extend({
         var moneySprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("token-green.png"))
         if ( this.model.get("position") == PLAYER_POSITION_DOWN ) {
             moneySprite.attr({
-                x: 30,
+                x: 30+(isWebIOS ? offsetX : 0),
                 y: 70
             });
         } else {
             moneySprite.attr({
-                x: cc.winSize.width-30,
+                x: isWebIOS?(30+offsetX):(cc.winSize.width-30),
                 y: cc.winSize.height-70
             });
         }
@@ -380,7 +380,7 @@ var PlayerSprite = cc.Sprite.extend({
                 });
             } else {
                 this.itemSlotSprite.attr({
-                    x: 45,
+                    x: isWebIOS?(cc.winSize.width - 45):45,
                     y: cc.winSize.height - 45,
                     rotation: 180
                 });
@@ -397,13 +397,13 @@ var PlayerSprite = cc.Sprite.extend({
         if ( this.model.get("position") == PLAYER_POSITION_DOWN ) {
             this.moneyLabel.attr({
                 //color: colors.tableLabel,
-                x: 45,
+                x: 45+(isWebIOS?offsetX:0),
                 y: 65
             });
         } else {
             this.moneyLabel.attr({
                 //color: colors.tableLabel,
-                x: cc.winSize.width - 45,
+                x: isWebIOS?(45+offsetX):(cc.winSize.width - 45),
                 y: cc.winSize.height - 65,
                 rotation: 180
             });
@@ -413,14 +413,14 @@ var PlayerSprite = cc.Sprite.extend({
         var targetMoneySprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("token-win.png"))
         if ( this.model.get("position") == PLAYER_POSITION_DOWN ) {
             targetMoneySprite.attr({
-                x: 30,
+                x: 30+(isWebIOS?offsetX:0),
                 y: 20,
                 scaleX: 0.5,
                 scaleY: 0.5
             });
         } else {
             targetMoneySprite.attr({
-                x: cc.winSize.width-30,
+                x: isWebIOS?(30+offsetX):(cc.winSize.width-30),
                 y: cc.winSize.height-20,
                 scaleX: 0.5,
                 scaleY: 0.5,
@@ -435,13 +435,13 @@ var PlayerSprite = cc.Sprite.extend({
         if ( this.model.get("position") == PLAYER_POSITION_DOWN ) {
             targetMoneyLabel.attr({
                 //color: colors.tableLabel,
-                x: 70,
+                x: 70+(isWebIOS?offsetX:0),
                 y: 15
             });
         } else {
             targetMoneyLabel.attr({
                 //color: colors.tableLabel,
-                x: cc.winSize.width - 70,
+                x: isWebIOS?(70+offsetX):(cc.winSize.width - 70),
                 y: cc.winSize.height - 15,
                 rotation: 180
             });
