@@ -22,6 +22,7 @@ var IntroLayer = cc.Layer.extend({
                     cc.director.runScene(new ModeSelectScene({mode: "vs"}));
                 } else {
                     cc.director.runScene(new MainScene({
+                        mode: "vs",
                         itemPool : INIT_ITEMS
                     }));
                 }
@@ -57,6 +58,8 @@ var IntroLayer = cc.Layer.extend({
             scaleY: 1.1,
             rotation: 5
         });
+
+        //TODO menu fly in
         var menu = new cc.Menu([vsItem, vsAIItem]);
         menu.x = 0;
         menu.y = 0;

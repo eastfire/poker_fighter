@@ -26,6 +26,7 @@
         "src/help.js",
         "src/intro.js",
         "src/mode-select.js",
+        "src/tutorial.js",
         "src/app.js"
     ]
 }

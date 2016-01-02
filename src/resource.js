@@ -139,13 +139,15 @@ var texts_locale = {
 var colors = {
     table: new cc.color(0x3b,0x7f,0x42),
     tableLabel: new cc.color(0xd6,0xfe,0x9d),
-    tableLabelOutline: new cc.color(0x40,0x66,0x1d)
+    tableLabelOutline: new cc.color(0x40,0x66,0x1d),
+    tutorial: new cc.color(0x80,0x80,0x80, 192)
 };
 
 var times = {
     card_sort : 0.1,
     performSkill: 0.2,
     flip: 0.2,
+    quickFlip: 0.1,
     takeCard: 0.3,
     rotateDirection: 0.1,
     compare: 4,

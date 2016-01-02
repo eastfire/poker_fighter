@@ -453,7 +453,7 @@ var PlayerSprite = cc.Sprite.extend({
             event: cc.EventListener.TOUCH_ONE_BY_ONE,
             swallowTouches: true,
             onTouchBegan: function (touch, event) {
-                if ( self.model.get("type") === PLAYER_TYPE_AI ) return;
+                if ( self.model.get("type") === PLAYER_TYPE_AI ) return false;
                 var target = event.getCurrentTarget();
 
                 var locationInNode = target.convertToNodeSpace(touch.getLocation());
@@ -635,7 +635,7 @@ var PlayerSprite = cc.Sprite.extend({
                 var sprite = this.getParent().getChildByName(cardModel.cid);
                 if ( sprite != null ) {
                     sprite.stopActionByTag(ACTION_TAG_FLIPPING);
-                    sprite.runAction(sprite.getFlipToFrontSequence()).setTag(ACTION_TAG_FLIPPING);
+                    sprite.runAction(sprite.getFlipToFrontSequence(times.quickFlip)).setTag(ACTION_TAG_FLIPPING);
 
                 }
             }, this);
@@ -644,7 +644,7 @@ var PlayerSprite = cc.Sprite.extend({
                 var sprite = this.getParent().getChildByName(cardModel.cid);
                 if ( sprite != null ) {
                     sprite.stopActionByTag(ACTION_TAG_FLIPPING);
-                    sprite.runAction(sprite.getFlipToBackSequence()).setTag(ACTION_TAG_FLIPPING);
+                    sprite.runAction(sprite.getFlipToBackSequence(times.quickFlip)).setTag(ACTION_TAG_FLIPPING);
 
                 }
             }, this);

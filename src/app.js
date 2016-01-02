@@ -216,6 +216,10 @@ var MainLayer = cc.LayerColor.extend({
 
         this.renderBetRate();
 
+        this.scheduleOnce(function(){
+            showTutorial(mainLayer, "main","getCard")
+        },4);
+
         return true;
     },
     renderBetRate:function(){

@@ -311,25 +311,27 @@ var PokerCardSprite = NormalCardSprite.extend({
         });
         this.addChild(this.numberDownSprite, 0);
     },
-    getFlipToFrontSequence:function(){
+    getFlipToFrontSequence:function(time){
         var oldScaleX = 1;
         var oldScaleY = 1;
-        return new cc.Sequence( new cc.ScaleTo(times.flip/2, 0, oldScaleY), new cc.CallFunc(function(){
+        var time = time || times.flip
+        return new cc.Sequence( new cc.ScaleTo(time/2, 0, oldScaleY), new cc.CallFunc(function(){
             this.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame("card-"+SUIT_ARRAY[this.model.get("suit")]+".png"));
             this.numberSprite.setVisible(true);
             this.numberDownSprite.setVisible(true);
             this.model.set("side","front");
-        },this), new cc.ScaleTo(times.flip/2,oldScaleX,oldScaleY));
+        },this), new cc.ScaleTo(time/2,oldScaleX,oldScaleY));
     },
-    getFlipToBackSequence:function(){
+    getFlipToBackSequence:function(time){
         var oldScaleX = 1;
         var oldScaleY = 1;
-        return new cc.Sequence( new cc.ScaleTo(times.flip/2, 0, oldScaleY), new cc.CallFunc(function(){
+        var time = time || times.flip
+        return new cc.Sequence( new cc.ScaleTo(time/2, 0, oldScaleY), new cc.CallFunc(function(){
             this.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame("card-back.png"));
             this.numberSprite.setVisible(false);
             this.numberDownSprite.setVisible(false);
             this.model.set("side","back");
-        },this), new cc.ScaleTo(times.flip/2,oldScaleX,oldScaleY));
+        },this), new cc.ScaleTo(time/2,oldScaleX,oldScaleY));
     }
 })
 

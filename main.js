@@ -48,6 +48,7 @@
  */
 var texts;
 var statistic;
+var tutorialPassed;
 
 var saveStatistic = function(){
     cc.sys.localStorage.setItem("poker_fighter.statistic",JSON.stringify(statistic));
@@ -89,6 +90,13 @@ cc.game.onStart = function(){
             statistic = {
 
             }
+        }
+
+        var store = cc.sys.localStorage.getItem("poker_fighter.tutorial");
+        if ( store ) {
+            tutorialPassed = JSON.parse(store);
+        } else {
+            tutorialPassed = {}
         }
 
         cc.spriteFrameCache.addSpriteFrames(res.game_plist);
