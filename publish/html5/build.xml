@@ -219,6 +219,7 @@
                 <file name="src/help.js"/>
                 <file name="src/intro.js"/>
                 <file name="src/mode-select.js"/>
+                <file name="src/tutorial.js"/>
                 <file name="src/app.js"/>
                 <file name="main.js"/>
 

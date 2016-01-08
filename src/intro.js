@@ -28,11 +28,11 @@ var IntroLayer = cc.Layer.extend({
                 }
             }, this);
         vsItem.attr({
-            x: cc.winSize.width/2 - 55,
-            y: cc.winSize.height/2 - 100,
+            x: cc.winSize.width/2,
+            y: -500,
             scaleX: 1.1,
             scaleY: 1.1,
-            rotation: -5
+            rotation: 0//-5
         });
 
         var vsAIItem = new cc.MenuItemImage(
@@ -52,15 +52,45 @@ var IntroLayer = cc.Layer.extend({
                 }
             }, this);
         vsAIItem.attr({
-            x: cc.winSize.width/2+55,
-            y: cc.winSize.height/2 - 100,
+            x: cc.winSize.width/2,
+            y: -500,
             scaleX: 1.1,
             scaleY: 1.1,
-            rotation: 5
+            rotation: 0//5
         });
 
-        //TODO menu fly in
-        var menu = new cc.Menu([vsItem, vsAIItem]);
+        var helpItem = new cc.MenuItemImage(
+            cc.spriteFrameCache.getSpriteFrame("help-menu.png"),
+            cc.spriteFrameCache.getSpriteFrame("help-menu.png"),
+            function () {
+                cc.audioEngine.playEffect(res.click_mp3,false);
+                clearTutorial();
+                cc.director.runScene(new MainScene({
+                    mode: "vs",
+                    itemPool : INIT_ITEMS
+                }));
+            }, this);
+        helpItem.attr({
+            x: cc.winSize.width/2,
+            y: -500,
+            scaleX: 1.1,
+            scaleY: 1.1,
+            rotation: 0//5
+        });
+
+        var dealTime = 0.5;
+        var y = cc.winSize.height/2 - 100;
+        vsItem.runAction(cc.sequence(cc.delayTime(0.1), cc.spawn(
+            cc.moveTo(dealTime, cc.winSize.width/2 - 120 - 15 + 30*Math.random(), y+Math.random()*50),
+            cc.rotateTo(dealTime, - Math.random()*10))))
+        vsAIItem.runAction(cc.sequence(cc.delayTime(dealTime-0.1), cc.spawn(
+            cc.moveTo(dealTime, cc.winSize.width/2-15+30*Math.random(), y+Math.random()*50),
+            cc.rotateTo(dealTime, 5- Math.random()*10))))
+        helpItem.runAction(cc.sequence(cc.delayTime((dealTime-0.1)*2), cc.spawn(
+            cc.moveTo(dealTime, cc.winSize.width/2+120 - 15 + 30*Math.random(), y+Math.random()*50),
+            cc.rotateTo(dealTime, Math.random()*10))))
+
+        var menu = new cc.Menu([vsItem, vsAIItem, helpItem]);
         menu.x = 0;
         menu.y = 0;
         this.addChild(menu);

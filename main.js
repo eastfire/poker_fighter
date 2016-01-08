@@ -54,6 +54,24 @@ var saveStatistic = function(){
     cc.sys.localStorage.setItem("poker_fighter.statistic",JSON.stringify(statistic));
 }
 
+var loadTutorial = function(){
+    var store = cc.sys.localStorage.getItem("poker_fighter.tutorial");
+    if ( store ) {
+        tutorialPassed = JSON.parse(store);
+    } else {
+        tutorialPassed = {}
+    }
+}
+
+var saveTutorial = function(){
+    cc.sys.localStorage.setItem("poker_fighter.tutorial",JSON.stringify(tutorialPassed));
+}
+
+var clearTutorial = function(){
+    cc.sys.localStorage.removeItem("poker_fighter.tutorial");
+    tutorialPassed = {}
+}
+
 var isWebIOS = false;
 cc.game.onStart = function(){
     if(!cc.sys.isNative ) {
@@ -92,12 +110,7 @@ cc.game.onStart = function(){
             }
         }
 
-        var store = cc.sys.localStorage.getItem("poker_fighter.tutorial");
-        if ( store ) {
-            tutorialPassed = JSON.parse(store);
-        } else {
-            tutorialPassed = {}
-        }
+        loadTutorial();
 
         cc.spriteFrameCache.addSpriteFrames(res.game_plist);
         cc.director.runScene(new IntroScene());

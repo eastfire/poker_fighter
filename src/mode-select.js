@@ -20,7 +20,7 @@ var setting = {};
 
 var ITEM_PER_LINE = 5;
 
-var INIT_ITEMS = ["ace","bomb","cloud","diamond", "dizzy","enlarge","fast","forbid","kiss","leaf", "shrink","spy","slow","sniper","thief", "tornado", "two"];
+var INIT_ITEMS = ["ace","bomb","cloud","diamond", "dizzy","enlarge","fast","forbid","kiss","leaf","hammer", "shrink","spy","slow","sniper","thief", "tornado", "two"];
 var UNLOCKABLE_ITEMS = [ "magnet","nuke" ];
 
 var ModeSelectLayer = PlayerRotateLayer.extend({
@@ -339,12 +339,15 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
                             setting.itemOff[item] = true;
                         else delete setting.itemOff[item];
                         this.renderItemMenu(item);
+                        this.showItemDescription(item);
                     }, this);
             } else {
                 this.itemMenus[item] = new cc.MenuItemImage(
                     cc.spriteFrameCache.getSpriteFrame("unknown-item.png"),
                     cc.spriteFrameCache.getSpriteFrame("unknown-item.png"),
                     function () {
+                        cc.audioEngine.playEffect(res.click_mp3, false);
+                        this.showItemDescription("unknown");
                     }, this);
             }
             this.itemMenus[item].attr({
@@ -487,6 +490,92 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
         _.each(this.allItems,function(item) {
             this.renderItemMenu(item);
         },this);
+    },
+    showItemDescription:function(item){
+        if ( this.itemDescSprite == null ) {
+            this.itemDescSprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("item-desc-bg.png"))
+            this.itemDescSprite.attr({
+                x: cc.winSize.width / 2,
+                y: 650
+            })
+            var self = this;
+            cc.eventManager.addListener(cc.EventListener.create({
+                event: cc.EventListener.TOUCH_ONE_BY_ONE,
+                swallowTouches: true,
+                onTouchBegan: function (touch, event) {
+                    var target = event.getCurrentTarget();
+                    var locationInNode = target.convertToNodeSpace(touch.getLocation());
+                    var s = target.getContentSize();
+                    var rect = cc.rect(0, 0, s.width, s.height);
+
+                    //Check the click area
+                    return cc.rectContainsPoint(rect, locationInNode);
+                },
+                //Trigger when moving touch
+                onTouchMoved: function (touch, event) {
+                },
+                //Process the touch end event
+                onTouchEnded: function (touch, event) {
+                    self.itemDescSprite.removeFromParent(true);
+                    self.itemDescSprite = null;
+                }
+            }), this.itemDescSprite);
+            this.addChild(this.itemDescSprite, 100)
+        }
+
+        this.itemDescSprite.removeAllChildren(true);
+        var itemSprite;
+        var text = "";
+        var title = "";
+        if ( item === "unknown" ) {
+            title = texts.items.unknown;
+            text = texts.items.unused;
+            itemSprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("unknown-item.png"));
+        } else {
+            title = texts.items[item].name
+            text = texts.items[item].desc;
+            var model = new ITEM_MODEL_CLASS_MAP[item]();
+            if ( model.get("maxCharge") !== 1 ) {
+                text += "\n"+texts.items.charge_before+model.get("maxCharge")+texts.items.charge_after;
+            }
+            itemSprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("item-" + item + ".png"));
+
+            var itemStatusLabel = new cc.LabelTTF(this.isItemOff(item)?texts.items.off:texts.items.on, null, 22);
+            itemStatusLabel.attr({
+                color: this.isItemOff(item)?colors.itemOff: colors.itemOn,
+                x: 50,
+                y: 175,
+                anchorX: 0.5,
+                anchorY: 1
+            });
+            this.itemDescSprite.addChild(itemStatusLabel)
+        }
+        itemSprite.attr({
+            x: 50,
+            y: 220
+        })
+        this.itemDescSprite.addChild(itemSprite)
+        var titleLabel = new cc.LabelTTF(title, null, 30);
+        titleLabel.attr({
+            color: colors.tableLabel,
+            x: 150,
+            y: 250,
+            anchorX: 0.5,
+            anchorY: 1
+        });
+        this.itemDescSprite.addChild(titleLabel)
+
+        var descLabel = new cc.LabelTTF(text, null, 24);
+        descLabel.attr({
+            color: colors.tableLabel,
+            x: 100,
+            y: 210,
+            anchorX: 0,
+            anchorY: 1,
+            textAlign: cc.TEXT_ALIGNMENT_LEFT,
+            boundingWidth : 300
+        });
+        this.itemDescSprite.addChild(descLabel)
     }
 });
 

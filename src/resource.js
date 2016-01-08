@@ -93,7 +93,102 @@ var texts_locale = {
         useDefault: "默认",
         returnToIntro: "返回",
 
-        gameOver: "GAME OVER"
+        gameOver: "GAME OVER",
+
+        tutorials: {
+            thisIsYourMoney: "这是你的钱。\n如果你没钱了，你就输掉了游戏。",
+            thisIsYourTarget: "这是你的目标金钱。\n如果你的钱达到这个数字\n并且赢了一局，你就赢得游戏胜利。"
+        },
+
+        items: {
+            unknown: "未知",
+            charge_before: "(可用",
+            charge_after: "次)",
+            on: "已开启",
+            off: "已关闭",
+
+            "unused":"你需要使用过这个道具一次才能在配置中停用或启用这个道具。",
+            "ace":{
+                name:"A",
+                desc:"召唤一张无花色的A朝自己移动。"
+            },
+            bomb:{
+                name:"炸弹",
+                desc:"朝对手扔出一颗炸弹。如进入他的手牌，可以随机破坏他的一张手牌，但如果对手手牌已满则无效。"
+            },
+            cloud:{
+                name:"行云",
+                desc:"召唤很多行云干扰对手的视线。"
+            },
+            diamond:{
+                name:"钻石",
+                desc:"吸引全场的Q朝自己移动。"
+            },
+            dizzy:{
+                name:"眩晕",
+                desc:"对手的牌、筹码、道具不停旋转，持续10秒。"
+            },
+            enlarge:{
+                name:"放大",
+                desc:"放大自己的牌、筹码、道具，持续10秒。"
+            },
+            fast:{
+                name:"快进",
+                desc:"对手的牌、筹码、道具运动速度加快，持续10秒"
+            },
+            forbid:{
+                name:"禁止",
+                desc:"对手无法使用或获得道具。"
+            },
+            hammer:{
+                name:"雷神之锤",
+                desc:"召唤一个神锤击向对方区域。消灭任何打到的东西，吹飞敌方区域所有东西。"
+            },
+            kiss:{
+                name:"热吻",
+                desc:"吸引全场的K和J朝自己移动。"
+            },
+            leaf:{
+                name:"落叶",
+                desc:"召唤很多落叶干扰对手的视线。"
+            },
+            magnet:{
+                name:"金钱磁铁",
+                desc:"吸引全场的筹码朝自己移动（包括假的）"
+            },
+            nuke:{
+                name:"核弹",
+                desc:"消灭全场的牌、筹码和所有玩家的手牌。倒计时也会取消。"
+            },
+            shrink:{
+                name:"缩小",
+                desc:"缩小对手的牌、筹码、道具，持续10秒。"
+            },
+            spy:{
+                name:"间谍",
+                desc:"对手亮出手牌，持续10秒。"
+            },
+            slow:{
+                name:"慢进",
+                desc:"自己的牌、筹码、道具运动速度减慢，持续10秒"
+            },
+            sniper:{
+                name:"狙击",
+                desc:"消灭对手场上最大的牌，如果对手场上没有牌时则无效。"
+            },
+            thief:{
+                name:"小偷",
+                desc:"放出一个化装成筹码的小偷，如果进入对手的金库，可以偷走对手一些钱（数量受当前赔率影响）"
+            },
+            tornado:{
+                name:"旋风",
+                desc:"在对手面前放出很多旋风，干扰对手拿牌。"
+            },
+            two:{
+                name:"2",
+                desc:"召唤一张无花色的2朝对手移动。"
+            }
+        }
     },
     en:{
         win:"WIN",
@@ -130,7 +225,101 @@ var texts_locale = {
         useDefault: "DEFAULT",
         returnToIntro: "RETURN",
 
-        gameOver: "GAME OVER"
+        gameOver: "GAME OVER",
+
+        tutorials: {
+            thisIsYourMoney: "This is your money.\nIf your money is gone, you lose."
+        },
+
+        items: {
+            unknown: "UNKNOWN",
+            charge_before: "(",
+            charge_after: "charges)",
+            on: "ON",
+            off: "OFF",
+
+            "unused":"Use this item at least once, then you can switch it on or off in game options.",
+            "ace":{
+                name:"ACE",
+                desc:"Summon an ace card which has no suit move toward you."
+            },
+            bomb:{
+                name:"BOMB",
+                desc:"Summon a bomb toward opponent.If it reach player's hand, bomb will randomly destroy one of his card.(If player's hand is full, bomb has no effect)"
+            },
+            cloud:{
+                name:"CLOUD",
+                desc:"Summon many clouds to disturb opponent sight."
+            },
+            diamond:{
+                name:"DIAMOND",
+                desc:"Attract all Qs toward you."
+            },
+            dizzy:{
+                name:"DIZZY",
+                desc:"All opponent's cards,tokens and items will rotate repeatedly for 10 seconds."
+            },
+            enlarge:{
+                name:"ENLARGE",
+                desc:"Enlarge all your cards,tokens and items for 10 seconds."
+            },
+            fast:{
+                name:"FAST FORWARD",
+                desc:"All opponent's cards,tokens and items move fast for 10 seconds."
+            },
+            forbid:{
+                name:"Forbid",
+                desc:"Opponent cant use item or get item for 10 seconds."
+            },
+            hammer:{
+                name:"HAMMER OF GOD",
+                desc:"Summon a hammer toward opponent.It will destroy anything it hit and blow away everything in opponent's field."
+            },
+            kiss:{
+                name:"KISS",
+                desc:"Attract all Ks and Js toward you."
+            },
+            leaf:{
+                name:"FALLING LEAVES",
+                desc:"Summon many falling leaves to disturb opponent sight."
+            },
+            magnet:{
+                name:"TOKEN MAGNET",
+                desc:"Attract all tokens toward you(including fake one)."
+            },
+            nuke:{
+                name:"NUKE",
+                desc:"Destroy all cards and tokens and all players' hands.Count down will also be cancelled."
+            },
+            shrink:{
+                name:"SHRINK",
+                desc:"Shrink all opponent's cards,tokens and items for 10 seconds."
+            },
+            spy:{
+                name:"SPY",
+                desc:"Opponent show you his hand for 10 seconds."
+            },
+            slow:{
+                name:"SLOW FORWARD",
+                desc:"All your cards,tokens and items move slowly for 10 seconds."
+            },
+            sniper:{
+                name:"SNIPER",
+                desc:"Destroy highest card in opponent's field.(If there is no card in opponent's field, nothing happened)"
+            },
+            thief:{
+                name:"THIEF",
+                desc:"Summon a thief who disguised as a token move toward opponent.If thief enter player's hand, he will steal money from him.(Money amount if effected by current bet rate)"
+            },
+            tornado:{
+                name:"TORNADO",
+                desc:"Summon many tornadoes in opponent's field which will disturb his taking card or token."
+            },
+            two:{
+                name:"2",
+                desc:"Summon a 2 card which has no suit move toward opponent."
+            }
+        }
     }
 };
 
@@ -140,7 +329,10 @@ var colors = {
     table: new cc.color(0x3b,0x7f,0x42),
     tableLabel: new cc.color(0xd6,0xfe,0x9d),
     tableLabelOutline: new cc.color(0x40,0x66,0x1d),
-    tutorial: new cc.color(0x80,0x80,0x80, 192)
+    tutorial: new cc.color(0x80,0x80,0x80, 192),
+
+    itemOn: cc.color.GREEN,
+    itemOff: cc.color.RED
 };
 
 var times = {

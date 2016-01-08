@@ -6,6 +6,8 @@ var MAIN_ACTION_TAG = 1;
 
 var NATURE_SPEED = 180;
 
+var MAX_ITEM_TYPE_PER_GAME = 10;
+
 var MainLayer = cc.LayerColor.extend({
     sprite:null,
     ctor:function (options) {
@@ -217,7 +219,7 @@ var MainLayer = cc.LayerColor.extend({
         this.renderBetRate();
 
         this.scheduleOnce(function(){
-            showTutorial(mainLayer, "main","getCard")
+            showTutorial(mainLayer, "main","initMoney")
         },4);
 
         return true;
@@ -808,6 +810,20 @@ var MainLayer = cc.LayerColor.extend({
         if ( player === this.model.player1 ) return this.player1Sprite;
         if ( player === this.model.player2 ) return this.player2Sprite;
         return null;
+    },
+    shake:function(){
+        var x = Math.random()*10;
+        var y = Math.random()*10;
+        this.runAction(cc.sequence(cc.moveBy(0.066,x,y),cc.moveBy(0.066,-x*2,-y*2),cc.moveBy(0.066,x,y)))
+    },
+    bigShake:function(){
+        var x = Math.random()*10;
+        var y = Math.random()*10;
+        var angle = Math.random()*10;
+        this.runAction(cc.sequence(cc.spawn(cc.moveBy(0.066,x*2,y*2),cc.rotateBy(0.066,angle)),
+            cc.spawn(cc.moveBy(0.066,-x*4,-y*4),cc.rotateBy(0.066,-angle*2)),
+            cc.spawn(cc.moveBy(0.066,x*3,y*3),cc.rotateBy(0.066,angle*2)),
+            cc.spawn(cc.moveBy(0.066,-x*2,-y*2),cc.rotateBy(0.066,-angle)),cc.moveBy(0.066,x,y)))
     }
 });
 
@@ -908,7 +924,7 @@ var GameModel = Backbone.Model.extend({
             new ItemPattern4Model()
         ];
 
-        this.itemPool = this.get("itemPool");
+        this.itemPool = _.sample(this.get("itemPool"), MAX_ITEM_TYPE_PER_GAME);
         if ( this.itemPool.length === 0 ) {
             this.set("itemAppearRate", 0 );
         }

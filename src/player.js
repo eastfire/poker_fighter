@@ -429,24 +429,24 @@ var PlayerSprite = cc.Sprite.extend({
         }
         this.addChild(targetMoneySprite);
 
-        var targetMoneyLabel = new ccui.Text(this.model.get("targetMoney"), "Arial", 30 );
-        targetMoneyLabel.enableOutline(cc.color.WHITE, 1);
-        targetMoneyLabel.setTextColor(cc.color.BLACK);
+        this.targetMoneyLabel = new ccui.Text(this.model.get("targetMoney"), "Arial", 30 );
+        this.targetMoneyLabel.enableOutline(cc.color.WHITE, 1);
+        this.targetMoneyLabel.setTextColor(cc.color.BLACK);
         if ( this.model.get("position") == PLAYER_POSITION_DOWN ) {
-            targetMoneyLabel.attr({
+            this.targetMoneyLabel.attr({
                 //color: colors.tableLabel,
                 x: 70+(isWebIOS?offsetX:0),
                 y: 15
             });
         } else {
-            targetMoneyLabel.attr({
+            this.targetMoneyLabel.attr({
                 //color: colors.tableLabel,
                 x: isWebIOS?(70+offsetX):(cc.winSize.width - 70),
                 y: cc.winSize.height - 15,
                 rotation: 180
             });
         }
-        this.addChild(targetMoneyLabel, 0);
+        this.addChild(this.targetMoneyLabel, 0);
 
         var self = this;
         cc.eventManager.addListener( cc.EventListener.create({

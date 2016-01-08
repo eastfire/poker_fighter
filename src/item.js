@@ -1,11 +1,9 @@
 var ItemModel = Backbone.Model.extend({
     defaults:function(){
         return {
-            displayName:"",
             maxCharge: 1,
             durationTime: 1,
             maxCoolDown: 1,
-            description:"牛X的人不需要使用技能",
             showCharge: false
         }
     },
@@ -27,10 +25,8 @@ var CloudItemModel = ItemModel.extend({
     defaults:function(){
         return {
             name:"cloud",
-            displayName:"唤云",
             maxCharge: 1,
             maxCoolDown: 10,
-            description:"召唤云朵干扰对手视线",
             showCharge: false,
             cloudCount : 50,
             cloudScale: 1.75,
@@ -73,10 +69,8 @@ var AceItemModel = ItemModel.extend({
     defaults:function(){
         return {
             name:"ace",
-            displayName:"A",
             maxCharge: 1,
             maxCoolDown: 0,
-            description:"为自己召唤一张无花色的A",
             showCharge: false,
             moveTime: 5
         }
@@ -123,10 +117,8 @@ var DizzyItemModel = ItemModel.extend({
     defaults:function(){
         return {
             name:"dizzy",
-            displayName:"眩晕",
             maxCharge: 1,
             maxCoolDown: 1,
-            description:"对手的牌全部旋转起来",
             showCharge: false,
             effectTime: 10
         }
@@ -148,10 +140,8 @@ var FastItemModel = ItemModel.extend({
     defaults:function(){
         return {
             name:"fast",
-            displayName:"快进",
             maxCharge: 1,
             maxCoolDown: 1,
-            description:"对手的牌速度加快",
             showCharge: false,
             effectTime: 10
         }
@@ -172,15 +162,67 @@ var FastItemModel = ItemModel.extend({
     }
 });
 
+var HammerItemModel = ItemModel.extend({
+    defaults:function(){
+        return {
+            name:"hammer",
+            maxCharge: 1,
+            maxCoolDown: 1,
+            showCharge: false
+        }
+    },
+    effect:function(playerSprite, opponentPlayerSprite){
+        var rotation, x,y;
+        x = Math.random()*(cc.winSize.width-140)+70
+        if ( playerSprite.model.get("position") === PLAYER_POSITION_DOWN ) {
+            y = dimens.player2Y - Math.random()*(cc.winSize.height/4)
+            rotation = 0;
+        } else {
+            y = Math.random()*(cc.winSize.height/4)+dimens.player1Y
+            rotation = 180
+        }
+        var hammerSprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("hammer.png"))
+        hammerSprite.attr({
+            x:playerSprite.itemSlotSprite.x,
+            y:playerSprite.itemSlotSprite.y,
+            opacity: 0,
+            scaleX: 0.5,
+            scaleY: 0.5,
+            rotation: rotation
+        })
+        mainLayer.addChild(hammerSprite);
+        var hammerWidth = 30;
+        var hammerHeight = 20;
+        hammerSprite.runAction(cc.sequence(cc.fadeIn(0.1), cc.spawn(cc.scaleTo(0.4, 1,1),cc.moveTo(0.4, x,y), cc.rotateBy(0.4,1080)), cc.callFunc(function(){
+            cc.audioEngine.playEffect(res.explosion_mp3,false)
+            mainLayer.shake();
+            _.each( mainLayer.getChildren(), function(sprite) {
+                if (sprite instanceof NormalCardSprite ) {
+                    if (opponentPlayerSprite.isThisSide(sprite.y) && !sprite.alreadyTaken){
+                        var dx = sprite.x - x;
+                        var dy = sprite.y - y;
+                        if ( Math.abs(dx) < hammerWidth && Math.abs(dy) < hammerHeight ) {
+                            gameModel.destroyCard(sprite.model);
+                        } else {
+                            var d = Math.sqrt(dx*dx+dy*dy);
+                            sprite.speedX = NATURE_SPEED*2*dx/d;
+                            sprite.speedY = NATURE_SPEED*2*dy/d;
+                            sprite.onTouchRelease();
+                        }
+                    }
+                }
+            });
+        },this),cc.delayTime(0.2), cc.removeSelf()))
+    }
+})
+
 var KissItemModel = ItemModel.extend({
     defaults:function(){
         return {
             name:"kiss",
-            displayName:"kiss",
-            maxCharge: 1,
-            maxCoolDown: 1,
-            description:"吸引全场的K和J",
-            showCharge: false
+            maxCharge: 2,
+            maxCoolDown: 3,
+            showCharge: true
         }
     },
     effect:function(playerSprite, opponentPlayerSprite){
@@ -292,10 +334,10 @@ var DiamondItemModel = ItemModel.extend({
         return {
             name:"diamond",
             displayName:"钻戒",
-            maxCharge: 1,
-            maxCoolDown: 1,
+            maxCharge: 2,
+            maxCoolDown: 3,
             description:"吸引全场的Q",
-            showCharge: false
+            showCharge: true
         }
     },
     effect:function(playerSprite, opponentPlayerSprite){
@@ -473,6 +515,7 @@ var NukeItemModel = ItemModel.extend({
         mainLayer.addChild(explosionSprite);
 
         cc.audioEngine.playEffect(res.explosion_mp3, false);
+        mainLayer.bigShake();
         explosionSprite.runAction(new cc.Sequence(
             explosionAction,
             cc.callFunc(function(){
@@ -807,6 +850,7 @@ var ItemSlotSprite = cc.Sprite.extend({
         })
         this.addChild(clipper);
         clipper.setAlphaThreshold(0);
+
         clipper.addChild(this.foreground);
 
         this.chargeLabel = new ccui.Text("", "Arial", 30 );
@@ -985,6 +1029,7 @@ var ITEM_MODEL_CLASS_MAP = {
     "enlarge":EnlargeItemModel,
     "fast": FastItemModel,
     "forbid": ForbidItemModel,
+    "hammer": HammerItemModel,
     "kiss": KissItemModel,
     "leaf": LeafItemModel,
     "magnet": MagnetItemModel,
