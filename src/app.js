@@ -218,9 +218,7 @@ var MainLayer = cc.LayerColor.extend({
 
         this.renderBetRate();
 
-        this.scheduleOnce(function(){
-            showTutorial(mainLayer, "main","initMoney")
-        },4);
+        this.scheduleTutorial("main", "takeCard",4)
 
         return true;
     },
@@ -233,8 +231,22 @@ var MainLayer = cc.LayerColor.extend({
         this.betRateLabel1.runAction(seq.clone());
         this.betRateLabel2.runAction(seq.clone());
         this.renderBetRate();
+        this.scheduleTutorial("main", "betRateIncrease",0.4)
+    },
+    onPlayerGetCardTutorial:function(){
+        if ( !isTutorialPassed("main","showCard") ) {
+            if ( this.player1.get("hands").length &&  this.player2.get("hands").length ) {
+                this.scheduleOnce(function(){
+                    showTutorial(mainLayer, "main","showCard")
+                },1);
+            }
+        }
     },
     initEvent:function(){
+        if ( !isTutorialPassed("main","showCard") ) {
+            this.player1.on("change:hands", this.onPlayerGetCardTutorial, this);
+            this.player2.on("change:hands", this.onPlayerGetCardTutorial, this);
+        }
         this.model.on("change:betRate", this.onBetRateChange, this);
         this.model.on("start-countdown", this.startRoundCountDown, this);
         cc.eventManager.addListener(this.listener = cc.EventListener.create({
@@ -367,6 +379,7 @@ var MainLayer = cc.LayerColor.extend({
         });
         gameModel.set("currentCount",5);
         this.showCountDown();
+        this.scheduleTutorial("main","countDown",0.8);
     },
     compareHands:function(){
         this.model.set("status", "compare");
@@ -379,6 +392,7 @@ var MainLayer = cc.LayerColor.extend({
         }
 
         this.scheduleOnce(function() {
+            this.scheduleTutorial("main","compareHands",0.5);
             this.player1Sprite.forceShowHand();
             this.player2Sprite.forceShowHand();
             var player1Feature = this.player1.getFeature();
@@ -434,6 +448,13 @@ var MainLayer = cc.LayerColor.extend({
                 }
             }, times.compare);
         }, times.takeCard+0.1);
+    },
+    scheduleTutorial:function(sceneName, stepName, time){
+        if ( !isTutorialPassed(sceneName,stepName) ) {
+            this.scheduleOnce(function () {
+                showTutorial(this, sceneName, stepName)
+            }, time);
+        }
     },
     giveMoney:function(money, fromPlayerSprite, toPlayerSprite ){
         var mp3 = res["chips"+ _.sample([0,1,2,3,4])+"_mp3"];
@@ -591,7 +612,7 @@ var MainLayer = cc.LayerColor.extend({
         var mirrorType = _.sample([0,1]);
         var cardModel = new ItemSpecialCardModel();
         var sprite = new ItemSpecialCardSprite({model: cardModel});
-
+        this.model.manageCard(cardModel);
         this.addChild(sprite);
         if ( isOriginMirror ) {
             sprite.speedX = - pattern.speedX;
@@ -610,7 +631,7 @@ var MainLayer = cc.LayerColor.extend({
 
         var mirrorCardModel = new ItemSpecialCardModel();
         var mirrorSprite  = new ItemSpecialCardSprite({model: mirrorCardModel});
-
+        this.model.manageCard(mirrorCardModel);
         var endX,endY;
         if ( mirrorType ) {
             mirrorSprite.attr({
@@ -647,7 +668,8 @@ var MainLayer = cc.LayerColor.extend({
         _.each(list, function(entry){
             var cardModel;
             var sprite;
-            if ( Math.random() < this.model.get("tokenAppearRate")) {
+            var tokenAppearRate = isTutorialPassed("main","takeCard") ? this.model.get("tokenAppearRate") : 0;
+            if ( Math.random() < tokenAppearRate) {
                 var money = 1;
                 var isRare = false;
                 if ( this.model.get("betRate") >= 10 ) {
@@ -944,16 +966,30 @@ var GameModel = Backbone.Model.extend({
     },
     newDeck:function(){
         var deck = [];
-        for ( var number = this.get("deck"); number <= 14; number ++ ) {
-            for ( var suit = 0; suit <= 3; suit ++ ) {
+
+        for (var number = this.get("deck"); number <= 14; number++) {
+            for (var suit = 0; suit <= 3; suit++) {
+                if ( !isTutorialPassed("main","takeCard") ) {
+                    if (number === 13 && (suit === 0 || suit === 1)) continue;
+                }
                 deck.push(new PokerCardModel({ number: number,
                     suit: suit,
                     isRare: number == 14
                 }));
             }
         }
+        this.deck = _.shuffle(deck);
+        if ( !isTutorialPassed("main","takeCard") ) {
+            this.deck.push( new PokerCardModel({ number: 13,
+                suit: 0,
+                isRare: false
+            }) )
+            this.deck.push( new PokerCardModel({ number: 13,
+                suit: 1,
+                isRare: false
+            }) )
+        }
 
-        this.deck = _.shuffle( deck );
         this.discardDeck = [];
     },
     drawCard:function(){
@@ -1008,6 +1044,9 @@ var GameModel = Backbone.Model.extend({
         delete this.cidToModel[cardModel.cid];
     },
     getPattern:function(){
+        if ( !isTutorialPassed("main","takeCard") ) {
+            return new TutorialPatternModel();
+        }
         return _.sample( this.patternPool );
     },
     getItemPattern:function(){

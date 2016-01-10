@@ -199,7 +199,7 @@ var SimpleAIPlayerModel = AIPlayerModel.extend({
         var counts = this.countSprite();
         switch ( itemName ) {
             case "ace":case "cloud":case "two":case "dizzy":case "enlarge":case "fast":case "forbid":
-            case"leaf":case"shrink":case"slow":case "sniper":case"thief":case"tornado":
+            case"leaf":case"shrink":case"slow":case "sniper":case"thief":case"tornado":case"hammer":
                 return 30;
             case "bomb":
                 return opponentSprite.model.get("hands").length >= 2 ? 30 : 0;

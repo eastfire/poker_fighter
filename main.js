@@ -48,28 +48,9 @@
  */
 var texts;
 var statistic;
-var tutorialPassed;
 
 var saveStatistic = function(){
     cc.sys.localStorage.setItem("poker_fighter.statistic",JSON.stringify(statistic));
-}
-
-var loadTutorial = function(){
-    var store = cc.sys.localStorage.getItem("poker_fighter.tutorial");
-    if ( store ) {
-        tutorialPassed = JSON.parse(store);
-    } else {
-        tutorialPassed = {}
-    }
-}
-
-var saveTutorial = function(){
-    cc.sys.localStorage.setItem("poker_fighter.tutorial",JSON.stringify(tutorialPassed));
-}
-
-var clearTutorial = function(){
-    cc.sys.localStorage.removeItem("poker_fighter.tutorial");
-    tutorialPassed = {}
 }
 
 var isWebIOS = false;
@@ -77,7 +58,7 @@ cc.game.onStart = function(){
     if(!cc.sys.isNative ) {
         isWebIOS = /iPad|iPhone|iPod/.test(navigator.platform);
     }
-    //isWebIOS = true;
+    //isWebIOS = true; //for debug on pc
     if(!cc.sys.isNative && document.getElementById("cocosLoading")) //If referenced loading.js, please remove it
         document.body.removeChild(document.getElementById("cocosLoading"));
 
@@ -87,7 +68,7 @@ cc.game.onStart = function(){
     cc.view.adjustViewPort(true);
     // Setup the resolution policy and design resolution size
     var policy = cc.ResolutionPolicy.FIXED_HEIGHT;
-    var maxWidth = 600;
+    var maxWidth = 450;
     var fixHeight = 800;
     if ( !cc.sys.isNative && window.innerWidth / window.innerHeight > maxWidth/fixHeight ) policy = cc.ResolutionPolicy.SHOW_ALL;
     cc.view.setDesignResolutionSize(maxWidth, fixHeight, policy );

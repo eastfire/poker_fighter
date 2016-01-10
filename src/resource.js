@@ -96,8 +96,17 @@ var texts_locale = {
         gameOver: "GAME OVER",
 
         tutorials: {
-            thisIsYourMoney: "这是你的钱。\n如果你没钱了，你就输掉了游戏。",
-            thisIsYourTarget: "这是你的目标金钱。\n如果你的钱达到这个数字\n并且赢了一局，你就赢得游戏胜利。"
+            touchThisCard: "请点击这张牌。\n牌也可以被滑动或拖动。",
+            showYourCard: "你得到了自己的第一张牌\n长按这个区域可以查看自己的手牌\n别让对手偷瞄到哦 ;)",
+            collectYourCard:"在游戏过程中，你要不断收集手牌\n将手牌组成扑克牌的牌型\n牌型比对手大时就能赢得对手的钱。",
+            thisIsYourMoney: "这是你的钱。\n如果你没钱了，你就输掉了游戏！",
+            thisIsYourTarget: "这是你的目标金钱。\n如果你的钱达到这个数字，\n并且赢了一局，你就赢得游戏胜利！",
+            thisIsForbidLine: "这是iOS浏览器的禁断之线。\n请勿在此区域向右滑动\n否则世界就会毁灭！",
+            thisIsCountDown:"当任何一方得到５张手牌\n留给另一方的时间只剩下５秒",
+            compareHands: "当倒计时结束，将比较双方的牌型。\n牌型较强的一方胜。\n如果牌型相同，\n则比较参与牌型的关键牌中最大的一张牌。\n(例如：满堂红中组成三条的牌)",
+            betHelp:"牌型胜者得到败者的钱。\n钱数由双方的牌型对应的赌注之和，\n乘以当前赔率得到",
+            handHelp: "如需牌型大小及其对应赌注的帮助，\n可以点击此按钮。",
+            betRateIncrease: "赔率每经过一局会增加１"
         },
 
         items: {
@@ -228,7 +237,17 @@ var texts_locale = {
         gameOver: "GAME OVER",
 
         tutorials: {
-            thisIsYourMoney: "This is your money.\nIf your money is gone, you lose."
+            touchThisCard: "Touch this card.\nCards can also be swiped or dragged.",
+            showYourCard: "You got you first card.\nCheck you hands by long press this area.\nDon't let opponent peek your cards ;)",
+            collectYourCard:"Keep collecting cards.\nForm your cards to a Poker Hands.\nWin opponent's money by beat his hands.",
+            thisIsYourMoney: "This is your money.\nIf your money is gone, you lose!",
+            thisIsYourTarget: "This is your victory goal.\nIf your money reach this goal \nafter winning a round,you win the game!",
+            thisIsForbidLine: "This is a forbid line for iOS Browser.\nPlease don't swipe from this area.\nOr the game will be closed!",
+            thisIsCountDown:"When any player get their fifth card.\nThe other player only has five seconds left.",
+            compareHands: "When count down finish,\nrevealed and compared both players' cards.\nPlayer with stronger hand win.\nIf there is a tie,\ncompare key highest card that form the Hand.\n(e.g.:Card that form triple in Full House.)",
+            betHelp:"Winner get money from loser.\nMoney amount equal to total of\nboth players hands' gambit,\nmultiplied by current bet rate.",
+            handHelp: "If you need more info of\nPoker Hand and its gambit,\nclick this button.",
+            betRateIncrease: "Bet rate increase 1 per round."
         },
 
         items: {

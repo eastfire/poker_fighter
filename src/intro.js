@@ -18,7 +18,7 @@ var IntroLayer = cc.Layer.extend({
                 cc.audioEngine.playEffect(res.click_mp3, false);
                 statistic.game = statistic.game || {};
                 var playedOnce = statistic.game.vs || statistic.game["vs-ai"]
-                if ( playedOnce ) {
+                if ( playedOnce && isTutorialPassed("main","betRateIncrease")) {
                     cc.director.runScene(new ModeSelectScene({mode: "vs"}));
                 } else {
                     cc.director.runScene(new MainScene({
@@ -42,7 +42,7 @@ var IntroLayer = cc.Layer.extend({
                 cc.audioEngine.playEffect(res.click_mp3,false);
                 statistic.game = statistic.game || {};
                 var playedOnce = statistic.game.vs || statistic.game["vs-ai"]
-                if ( playedOnce ) {
+                if ( playedOnce && isTutorialPassed("main","betRateIncrease") ) {
                     cc.director.runScene(new ModeSelectScene({mode: "vs-ai"}));
                 } else {
                     cc.director.runScene(new MainScene({
@@ -80,15 +80,15 @@ var IntroLayer = cc.Layer.extend({
 
         var dealTime = 0.5;
         var y = cc.winSize.height/2 - 100;
-        vsItem.runAction(cc.sequence(cc.delayTime(0.1), cc.spawn(
+        vsItem.runAction(cc.sequence(cc.delayTime(0), cc.spawn(
             cc.moveTo(dealTime, cc.winSize.width/2 - 120 - 15 + 30*Math.random(), y+Math.random()*50),
-            cc.rotateTo(dealTime, - Math.random()*10))))
-        vsAIItem.runAction(cc.sequence(cc.delayTime(dealTime-0.1), cc.spawn(
+            cc.rotateTo(dealTime, -5 - Math.random()*10))))
+        vsAIItem.runAction(cc.sequence(cc.delayTime(0.25), cc.spawn(
             cc.moveTo(dealTime, cc.winSize.width/2-15+30*Math.random(), y+Math.random()*50),
             cc.rotateTo(dealTime, 5- Math.random()*10))))
-        helpItem.runAction(cc.sequence(cc.delayTime((dealTime-0.1)*2), cc.spawn(
+        helpItem.runAction(cc.sequence(cc.delayTime(0.5), cc.spawn(
             cc.moveTo(dealTime, cc.winSize.width/2+120 - 15 + 30*Math.random(), y+Math.random()*50),
-            cc.rotateTo(dealTime, Math.random()*10))))
+            cc.rotateTo(dealTime, 5+Math.random()*10))))
 
         var menu = new cc.Menu([vsItem, vsAIItem, helpItem]);
         menu.x = 0;

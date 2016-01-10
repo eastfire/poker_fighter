@@ -37,6 +37,24 @@ var PatternModel = Backbone.Model.extend({
     }
 });
 
+var TutorialPatternModel = PatternModel.extend({
+    generateList:function(){
+        var time = 0;
+        return [ {
+                time: 0,
+                start : {
+                    x: -dimens.card_size.width,
+                    y: 250
+                },
+                end : {
+                    x: cc.winSize.width+dimens.card_size.width,
+                    y: 250
+                },
+                moveTime: 3.5
+            } ]
+    }
+});
+
 var Pattern2Model = PatternModel.extend({
     generateList:function(){
         var time = 0;
