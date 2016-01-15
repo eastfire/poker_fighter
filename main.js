@@ -68,7 +68,7 @@ cc.game.onStart = function(){
     cc.view.adjustViewPort(true);
     // Setup the resolution policy and design resolution size
     var policy = cc.ResolutionPolicy.FIXED_HEIGHT;
-    var maxWidth = 450;
+    var maxWidth = 600;
     var fixHeight = 800;
     if ( !cc.sys.isNative && window.innerWidth / window.innerHeight > maxWidth/fixHeight ) policy = cc.ResolutionPolicy.SHOW_ALL;
     cc.view.setDesignResolutionSize(maxWidth, fixHeight, policy );

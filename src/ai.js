@@ -5,23 +5,19 @@ var DIRECTION_OUT = 2;
 var AIPlayerModel = PlayerModel.extend({
     initialize:function(options){
         options = options || {};
-        this.iWant = [];
-        this.iDontWant = [];
-        this.opponentWant = [];
-        this.opponentDontWant = [];
-        this.scheduleLength = 1;
+        this.scheduleLength = 0.7;
     },
     moveCard:function(cardSprite, direction){
         cardSprite.lastTouchBy = this.get("position");
         if ( direction === DIRECTION_ME ) {
             cardSprite.speedX = 0;
-            cardSprite.speedY = this.get("position") === PLAYER_POSITION_UP ? NATURE_SPEED : -NATURE_SPEED;
+            cardSprite.speedY = this.get("position") === PLAYER_POSITION_UP ? NATURE_SPEED*2 : -NATURE_SPEED*2;
         } else if ( direction === DIRECTION_OPPONENT ) {
-            cardSprite.speedX = 0;
+            cardSprite.speedX = Math.random()*NATURE_SPEED/5-NATURE_SPEED/8;
             cardSprite.speedY = this.get("position") === PLAYER_POSITION_UP ? -NATURE_SPEED : NATURE_SPEED;
-        } else {
-            cardSprite.speedX = 0;
-            cardSprite.speedY = Math.random()>0.5?NATURE_SPEED:-NATURE_SPEED;
+        } else if ( direction === DIRECTION_OUT ) {
+            cardSprite.speedY = 0;
+            cardSprite.speedX = Math.random()>0.5?NATURE_SPEED:-NATURE_SPEED;
         }
         var finger = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("finger.png"));
         finger.attr({
@@ -34,6 +30,7 @@ var AIPlayerModel = PlayerModel.extend({
             cc.delayTime(0.5),
             cc.removeSelf(true)
         ))
+        cardSprite.__finger = finger;
         cardSprite.onTouchRelease();
     },
     checkMovable:function(sprite) {
@@ -67,14 +64,18 @@ var AIPlayerModel = PlayerModel.extend({
         });
     },
     onAskStrategy:function(){
+        this.calculateWantAndHate();
+        var opponent = gameModel.getOpponentPlayer(this)
+        opponent.calculateWantAndHate();
         var candidates = [];
         _.each( mainLayer.getChildren(), function(sprite) {
             if (sprite instanceof PokerCardSprite ) {
                 if ( this.checkMovable(sprite) && this.canTakeCard() ) {
+                    var result = this.evaluatePokerCard(sprite, opponent);
                     candidates.push({
                         sprite: sprite,
-                        direction: DIRECTION_ME,
-                        value: this.evaluatePokerCard(sprite)
+                        direction: result.direction,
+                        value: result.value
                     });
                 }
             } else if (sprite instanceof MoneySpecialCardSprite ) {
@@ -126,6 +127,7 @@ var AIPlayerModel = PlayerModel.extend({
         }
         if ( candidates.length ) {
             var result = this.pickUpCandidate(candidates);
+            if ( result.value <= 0 ) return;
             if ( result.useItem ) {
                 playerSprite.itemSlotSprite.useItem();
             } else {
@@ -135,8 +137,11 @@ var AIPlayerModel = PlayerModel.extend({
     },
     onGetItem:function(itemName){
     },
-    evaluatePokerCard:function(sprite){
-        return 1;
+    evaluatePokerCard:function(sprite, opponent){
+        return {
+            direction:DIRECTION_ME,
+            value:1
+        };
     },
     evaluateMoney:function(sprite){
         return 1;
@@ -167,11 +172,51 @@ var SimpleAIPlayerModel = AIPlayerModel.extend({
     },
     onStartCountDown:function(){
     },
-    evaluatePokerCard:function(sprite){
+    evaluatePokerCard:function(sprite, opponent){
         var number = sprite.model.get("number");
-        if ( number < 10 ) {
-            return 1;
-        } return number;
+        var suit = sprite.model.get("suit");
+        var value = 0;
+        if (_.contains(this.wantNumber,number)) {
+            value += 40;
+        } else if (_.contains(this.hateNumber,number)) {
+            value -= 50;
+        }
+        if (_.contains(this.reallyWantNumber,number)) {
+            value += 40;
+        }
+        if (_.contains(this.wantSuit,suit)) {
+            value += 80;
+        } else if (_.contains(this.hateSuit,suit)) {
+            value -= 50;
+        }
+        if ( value === 0 ) {
+            if (number < 10) {
+                return {
+                    direction: DIRECTION_ME,
+                    value:0
+                };
+            }
+        }
+
+        if ( value < 0 ) {
+            if (_.contains(opponent.wantNumber,number) ||
+                _.contains(opponent.wantSuit,suit) ) {
+                return {
+                    direction: DIRECTION_OUT,
+                    value:Math.abs(value)
+                };
+            } else {
+                return {
+                    direction: DIRECTION_OPPONENT,
+                    value:Math.abs(value)
+                };
+            }
+        } else {
+            return {
+                direction: DIRECTION_ME,
+                value:number
+            };
+        }
     },
     evaluateMoney:function(sprite){
         return sprite.model.get("money");

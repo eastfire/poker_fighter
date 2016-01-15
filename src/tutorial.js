@@ -476,8 +476,49 @@ var initTutorialMapVsAI = function(){
                 labels: [
                     {
                         x: cc.winSize.width/2,
-                        y: 310,
+                        y: 270,
                         text: texts.tutorials.compareHands
+                    }
+                ],
+                images: [
+                ],
+                next: {
+                    sceneName:"main",
+                    stepName:"compareHands2"
+                }
+            }),
+            "compareHands2": new TutorialModel({
+                points:[
+                    {
+                        x: cc.winSize.width/2,
+                        y: 120,
+                        width: cc.winSize.width * 350/600,
+                        height: 60
+                    },
+                    {
+                        x: cc.winSize.width/2,
+                        y: cc.winSize.height - 120,
+                        width: cc.winSize.width * 350/600,
+                        height: 60
+                    },
+                    {
+                        x: cc.winSize.width/2,
+                        y: 50,
+                        width: cc.winSize.width * 350/600,
+                        height: 100
+                    },
+                    {
+                        x: cc.winSize.width/2,
+                        y: cc.winSize.height - 50,
+                        width: cc.winSize.width * 350/600,
+                        height: 100
+                    }
+                ],
+                labels: [
+                    {
+                        x: cc.winSize.width/2,
+                        y: 270,
+                        text: texts.tutorials.compareHands2
                     }
                 ],
                 images: [
@@ -938,13 +979,60 @@ var initTutorialMap = function(){
                 labels: [
                     {
                         x: cc.winSize.width/2,
-                        y: 310,
+                        y: 270,
                         text: texts.tutorials.compareHands
                     },
                     {
                         x: cc.winSize.width/2,
-                        y: cc.winSize.height - 310,
+                        y: cc.winSize.height - 270,
                         text: texts.tutorials.compareHands,
+                        rotation: 180
+                    }
+                ],
+                images: [
+                ],
+                next: {
+                    sceneName:"main",
+                    stepName:"compareHands2"
+                }
+            }),
+            "compareHands2": new TutorialModel({
+                points:[
+                    {
+                        x: cc.winSize.width/2,
+                        y: 120,
+                        width: cc.winSize.width * 350/600,
+                        height: 60
+                    },
+                    {
+                        x: cc.winSize.width/2,
+                        y: cc.winSize.height - 120,
+                        width: cc.winSize.width * 350/600,
+                        height: 60
+                    },
+                    {
+                        x: cc.winSize.width/2,
+                        y: 50,
+                        width: cc.winSize.width * 350/600,
+                        height: 100
+                    },
+                    {
+                        x: cc.winSize.width/2,
+                        y: cc.winSize.height - 50,
+                        width: cc.winSize.width * 350/600,
+                        height: 100
+                    }
+                ],
+                labels: [
+                    {
+                        x: cc.winSize.width/2,
+                        y: 270,
+                        text: texts.tutorials.compareHands2
+                    },
+                    {
+                        x: cc.winSize.width/2,
+                        y: cc.winSize.height - 270,
+                        text: texts.tutorials.compareHands2,
                         rotation: 180
                     }
                 ],

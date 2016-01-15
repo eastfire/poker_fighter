@@ -1,10 +1,10 @@
-SUIT_NUMBER_MAP = {
-    spade: 0,
-    heart : 1,
-    club: 2,
-    diamond: 3,
-    blank: 4
-};
+var SUIT_NUMBER_SPADE = 0;
+var SUIT_NUMBER_HEART = 1;
+var SUIT_NUMBER_CLUB = 2;
+var SUIT_NUMBER_DIAMOND = 3;
+var SUIT_NUMBER_BLANK = 4;
+
+var ALL_SUIT_NUMBERS = [SUIT_NUMBER_SPADE, SUIT_NUMBER_HEART, SUIT_NUMBER_CLUB, SUIT_NUMBER_DIAMOND, SUIT_NUMBER_BLANK]
 SUIT_ARRAY = ["spade","heart","club","diamond", "blank"];
 
 var PokerCardModel = Backbone.Model.extend({
@@ -63,6 +63,8 @@ var NormalCardSprite = cc.Sprite.extend({
                     if ( gameModel.player2.get("dizzy") )
                         this.dizzy();
                     else this.rotation = 180;
+
+                    if ( this.__finger ) this.__finger.removeFromParent(true);
                 }, target);
                 //check size
                 var newSizeScale = gameModel.player1.getSizeAdjust();
@@ -73,6 +75,8 @@ var NormalCardSprite = cc.Sprite.extend({
             } else {
                 target.moveToLine.call(target, gameModel.player2, player2Y, function(){
                     target.playerTakeCard.call(target, gameModel.player2);
+
+                    if ( target.__finger ) target.__finger.removeFromParent(true);
                 }, target);
                 //check size
                 var newSizeScale = gameModel.player2.getSizeAdjust();
@@ -95,6 +99,8 @@ var NormalCardSprite = cc.Sprite.extend({
                     if ( gameModel.player1.get("dizzy") )
                         this.dizzy();
                     else this.rotation = 0;
+
+                    if ( this.__finger ) this.__finger.removeFromParent(true);
                 }, target);
                 //check size
                 var newSizeScale = gameModel.player2.getSizeAdjust();
@@ -105,6 +111,8 @@ var NormalCardSprite = cc.Sprite.extend({
             } else {
                 target.moveToLine.call(target, gameModel.player1, player1Y, function(){
                     target.playerTakeCard.call(target, gameModel.player1);
+
+                    if ( target.__finger ) target.__finger.removeFromParent(true);
                 }, target);
                 //check size
                 var newSizeScale = gameModel.player1.getSizeAdjust();

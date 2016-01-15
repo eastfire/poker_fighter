@@ -603,7 +603,7 @@ var MainLayer = cc.LayerColor.extend({
                     self.player1.onAskStrategy();
                 }
             }
-            this.schedule(this.aiSchedule1, this.player2.scheduleLength+Math.random()*0.3);
+            this.schedule(this.aiSchedule1, this.player1.scheduleLength+Math.random()*0.3);
         }
     },
     generateItems:function(){

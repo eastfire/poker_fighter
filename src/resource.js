@@ -103,7 +103,8 @@ var texts_locale = {
             thisIsYourTarget: "这是你的目标金钱。\n如果你的钱达到这个数字，\n并且赢了一局，你就赢得游戏胜利！",
             thisIsForbidLine: "这是iOS浏览器的禁断之线。\n请勿在此区域向右滑动\n否则世界就会毁灭！",
             thisIsCountDown:"当任何一方得到５张手牌\n留给另一方的时间只剩下５秒",
-            compareHands: "当倒计时结束，将比较双方的牌型。\n牌型较强的一方胜。\n如果牌型相同，\n则比较参与牌型的关键牌中最大的一张牌。\n(例如：满堂红中组成三条的牌)",
+            compareHands: "当倒计时结束，\n将比较双方的牌型。\n牌型较强的一方胜。",
+            compareHands2: "如果牌型相同，\n则比较参与牌型的关键牌中最大的一张牌。\n(例如：满堂红中组成三条的牌)",
             betHelp:"牌型胜者得到败者的钱。\n钱数由双方的牌型对应的赌注之和，\n乘以当前赔率得到",
             handHelp: "如需牌型大小及其对应赌注的帮助，\n可以点击此按钮。",
             betRateIncrease: "赔率每经过一局会增加１"
@@ -244,7 +245,8 @@ var texts_locale = {
             thisIsYourTarget: "This is your victory goal.\nIf your money reach this goal \nafter winning a round,you win the game!",
             thisIsForbidLine: "This is a forbid line for iOS Browser.\nPlease don't swipe from this area.\nOr the game will be closed!",
             thisIsCountDown:"When any player get their fifth card.\nThe other player only has five seconds left.",
-            compareHands: "When count down finish,\nrevealed and compared both players' cards.\nPlayer with stronger hand win.\nIf there is a tie,\ncompare key highest card that form the Hand.\n(e.g.:Card that form triple in Full House.)",
+            compareHands: "When count down finish,\nrevealed and compared both players' cards.\nPlayer with stronger hand win.",
+            compareHands2: "If there is a tie,\ncompare key highest card that form the Hand.\n(e.g.:Card that form triple in Full House.)",
             betHelp:"Winner get money from loser.\nMoney amount equal to total of\nboth players hands' gambit,\nmultiplied by current bet rate.",
             handHelp: "If you need more info of\nPoker Hand and its gambit,\nclick this button.",
             betRateIncrease: "Bet rate increase 1 per round."

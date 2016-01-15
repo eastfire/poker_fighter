@@ -1,3 +1,5 @@
+var ALL_NUMBERS = [2,3,4,5,6,7,8,9,10,11,12,13,14];
+
 var STRAIGHT_MAP = {
     "14-3-2":true,
     "4-3-2":true,
@@ -146,8 +148,9 @@ var PlayerModel = Backbone.Model.extend({
     },
     isFlush:function(cards){
         var v = cards[0].get("suit");
+        if ( v === SUIT_NUMBER_BLANK ) return false;
         for ( var i = 1; i < cards.length ; i++ ){
-            if ( v != cards[i].get("suit") )
+            if ( v != cards[i].get("suit") || cards[i].get("suit") === SUIT_NUMBER_BLANK)
                 return false;
         }
         return true;
@@ -184,7 +187,7 @@ var PlayerModel = Backbone.Model.extend({
         for ( var i = this.get("hands").length; i < MAX_HAND; i++ ) {
             cards.push( new PokerCardModel({
                 number : -i,
-                suit: 5 + i
+                suit: SUIT_NUMBER_BLANK
             }))
         }
 
@@ -272,6 +275,7 @@ var PlayerModel = Backbone.Model.extend({
     },
     cleanStatus:function(){
         this.set({
+            showHand: false,
             sizeUp: 0,
             sizeDown: 0,
             speedUp: 0,
@@ -294,6 +298,129 @@ var PlayerModel = Backbone.Model.extend({
     onGetItem:function(itemName){
     },
     onStartCountDown:function(){
+    },
+    calculateWantAndHate:function(){
+        var hands = this.get("hands");
+        this.wantNumber = [];
+        this.reallyWantNumber = [];
+        this.wantSuit = [];
+        this.hateNumber = [];
+        this.hateSuit = [];
+        if ( hands.length === 2 ) {
+            var number0 = hands[0].get("number");
+            var number1 = hands[1].get("number");
+            var suit0 = hands[0].get("suit");
+            var suit1 = hands[1].get("suit");
+            if ( number0 === number1 ) {
+                this.wantNumber.push(number0)
+            } else if ( number0 - number1 <= 4) {//顺子潜力
+                for ( var i = number0 - 4; i <= number1 + 4; i++) {
+                    this.wantNumber.push(i)
+                }
+                this.reallyWantNumber.push(number0)
+                this.reallyWantNumber.push(number1)
+                this.hateNumber = _.union(this.hateNumber, _.without(ALL_NUMBERS, this.wantNumber ))
+            } else { //散牌
+                this.wantNumber.push(number0)
+                this.wantNumber.push(number1)
+            }
+            if ( suit0 === suit1 && suit0 !== SUIT_NUMBER_BLANK ) {
+                this.wantSuit.push(suit0);
+            }
+        } else if ( hands.length === 3 ) {
+            var number0 = hands[0].get("number");
+            var number1 = hands[1].get("number");
+            var number2 = hands[2].get("number");
+            var suit0 = hands[0].get("suit");
+            var suit1 = hands[1].get("suit");
+            var suit2 = hands[2].get("suit");
+            if ( number0 === number1 && number0 === number2) { //三张
+                this.wantNumber.push(number0)
+            } else if ( number0 === number1 || number1 === number2) { //有一对
+                this.wantNumber.push(number0)
+                this.wantNumber.push(number2)
+                if ( number0 === number1 )
+                    this.reallyWantNumber.push(number0)
+                else
+                    this.reallyWantNumber.push(number2)
+                this.hateNumber = _.without(ALL_NUMBERS, this.wantNumber )
+            } else if ( number0 - number2 <= 4) {//顺子潜力
+                for ( var i = number0 - 4; i <= number2 + 4; i++) {
+                    if ( i !== number0 && i !== number1 && i !== number2 )
+                        this.wantNumber.push(i)
+                }
+                this.reallyWantNumber.push(number0)
+                this.reallyWantNumber.push(number1)
+                this.reallyWantNumber.push(number2)
+                this.hateNumber = _.without(ALL_NUMBERS, this.wantNumber)
+            } else { //散牌
+                this.wantNumber.push(number0)
+                this.wantNumber.push(number1)
+                this.wantNumber.push(number2)
+                this.hateNumber = _.without(ALL_NUMBERS, this.wantNumber)
+            }
+            if ( suit0 === suit1 && suit0 === suit2 && suit0 !== SUIT_NUMBER_BLANK) {
+                this.wantSuit.push(suit0);
+                this.hateSuit = _.without(ALL_SUIT_NUMBERS, suit0)
+            }
+        } else if ( hands.length === 4 ) {
+            var number0 = hands[0].get("number");
+            var number1 = hands[1].get("number");
+            var number2 = hands[2].get("number");
+            var number3 = hands[3].get("number");
+            var suit0 = hands[0].get("suit");
+            var suit1 = hands[1].get("suit");
+            var suit2 = hands[2].get("suit");
+            var suit3 = hands[3].get("suit");
+            if ( number0 === number1 && number0 === number2 && number0 === number3) { //四条
+                this.wantNumber.push(number0)
+            } else if ( ( number0 === number1 && number0 === number2 )||
+                ( number1 === number2 && number1 === number3 ) ||
+                ( number0 === number1 && number2 === number3 ) ) { //三条或两对
+                this.wantNumber.push(number0)
+                this.wantNumber.push(number3)
+                if ( number0 === number1 && number0 === number2 ) {
+                    this.reallyWantNumber.push(number0)
+                } else if ( number1 === number2 && number1 === number3 ) {
+                    this.reallyWantNumber.push(number1)
+                }
+                this.hateNumber = _.without(ALL_NUMBERS, this.wantNumber )
+            } else if (  number0 === number1 ) { //一对
+                this.wantNumber.push(number0)
+                this.wantNumber.push(number2)
+                this.wantNumber.push(number3)
+                this.reallyWantNumber.push(number0)
+                this.hateNumber = _.without(ALL_NUMBERS, this.wantNumber )
+            } else if ( number1 === number2 ) { //一对
+                this.wantNumber.push(number0)
+                this.wantNumber.push(number1)
+                this.wantNumber.push(number3)
+                this.reallyWantNumber.push(number1)
+                this.hateNumber = _.without(ALL_NUMBERS, this.wantNumber )
+            } else if ( number2 === number3 ) { //一对
+                this.wantNumber.push(number0)
+                this.wantNumber.push(number1)
+                this.wantNumber.push(number2)
+                this.reallyWantNumber.push(number2)
+                this.hateNumber = _.without(ALL_NUMBERS, this.wantNumber )
+            } else if ( number0 - number3 <= 4) {//顺子潜力
+                for ( var i = number0 - 4; i <= number3 + 4; i++) {
+                    if ( i !== number0 && i !== number1 && i !== number2 && i !== number3)
+                        this.wantNumber.push(i)
+                }
+                this.hateNumber = _.union(this.hateNumber, _.without(ALL_NUMBERS, this.wantNumber))
+            } else { //散牌
+                this.wantNumber.push(number0)
+                this.wantNumber.push(number1)
+                this.wantNumber.push(number2)
+                this.wantNumber.push(number3)
+                this.hateNumber = _.union(this.hateNumber, _.without(ALL_NUMBERS, this.wantNumber ))
+            }
+            if ( suit0 === suit1 && suit0 === suit2 && suit0 === suit3 && suit0 !== SUIT_NUMBER_BLANK) {
+                this.wantSuit.push(suit0);
+                this.hateSuit = _.without(ALL_SUIT_NUMBERS, suit0)
+            }
+        }
     }
 });
 
