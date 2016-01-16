@@ -607,6 +607,15 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
             boundingWidth : 300
         });
         this.itemDescSprite.addChild(descLabel)
+    },
+    onRotate:function(rotation){
+        if ( rotation === 180 ) {
+            this.player1Label.setString(texts.player2)
+            this.player2Label.setString(texts.player1)
+        } else {
+            this.player1Label.setString(texts.player1)
+            this.player2Label.setString(texts.player2)
+        }
     }
 });
 

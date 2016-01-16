@@ -80,12 +80,13 @@ var PlayerRotateLayer = cc.LayerColor.extend({
         this.menuArray.push(exitItem);
     },
     rotateLayer:function(){
- //       this.letMeSeeItem.setEnabled(false);
         var rotation = (this.rotation + 180) % 360;
         this.runAction( cc.sequence( cc.rotateTo(times.letMeSee, rotation ),
             cc.callFunc(function(){
-   //             this.letMeSeeItem.setEnabled(true);
+                this.onRotate(rotation)
             },this)));
+    },
+    onRotate:function(rotation){
     },
     onExit: function(){
         this._super();
