@@ -328,12 +328,7 @@ var MainLayer = cc.LayerColor.extend({
                 var prevLocationInNode = target.convertToNodeSpace(touch.getPreviousLocation());
                 var touchId = cc.sys.isNative ? touch.getID() : touch.__instanceId;
                 _.each( target.getChildren(), function(sprite){
-                    if ( sprite instanceof NormalCardSprite && sprite.canBeTouch(locationInNode) ) {
-                        var rect = cc.rect(sprite.x-sprite.contentSprite.width*sprite.contentSprite.scaleX/2,
-                            sprite.y-sprite.contentSprite.height*sprite.contentSprite.scaleY/2,
-                            sprite.contentSprite.width*sprite.contentSprite.scaleX,
-                            sprite.contentSprite.height*sprite.contentSprite.scaleY);
-
+                    if ( sprite instanceof NormalCardSprite && !sprite.alreadyTaken ) {
                         //Check the click area
                         if ( sprite.touchingInstanceId === touchId ){
                             sprite.touchingInstanceId = null;
