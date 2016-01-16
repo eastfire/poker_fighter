@@ -16,7 +16,7 @@ var MoneySpecialCardSprite = NormalCardSprite.extend({
         } else {
             name = "token-black.png";
         }
-        this.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame(name));
+        this.contentSprite.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame(name));
     },
     render:function(){
 
@@ -54,7 +54,7 @@ var ItemSpecialCardModel = Backbone.Model.extend({
 
 var ItemSpecialCardSprite = NormalCardSprite.extend({
     initView:function(){
-        this.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame("card-item.png"));
+        this.contentSprite.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame("card-item.png"));
     },
     render:function(){
 
@@ -93,7 +93,7 @@ var BombSpecialCardModel = Backbone.Model.extend({
 
 var BombSpecialCardSprite = NormalCardSprite.extend({
     initView:function(){
-        this.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame("bomb.png"));
+        this.contentSprite.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame("bomb.png"));
     },
     render:function(){
 
@@ -147,7 +147,7 @@ var ThiefSpecialCardModel = Backbone.Model.extend({
 
 var ThiefSpecialCardSprite = NormalCardSprite.extend({
     initView:function(){
-        this.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame(this.model.power == 10 ? "thief-red.png" : "thief-green.png"));
+        this.contentSprite.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame(this.model.power == 10 ? "thief-red.png" : "thief-green.png"));
     },
     render:function(){
 

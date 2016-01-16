@@ -4,6 +4,7 @@ var res = {
 
     intro_png : "res/intro.png",
 
+    card_slide_mp3: "res/card-slide.mp3",
     explosion_mp3: "res/explosion.mp3",
     spring_mp3: "res/spring-boing.mp3",
     slot_machine_mp3: "res/slot-machine.mp3",
@@ -350,7 +351,8 @@ var colors = {
     table: new cc.color(0x3b,0x7f,0x42),
     tableLabel: new cc.color(0xd6,0xfe,0x9d),
     tableLabelOutline: new cc.color(0x40,0x66,0x1d),
-    tutorial: new cc.color(0x80,0x80,0x80, 192),
+    tutorialMask: new cc.color(0x00,0x00,0x00, 192),
+    tutorialLabel: cc.color.WHITE,
 
     itemOn: cc.color.GREEN,
     itemOff: cc.color.RED

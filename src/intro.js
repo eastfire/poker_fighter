@@ -80,13 +80,19 @@ var IntroLayer = cc.Layer.extend({
 
         var dealTime = 0.5;
         var y = cc.winSize.height/2 - 100;
-        vsItem.runAction(cc.sequence(cc.delayTime(0), cc.spawn(
+        vsItem.runAction(cc.sequence(cc.delayTime(0), cc.callFunc(function(){
+            cc.audioEngine.playEffect(res.card_slide_mp3, false);
+        },this), cc.spawn(
             cc.moveTo(dealTime, cc.winSize.width/2 - 120 - 15 + 30*Math.random(), y+Math.random()*50),
             cc.rotateTo(dealTime, -5 - Math.random()*10))))
-        vsAIItem.runAction(cc.sequence(cc.delayTime(0.25), cc.spawn(
+        vsAIItem.runAction(cc.sequence(cc.delayTime(0.25), cc.callFunc(function(){
+            cc.audioEngine.playEffect(res.card_slide_mp3, false);
+        },this), cc.spawn(
             cc.moveTo(dealTime, cc.winSize.width/2-15+30*Math.random(), y+Math.random()*50),
             cc.rotateTo(dealTime, 5- Math.random()*10))))
-        helpItem.runAction(cc.sequence(cc.delayTime(0.5), cc.spawn(
+        helpItem.runAction(cc.sequence(cc.delayTime(0.5), cc.callFunc(function(){
+            cc.audioEngine.playEffect(res.card_slide_mp3, false);
+        },this), cc.spawn(
             cc.moveTo(dealTime, cc.winSize.width/2+120 - 15 + 30*Math.random(), y+Math.random()*50),
             cc.rotateTo(dealTime, 5+Math.random()*10))))
 

@@ -28,6 +28,9 @@ var NormalCardSprite = cc.Sprite.extend({
 
         this.setName(this.model.cid);
 
+        this.contentSprite = new cc.Sprite();
+        this.addChild(this.contentSprite);
+
         this.initView();
     },
     initView:function(){
@@ -58,17 +61,17 @@ var NormalCardSprite = cc.Sprite.extend({
                     }, this);
                     //check size
                     var newSizeScale = gameModel.player2.getSizeAdjust();
-                    this.runAction(cc.scaleTo(0.1, newSizeScale, newSizeScale));
+                    this.contentSprite.runAction(cc.scaleTo(0.1, newSizeScale, newSizeScale));
                     //dizzy
                     if ( gameModel.player2.get("dizzy") )
                         this.dizzy();
-                    else this.rotation = 180;
+                    else this.contentSprite.rotation = 180;
 
                     if ( this.__finger ) this.__finger.removeFromParent(true);
                 }, target);
                 //check size
                 var newSizeScale = gameModel.player1.getSizeAdjust();
-                this.runAction(cc.scaleTo(0.1, newSizeScale, newSizeScale));
+                this.contentSprite.runAction(cc.scaleTo(0.1, newSizeScale, newSizeScale));
                 //dizzy
                 if ( gameModel.player1.get("dizzy") )
                     this.dizzy();
@@ -80,7 +83,7 @@ var NormalCardSprite = cc.Sprite.extend({
                 }, target);
                 //check size
                 var newSizeScale = gameModel.player2.getSizeAdjust();
-                this.runAction(cc.scaleTo(0.1, newSizeScale, newSizeScale));
+                this.contentSprite.runAction(cc.scaleTo(0.1, newSizeScale, newSizeScale));
                 //dizzy
                 if ( gameModel.player2.get("dizzy") )
                     this.dizzy();
@@ -94,17 +97,17 @@ var NormalCardSprite = cc.Sprite.extend({
                     }, this);
                     //check size
                     var newSizeScale = gameModel.player1.getSizeAdjust();
-                    this.runAction(cc.scaleTo(0.1, newSizeScale, newSizeScale));
+                    this.contentSprite.runAction(cc.scaleTo(0.1, newSizeScale, newSizeScale));
                     //dizzy
                     if ( gameModel.player1.get("dizzy") )
                         this.dizzy();
-                    else this.rotation = 0;
+                    else this.contentSprite.rotation = 0;
 
                     if ( this.__finger ) this.__finger.removeFromParent(true);
                 }, target);
                 //check size
                 var newSizeScale = gameModel.player2.getSizeAdjust();
-                this.runAction(cc.scaleTo(0.1, newSizeScale, newSizeScale));
+                this.contentSprite.runAction(cc.scaleTo(0.1, newSizeScale, newSizeScale));
                 //dizzy
                 if ( gameModel.player2.get("dizzy") )
                     this.dizzy();
@@ -116,7 +119,7 @@ var NormalCardSprite = cc.Sprite.extend({
                 }, target);
                 //check size
                 var newSizeScale = gameModel.player1.getSizeAdjust();
-                this.runAction(cc.scaleTo(0.1, newSizeScale, newSizeScale));
+                this.contentSprite.runAction(cc.scaleTo(0.1, newSizeScale, newSizeScale));
                 //dizzy
                 if ( gameModel.player1.get("dizzy") )
                     this.dizzy();
@@ -146,14 +149,14 @@ var NormalCardSprite = cc.Sprite.extend({
             if ( target.y < midY ) {
                 //check size
                 var newSizeScale = gameModel.player1.getSizeAdjust();
-                this.runAction(cc.scaleTo(0.1, newSizeScale, newSizeScale));
+                this.contentSprite.runAction(cc.scaleTo(0.1, newSizeScale, newSizeScale));
                 //check dizzy
                 if ( gameModel.player1.get("dizzy") )
                     this.dizzy();
             } else {
                 //check size
                 var newSizeScale = gameModel.player2.getSizeAdjust();
-                this.runAction(cc.scaleTo(0.1, newSizeScale, newSizeScale));
+                this.contentSprite.runAction(cc.scaleTo(0.1, newSizeScale, newSizeScale));
                 //check dizzy
                 if ( gameModel.player2.get("dizzy") )
                     this.dizzy();
@@ -260,14 +263,14 @@ var NormalCardSprite = cc.Sprite.extend({
     render:function(){
         if ( this.model.get("side") === "front" ) {
             var suit = this.model.get("suit");
-            this.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame("card-" + SUIT_ARRAY[suit] + ".png"));
+            this.contentSprite.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame("card-" + SUIT_ARRAY[suit] + ".png"));
             var r = ( suit === 1 || suit === 3 )?"r":"";
             this.numberSprite.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame("number-" + this.model.get("number") + r + ".png"));
             this.numberDownSprite.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame("number-" + this.model.get("number") + r + ".png"));
             this.numberSprite.setVisible(true);
             this.numberDownSprite.setVisible(true);
         } else {
-            this.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame("card-back.png"));
+            this.contentSprite.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame("card-back.png"));
             this.numberSprite.setVisible(false);
             this.numberDownSprite.setVisible(false);
         }
@@ -292,13 +295,17 @@ var NormalCardSprite = cc.Sprite.extend({
         this.removeFromParent(true);
     },
     dizzy:function(){
-        this.runAction(cc.rotateBy(0.5,360).repeatForever())
+        this.contentSprite.runAction(cc.rotateBy(0.5,360).repeatForever())
     },
     shrink:function(){
-        this.runAction(cc.scaleTo(0.1,1.1/1.5, 1.1/1.5));
+        this.contentSprite.runAction(cc.scaleTo(0.1,1.1/1.5, 1.1/1.5));
     },
     enlarge:function(){
-        this.runAction(cc.scaleTo(0.1,1.1*1.5, 1.1*1.5));
+        this.contentSprite.runAction(cc.scaleTo(0.1,1.1*1.5, 1.1*1.5));
+    },
+    stopAllActions:function(){
+        this._super();
+        this.contentSprite.stopAllActions();
     }
 });
 
@@ -309,7 +316,7 @@ var PokerCardSprite = NormalCardSprite.extend({
             x: dimens.card_number_position.x,
             y: dimens.card_number_position.y
         });
-        this.addChild(this.numberSprite, 0);
+        this.contentSprite.addChild(this.numberSprite, 0);
 
         this.numberDownSprite = new cc.Sprite();
         this.numberDownSprite.attr({
@@ -317,14 +324,14 @@ var PokerCardSprite = NormalCardSprite.extend({
             y: dimens.card_size.height - dimens.card_number_position.y,
             rotation: 180
         });
-        this.addChild(this.numberDownSprite, 0);
+        this.contentSprite.addChild(this.numberDownSprite, 0);
     },
     getFlipToFrontSequence:function(time){
         var oldScaleX = 1;
         var oldScaleY = 1;
         var time = time || times.flip
         return new cc.Sequence( new cc.ScaleTo(time/2, 0, oldScaleY), new cc.CallFunc(function(){
-            this.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame("card-"+SUIT_ARRAY[this.model.get("suit")]+".png"));
+            this.contentSprite.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame("card-"+SUIT_ARRAY[this.model.get("suit")]+".png"));
             this.numberSprite.setVisible(true);
             this.numberDownSprite.setVisible(true);
             this.model.set("side","front");
@@ -335,7 +342,7 @@ var PokerCardSprite = NormalCardSprite.extend({
         var oldScaleY = 1;
         var time = time || times.flip
         return new cc.Sequence( new cc.ScaleTo(time/2, 0, oldScaleY), new cc.CallFunc(function(){
-            this.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame("card-back.png"));
+            this.contentSprite.setSpriteFrame(cc.spriteFrameCache.getSpriteFrame("card-back.png"));
             this.numberSprite.setVisible(false);
             this.numberDownSprite.setVisible(false);
             this.model.set("side","back");

@@ -451,8 +451,8 @@ var SniperItemModel = ItemModel.extend({
         if ( currentSprite ) {
             var sniperSprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("crosshair.png"));
             sniperSprite.attr({
-                x: cc.winSize.width/2 - currentSprite.x,
-                y: ( opponentPlayerSprite.model.get("position") === PLAYER_POSITION_DOWN ? 1 : -1 ) * (cc.winSize.height/2 - currentSprite.y)
+                x: playerSprite.itemSlotSprite.x - currentSprite.x,
+                y: playerSprite.itemSlotSprite.y - currentSprite.y
             })
             currentSprite.addChild(sniperSprite);
             sniperSprite.runAction(cc.sequence(

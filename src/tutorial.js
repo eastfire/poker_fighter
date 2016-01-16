@@ -153,7 +153,7 @@ var TutorialLayer = cc.Layer.extend({
         this.pointSprites = [];
         mask.drawPoly([cc.p(0, 0), cc.p(cc.winSize.width, 0),
             cc.p(cc.winSize.width, cc.winSize.height),
-            cc.p(0, cc.winSize.height)], colors.tutorial, 1, colors.tutorial);
+            cc.p(0, cc.winSize.height)], colors.tutorialMask, 1, colors.tutorialMask);
         if ( points.length ) {
             var clipper = new cc.ClippingNode();
             var stencilSprite = new cc.Sprite();
@@ -165,8 +165,22 @@ var TutorialLayer = cc.Layer.extend({
                     scaleX:this.getValue(pointEntry,"width")/pointSprite.width,
                     scaleY:this.getValue(pointEntry,"height")/pointSprite.height
                 })
+//                var pointSprite = new cc.DrawNode();
+//                pointSprite.drawDot(new cc.Point(this.getValue(pointEntry,"x"), this.getValue(pointEntry,"y")), this.getValue(pointEntry,"width"), cc.color.BLACK);
+//                pointSprite.attr({
+//                    scaleY: this.getValue(pointEntry,"height") / this.getValue(pointEntry,"width")
+//                })
                 stencilSprite.addChild(pointSprite)
                 this.pointSprites.push(pointSprite)
+
+//                var pointSprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("tutorial-point.png"))
+//                pointSprite.attr({
+//                    x:this.getValue(pointEntry,"x"),
+//                    y:this.getValue(pointEntry,"y"),
+//                    scaleX:this.getValue(pointEntry,"width")/pointSprite.width,
+//                    scaleY:this.getValue(pointEntry,"height")/pointSprite.height
+//                })
+//                this.addChild(pointSprite,100);
             },this);
 
             clipper.stencil = stencilSprite;
@@ -188,7 +202,7 @@ var TutorialLayer = cc.Layer.extend({
         _.each(labels,function(labelEntry){
             var labelSprite = new cc.LabelTTF(this.getValue(labelEntry,"text") , null, this.getValue(labelEntry,"fontSize") || 22);
             labelSprite.attr({
-                color: labelEntry.color || cc.color.BLACK,
+                color: labelEntry.color || colors.tutorialLabel,
                 x:this.getValue(labelEntry,"x"),
                 y:this.getValue(labelEntry,"y"),
                 anchorX: this.getValue(labelEntry,"anchorX") || 0.5,
@@ -255,12 +269,12 @@ var initTutorialMapVsAI = function(){
                         width: function(){
                             return _.find(mainLayer.getChildren(),function(sprite){
                                 return sprite instanceof PokerCardSprite && sprite.y < cc.winSize.height/2
-                            }).width*1.4
+                            }).contentSprite.width*1.4
                         },
                         height: function(){
                             return _.find(mainLayer.getChildren(),function(sprite){
                                 return sprite instanceof PokerCardSprite && sprite.y < cc.winSize.height/2
-                            }).height*1.4
+                            }).contentSprite.height*1.4
                         }
                     }
                 ],
@@ -638,12 +652,12 @@ var initTutorialMap = function(){
                         width: function(){
                             return _.find(mainLayer.getChildren(),function(sprite){
                                 return sprite instanceof PokerCardSprite && sprite.y < cc.winSize.height/2
-                            }).width*1.4
+                            }).contentSprite.width*1.4
                         },
                         height: function(){
                             return _.find(mainLayer.getChildren(),function(sprite){
                                 return sprite instanceof PokerCardSprite && sprite.y < cc.winSize.height/2
-                            }).height*1.4
+                            }).contentSprite.height*1.4
                         }
                     },
                     {
@@ -660,12 +674,12 @@ var initTutorialMap = function(){
                         width: function(){
                             return _.find(mainLayer.getChildren(),function(sprite){
                                 return sprite instanceof PokerCardSprite && sprite.y > cc.winSize.height/2
-                            }).width*1.4
+                            }).contentSprite.width*1.4
                         },
                         height: function(){
                             return _.find(mainLayer.getChildren(),function(sprite){
                                 return sprite instanceof PokerCardSprite && sprite.y > cc.winSize.height/2
-                            }).height*1.4
+                            }).contentSprite.height*1.4
                         }
                     }
                 ],

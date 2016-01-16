@@ -42,6 +42,7 @@ var PLAYER_POSITION_DOWN = 0;
 var PLAYER_POSITION_UP = 1;
 
 var MAX_HAND = 5;
+var ACTION_TAG_RATATE = 110;
 var ACTION_TAG_MOVING = 111;
 var ACTION_TAG_FLIPPING = 112;
 
@@ -761,8 +762,8 @@ var PlayerSprite = cc.Sprite.extend({
             _.each(cards,function(cardModel){
                 var sprite = this.getParent().getChildByName(cardModel.cid);
                 if ( sprite != null ) {
-                    sprite.stopActionByTag(ACTION_TAG_FLIPPING);
-                    sprite.runAction(sprite.getFlipToFrontSequence(times.quickFlip)).setTag(ACTION_TAG_FLIPPING);
+                    sprite.contentSprite.stopActionByTag(ACTION_TAG_FLIPPING);
+                    sprite.contentSprite.runAction(sprite.getFlipToFrontSequence(times.quickFlip)).setTag(ACTION_TAG_FLIPPING);
 
                 }
             }, this);
@@ -770,8 +771,8 @@ var PlayerSprite = cc.Sprite.extend({
             _.each(cards,function(cardModel){
                 var sprite = this.getParent().getChildByName(cardModel.cid);
                 if ( sprite != null ) {
-                    sprite.stopActionByTag(ACTION_TAG_FLIPPING);
-                    sprite.runAction(sprite.getFlipToBackSequence(times.quickFlip)).setTag(ACTION_TAG_FLIPPING);
+                    sprite.contentSprite.stopActionByTag(ACTION_TAG_FLIPPING);
+                    sprite.contentSprite.runAction(sprite.getFlipToBackSequence(times.quickFlip)).setTag(ACTION_TAG_FLIPPING);
 
                 }
             }, this);
@@ -822,13 +823,15 @@ var PlayerSprite = cc.Sprite.extend({
             if ( sprite != null ) {
                 if ( sprite.x != x || sprite.y != y) {
                     sprite.stopActionByTag(ACTION_TAG_MOVING);
-                    sprite.runAction( new cc.Spawn(new cc.MoveTo(times.card_sort, realX, realY), new cc.RotateTo(times.card_sort, cardAngle, cardAngle)) ).setTag(ACTION_TAG_MOVING);
+                    sprite.contentSprite.stopActionByTag(ACTION_TAG_RATATE);
+                    sprite.runAction(new cc.MoveTo(times.card_sort, realX, realY)).setTag(ACTION_TAG_MOVING);
+                    sprite.contentSprite.runAction(new cc.RotateTo(times.card_sort, cardAngle, cardAngle)).setTag(ACTION_TAG_RATATE);
                     if ( sprite.isNewHand ) {
                         if ( !this.isHandVisible() ) {
-                            sprite.stopActionByTag(ACTION_TAG_FLIPPING);
-                            sprite.runAction(sprite.getFlipToBackSequence()).setTag(ACTION_TAG_FLIPPING);
+                            sprite.contentSprite.stopActionByTag(ACTION_TAG_FLIPPING);
+                            sprite.contentSprite.runAction(sprite.getFlipToBackSequence()).setTag(ACTION_TAG_FLIPPING);
                         } else {
-                            sprite.runAction(cc.scaleTo(times.flip,1,1));
+                            sprite.contentSprite.runAction(cc.scaleTo(times.flip,1,1));
                         }
                         sprite.isNewHand = false;
                     }
@@ -854,7 +857,7 @@ var PlayerSprite = cc.Sprite.extend({
         var cards = this.model.get("hands");
         _.each(cards,function(cardModel){
             var sprite = this.getParent().getChildByName(cardModel.cid);
-            if ( !sprite.numberSprite.isVisible() ) sprite.runAction(sprite.getFlipToFrontSequence());
+            if ( !sprite.numberSprite.isVisible() ) sprite.contentSprite.runAction(sprite.getFlipToFrontSequence());
         }, this);
     },
     showHand:function(){

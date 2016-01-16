@@ -258,7 +258,7 @@ var MainLayer = cc.LayerColor.extend({
                 var touchId = cc.sys.isNative ? touch.getID() : touch.__instanceId;
                 _.each( target.getChildren(), function(sprite) {
                     if (sprite instanceof NormalCardSprite && sprite.canBeTouch(locationInNode) && (!target._touchInstanceUsed[touchId] || sprite.touchingInstanceId === touchId )) {
-                        var rect = cc.rect(sprite.x - sprite.width / 2, sprite.y - sprite.height / 2, sprite.width, sprite.height);
+                        var rect = cc.rect(sprite.x - sprite.contentSprite.width / 2, sprite.y - sprite.contentSprite.height / 2, sprite.contentSprite.width, sprite.contentSprite.height);
                         if (cc.rectContainsPoint(rect, locationInNode)){
                             sprite.touchingInstanceId = touchId;
                             if (sprite.y >= cc.winSize.height / 2) {
@@ -283,7 +283,7 @@ var MainLayer = cc.LayerColor.extend({
                 _.each( target.getChildren(), function(sprite){
                     if ( sprite instanceof NormalCardSprite && sprite.canBeTouch(locationInNode) && (!target._touchInstanceUsed[touchId] || sprite.touchingInstanceId === touchId ) ) {
                         var padding = 0;
-                        var rect = cc.rect(sprite.x-sprite.width/2+padding, sprite.y-sprite.height/2+padding, sprite.width-2*padding,sprite.height-2*padding);
+                        var rect = cc.rect(sprite.x-sprite.contentSprite.width/2+padding, sprite.y-sprite.contentSprite.height/2+padding, sprite.contentSprite.width-2*padding,sprite.contentSprite.height-2*padding);
 
                         //Check the click area
                         if (cc.rectContainsPoint(rect, locationInNode)){
@@ -319,7 +319,7 @@ var MainLayer = cc.LayerColor.extend({
                 var touchId = cc.sys.isNative ? touch.getID() : touch.__instanceId;
                 _.each( target.getChildren(), function(sprite){
                     if ( sprite instanceof NormalCardSprite && sprite.canBeTouch(locationInNode) ) {
-                        var rect = cc.rect(sprite.x-sprite.width/2, sprite.y-sprite.height/2, sprite.width,sprite.height);
+                        var rect = cc.rect(sprite.x-sprite.contentSprite.width/2, sprite.y-sprite.contentSprite.height/2, sprite.contentSprite.width,sprite.contentSprite.height);
 
                         //Check the click area
                         if ( sprite.touchingInstanceId === touchId ){
@@ -654,7 +654,7 @@ var MainLayer = cc.LayerColor.extend({
         }
         mirrorSprite.speedY = - pattern.speedY;
         if ( mirrorSprite.y > cc.winSize.height/2 ) {
-            mirrorSprite.rotation = 180;
+            mirrorSprite.contentSprite.rotation = 180;
         }
 
         this.addChild(mirrorSprite);
@@ -748,7 +748,7 @@ var MainLayer = cc.LayerColor.extend({
                 mirrorSprite.speedX = -entry.speedX;
             }
             if ( mirrorSprite.y > cc.winSize.height/2 ) {
-                mirrorSprite.rotation = 180;
+                mirrorSprite.contentSprite.rotation = 180;
             }
 
             mirrorSprite.speedY = -entry.speedY;
