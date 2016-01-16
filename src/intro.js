@@ -8,6 +8,8 @@ var IntroLayer = cc.Layer.extend({
         })
         this.addChild(sprite);
 
+        this.initAudio();
+
         var lang = cc.sys.language;
         if ( lang != "zh" ) lang = "en";
 
@@ -100,6 +102,15 @@ var IntroLayer = cc.Layer.extend({
         menu.x = 0;
         menu.y = 0;
         this.addChild(menu);
+    },
+    initAudio:function(){
+        var store = cc.sys.localStorage.getItem("poker_fighter.sound");
+        if ( store != null ) {
+            this.sound = store;
+        } else {
+            this.sound = 1;
+        }
+        cc.audioEngine.setEffectsVolume(this.sound);
     }
 });
 

@@ -14,8 +14,6 @@ var MainLayer = cc.LayerColor.extend({
         this._super(colors.table);
         this.need_read_fight = options.need_read_fight;
 
-        this.initAudio();
-
         this._touchInstanceUsed = {};
 
         var size = cc.winSize;
@@ -767,15 +765,7 @@ var MainLayer = cc.LayerColor.extend({
             ));
         },this);
     },
-    initAudio:function(){
-        var store = cc.sys.localStorage.getItem("poker_fighter.sound");
-        if ( store != null ) {
-            this.sound = store;
-        } else {
-            this.sound = 1;
-        }
-        cc.audioEngine.setEffectsVolume(this.sound);
-    },
+
     gameOver:function(){
         cc.audioEngine.playEffect(res.game_over_mp3, false);
         //reuse betRateLabel to show game over
