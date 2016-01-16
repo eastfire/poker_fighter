@@ -256,7 +256,10 @@ var MainLayer = cc.LayerColor.extend({
                 var touchId = cc.sys.isNative ? touch.getID() : touch.__instanceId;
                 _.each( target.getChildren(), function(sprite) {
                     if (sprite instanceof NormalCardSprite && sprite.canBeTouch(locationInNode) && (!target._touchInstanceUsed[touchId] || sprite.touchingInstanceId === touchId )) {
-                        var rect = cc.rect(sprite.x - sprite.contentSprite.width / 2, sprite.y - sprite.contentSprite.height / 2, sprite.contentSprite.width, sprite.contentSprite.height);
+                        var rect = cc.rect(sprite.x - sprite.contentSprite.width*sprite.contentSprite.scaleX / 2,
+                                sprite.y - sprite.contentSprite.height*sprite.contentSprite.scaleY / 2,
+                            sprite.contentSprite.width*sprite.contentSprite.scaleX,
+                            sprite.contentSprite.height*sprite.contentSprite.scaleY);
                         if (cc.rectContainsPoint(rect, locationInNode)){
                             sprite.touchingInstanceId = touchId;
                             if (sprite.y >= cc.winSize.height / 2) {
@@ -279,27 +282,36 @@ var MainLayer = cc.LayerColor.extend({
                 if ( gameModel.player2.get("type") === PLAYER_TYPE_AI && locationInNode.y > cc.winSize.height/2 ) return;
                 var touchId = cc.sys.isNative ? touch.getID() : touch.__instanceId;
                 _.each( target.getChildren(), function(sprite){
-                    if ( sprite instanceof NormalCardSprite && sprite.canBeTouch(locationInNode) && (!target._touchInstanceUsed[touchId] || sprite.touchingInstanceId === touchId ) ) {
+                    if ( sprite instanceof NormalCardSprite && !this.alreadyTaken && (!target._touchInstanceUsed[touchId] || sprite.touchingInstanceId === touchId ) ) {
                         var padding = 0;
-                        var rect = cc.rect(sprite.x-sprite.contentSprite.width/2+padding, sprite.y-sprite.contentSprite.height/2+padding, sprite.contentSprite.width-2*padding,sprite.contentSprite.height-2*padding);
+                        var rect = cc.rect(sprite.x-sprite.contentSprite.width/2*sprite.contentSprite.scaleX+padding,
+                                sprite.y-sprite.contentSprite.height/2*sprite.contentSprite.scaleY+padding,
+                                sprite.contentSprite.width*sprite.contentSprite.scaleX-2*padding,
+                                sprite.contentSprite.height*sprite.contentSprite.scaleY-2*padding);
 
                         //Check the click area
                         if (cc.rectContainsPoint(rect, locationInNode)){
-                            sprite.stopAllActions();
-                            sprite.touchingInstanceId = touchId;
-                            target._touchInstanceUsed[touchId] = true;
-                            var delta = touch.getDelta();
-                            sprite.x += delta.x;
-                            sprite.y += delta.y;
-                            sprite.speedX = delta.x*50;
-                            if ( delta.y == 0 ) {
-                                if (sprite.y >= cc.winSize.height / 2) {
-                                    sprite.speedY = NATURE_SPEED;
+                            if ( sprite.canBeTouch(locationInNode) ) {
+                                sprite.stopAllActions();
+                                sprite.touchingInstanceId = touchId;
+                                target._touchInstanceUsed[touchId] = true;
+                                var delta = touch.getDelta();
+                                sprite.x += delta.x;
+                                sprite.y += delta.y;
+                                sprite.speedX = delta.x * 50;
+                                if (delta.y == 0) {
+                                    if (sprite.y >= cc.winSize.height / 2) {
+                                        sprite.speedY = NATURE_SPEED;
+                                    } else {
+                                        sprite.speedY = -NATURE_SPEED;
+                                    }
                                 } else {
-                                    sprite.speedY = -NATURE_SPEED;
+                                    sprite.speedY = delta.y * 50;
                                 }
                             } else {
-                                sprite.speedY = delta.y*50;
+                                sprite.touchingInstanceId = null;
+                                delete target._touchInstanceUsed[touchId];
+                                sprite.onTouchRelease.call(sprite);
                             }
                         } else if ( sprite.touchingInstanceId === touchId ) {
                             sprite.touchingInstanceId = null;
@@ -317,7 +329,10 @@ var MainLayer = cc.LayerColor.extend({
                 var touchId = cc.sys.isNative ? touch.getID() : touch.__instanceId;
                 _.each( target.getChildren(), function(sprite){
                     if ( sprite instanceof NormalCardSprite && sprite.canBeTouch(locationInNode) ) {
-                        var rect = cc.rect(sprite.x-sprite.contentSprite.width/2, sprite.y-sprite.contentSprite.height/2, sprite.contentSprite.width,sprite.contentSprite.height);
+                        var rect = cc.rect(sprite.x-sprite.contentSprite.width*sprite.contentSprite.scaleX/2,
+                            sprite.y-sprite.contentSprite.height*sprite.contentSprite.scaleY/2,
+                            sprite.contentSprite.width*sprite.contentSprite.scaleX,
+                            sprite.contentSprite.height*sprite.contentSprite.scaleY);
 
                         //Check the click area
                         if ( sprite.touchingInstanceId === touchId ){

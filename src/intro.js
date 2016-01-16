@@ -10,6 +10,8 @@ var IntroLayer = cc.Layer.extend({
 
         this.initAudio();
 
+        this.initTutorial();
+
         var lang = cc.sys.language;
         if ( lang != "zh" ) lang = "en";
 
@@ -111,6 +113,9 @@ var IntroLayer = cc.Layer.extend({
             this.sound = 1;
         }
         cc.audioEngine.setEffectsVolume(this.sound);
+    },
+    initTutorial:function(){
+        tutorialMap = null;
     }
 });
 

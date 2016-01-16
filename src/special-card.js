@@ -120,18 +120,22 @@ var BombSpecialCardSprite = NormalCardSprite.extend({
         this.explosionAction = new cc.Animate(animation);
         this.explosionAction.retain();
 
-        this.runAction(new cc.Sequence( new cc.MoveTo(times.getMoney, cc.winSize.width/2, player == gameModel.player1 ? dimens.player1HandPosition.y : dimens.player2HandPosition.y ) ,
-            new cc.CallFunc(function(){
+        this.runAction(cc.sequence( cc.moveTo(times.getMoney, cc.winSize.width/2, player == gameModel.player1 ? dimens.player1HandPosition.y : dimens.player2HandPosition.y ) ,
+            cc.callFunc(function(){
                 cc.audioEngine.playEffect(res.explosion_mp3, false);
                 if ( player.canTakeCard() ) {
                     //Destroy hand
                     player.discardRandomCard();
                 }
             },this),
-            this.explosionAction,
             cc.callFunc(function(){
-                this.explosionAction.release();
-                gameModel.destroyCard(this.model);
+                this.contentSprite.runAction(cc.sequence(
+                    this.explosionAction,
+                    cc.callFunc(function(){
+                        this.explosionAction.release();
+                        gameModel.destroyCard(this.model);
+                    },this)
+                ))
             },this)
         ));
 

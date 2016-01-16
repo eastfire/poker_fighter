@@ -93,11 +93,13 @@ var AceItemModel = ItemModel.extend({
         cardSprite.attr({
             x: startX,
             y: startY,
+            opacity: 0
+        });
+        cardSprite.contentSprite.attr({
             scaleX: scale,
             scaleY: scale,
-            opacity: 0,
             rotation: rotation
-        });
+        })
         mainLayer.addChild(cardSprite);
         gameModel.manageCard(cardModel);
         cardSprite.speedY = isDown ? -NATURE_SPEED : NATURE_SPEED;
@@ -647,11 +649,13 @@ var TwoItemModel = ItemModel.extend({
         cardSprite.attr({
             x: startX,
             y: startY,
-            opacity: 0,
-            rotation: rotation,
-            scaleX: scale,
-            scaleY: scale
+            opacity: 0
         });
+        cardSprite.contentSprite.attr({
+            scaleX: scale,
+            scaleY: scale,
+            rotation: rotation
+        })
         mainLayer.addChild(cardSprite);
         gameModel.manageCard(cardModel);
         cardSprite.speedY = isDown ? -NATURE_SPEED : NATURE_SPEED;
@@ -692,11 +696,14 @@ var BombItemModel = ItemModel.extend({
         cardSprite.attr({
             x: startX,
             y: startY,
-            opacity: 0,
-            rotation: rotation,
-            scaleX: scale,
-            scaleY: scale
+            opacity: 0
         });
+        cardSprite.contentSprite.attr({
+            scaleX: scale,
+            scaleY: scale,
+            rotation: rotation
+        })
+
         mainLayer.addChild(cardSprite);
         gameModel.manageCard(cardModel);
         cardSprite.speedY = isDown ? -NATURE_SPEED : NATURE_SPEED;
@@ -786,11 +793,13 @@ var ThiefItemModel = ItemModel.extend({
         cardSprite.attr({
             x: startX,
             y: startY,
-            opacity: 0,
-            rotation: rotation,
-            scaleX: scale,
-            scaleY: scale
+            opacity: 0
         });
+        cardSprite.contentSprite.attr({
+            scaleX: scale,
+            scaleY: scale,
+            rotation: rotation
+        })
         mainLayer.addChild(cardSprite);
         gameModel.manageCard(cardModel);
         cardSprite.speedY = isDown ? -NATURE_SPEED : NATURE_SPEED;
