@@ -964,6 +964,8 @@ var ItemSlotSprite = cc.Sprite.extend({
         }
     },
     useItemStatistic:function(){
+        statistic.totalUseItem = statistic.totalUseItem || 0;
+        statistic.totalUseItem++;
         statistic.useItem = statistic.useItem || {};
         var itemName = this.model.get("name");
         statistic.useItem[itemName] = statistic.useItem[itemName] || 0;

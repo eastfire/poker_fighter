@@ -165,22 +165,8 @@ var TutorialLayer = cc.Layer.extend({
                     scaleX:this.getValue(pointEntry,"width")/pointSprite.width,
                     scaleY:this.getValue(pointEntry,"height")/pointSprite.height
                 })
-//                var pointSprite = new cc.DrawNode();
-//                pointSprite.drawDot(new cc.Point(this.getValue(pointEntry,"x"), this.getValue(pointEntry,"y")), this.getValue(pointEntry,"width"), cc.color.BLACK);
-//                pointSprite.attr({
-//                    scaleY: this.getValue(pointEntry,"height") / this.getValue(pointEntry,"width")
-//                })
                 stencilSprite.addChild(pointSprite)
                 this.pointSprites.push(pointSprite)
-
-//                var pointSprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("tutorial-point.png"))
-//                pointSprite.attr({
-//                    x:this.getValue(pointEntry,"x"),
-//                    y:this.getValue(pointEntry,"y"),
-//                    scaleX:this.getValue(pointEntry,"width")/pointSprite.width,
-//                    scaleY:this.getValue(pointEntry,"height")/pointSprite.height
-//                })
-//                this.addChild(pointSprite,100);
             },this);
 
             clipper.stencil = stencilSprite;

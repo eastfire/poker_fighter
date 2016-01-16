@@ -331,8 +331,8 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
         _.each(this.allItems,function(item){
             if ( statistic.useItem[item] ) {
                 this.itemMenus[item] = new cc.MenuItemImage(
-                    cc.spriteFrameCache.getSpriteFrame("item-" + item + ".png"),
-                    cc.spriteFrameCache.getSpriteFrame("item-" + item + ".png"),
+                    cc.spriteFrameCache.getSpriteFrame("item-fg-mask.png"),
+                    cc.spriteFrameCache.getSpriteFrame("item-fg-mask.png"),
                     function () {
                         cc.audioEngine.playEffect(res.click_mp3, false);
                         if (!this.isItemOff(item))
@@ -341,13 +341,19 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
                         this.renderItemMenu(item);
                         this.showItemDescription(item);
                     }, this);
+                var itemSprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("item-"+item+".png"))
+                itemSprite.attr({
+                    x: this.itemMenus[item].width/2,
+                    y: this.itemMenus[item].height/2
+                })
+                this.itemMenus[item].addChild(itemSprite)
             } else {
                 this.itemMenus[item] = new cc.MenuItemImage(
                     cc.spriteFrameCache.getSpriteFrame("unknown-item.png"),
                     cc.spriteFrameCache.getSpriteFrame("unknown-item.png"),
                     function () {
                         cc.audioEngine.playEffect(res.click_mp3, false);
-                        this.showItemDescription("unknown");
+                        this.showItemDescription("unknown",item);
                     }, this);
             }
             this.itemMenus[item].attr({
@@ -491,7 +497,7 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
             this.renderItemMenu(item);
         },this);
     },
-    showItemDescription:function(item){
+    showItemDescription:function(item, realItem){
         if ( this.itemDescSprite == null ) {
             this.itemDescSprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("item-desc-bg.png"))
             this.itemDescSprite.attr({
@@ -524,14 +530,38 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
         }
 
         this.itemDescSprite.removeAllChildren(true);
+
         var itemSprite;
         var text = "";
         var title = "";
+
         if ( item === "unknown" ) {
+            var itemSprite = new cc.ClippingNode();
+
             title = texts.items.unknown;
             text = texts.items.unused;
-            itemSprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("unknown-item.png"));
+            //itemSprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("unknown-item.png"));
+            var stencilSprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("item-" + realItem + ".png"));
+            stencilSprite.attr({
+                x: dimens.itemDescIcon.x,
+                y: dimens.itemDescIcon.y
+            })
+            itemSprite.setAlphaThreshold(0)
+            itemSprite.stencil = stencilSprite;
+
+            var mask = new cc.DrawNode();
+            mask.drawPoly([cc.p(0, 0), cc.p(cc.winSize.width, 0),
+                cc.p(cc.winSize.width, cc.winSize.height),
+                cc.p(0, cc.winSize.height)], colors.itemMask, 1, colors.itemMask);
+            itemSprite.addChild(mask);
         } else {
+            itemFGSprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("item-fg-mask.png"))
+            itemFGSprite.attr({
+                x: dimens.itemDescIcon.x,
+                y: dimens.itemDescIcon.y
+            })
+            this.itemDescSprite.addChild(itemFGSprite)
+
             title = texts.items[item].name
             text = texts.items[item].desc;
             var model = new ITEM_MODEL_CLASS_MAP[item]();
@@ -543,17 +573,18 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
             var itemStatusLabel = new cc.LabelTTF(this.isItemOff(item)?texts.items.off:texts.items.on, null, 22);
             itemStatusLabel.attr({
                 color: this.isItemOff(item)?colors.itemOff: colors.itemOn,
-                x: 50,
+                x: dimens.itemDescIcon.x,
                 y: 175,
                 anchorX: 0.5,
                 anchorY: 1
             });
             this.itemDescSprite.addChild(itemStatusLabel)
+            itemSprite.attr({
+                x: dimens.itemDescIcon.x,
+                y: dimens.itemDescIcon.y
+            })
         }
-        itemSprite.attr({
-            x: 50,
-            y: 220
-        })
+
         this.itemDescSprite.addChild(itemSprite)
         var titleLabel = new cc.LabelTTF(title, null, 30);
         titleLabel.attr({

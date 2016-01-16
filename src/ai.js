@@ -23,7 +23,8 @@ var AIPlayerModel = PlayerModel.extend({
         finger.attr({
             x: cardSprite.width/2,
             y: cardSprite.height/2,
-            anchorY: 1
+            anchorY: 1,
+            rotation: this.get("position") === PLAYER_POSITION_UP ? 180 : 0
         })
         cardSprite.addChild(finger);
         finger.runAction(cc.sequence(
@@ -200,7 +201,8 @@ var SimpleAIPlayerModel = AIPlayerModel.extend({
 
         if ( value < 0 ) {
             if (_.contains(opponent.wantNumber,number) ||
-                _.contains(opponent.wantSuit,suit) ) {
+                _.contains(opponent.wantSuit,suit) ||
+                number >= 10 ) {
                 return {
                     direction: DIRECTION_OUT,
                     value:Math.abs(value)

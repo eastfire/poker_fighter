@@ -354,6 +354,7 @@ var colors = {
     tutorialMask: new cc.color(0x00,0x00,0x00, 192),
     tutorialLabel: cc.color.WHITE,
 
+    itemMask: cc.color.GRAY,
     itemOn: cc.color.GREEN,
     itemOff: cc.color.RED
 };
@@ -461,5 +462,9 @@ var dimens = {
     },
     startGame:{
         y: 40
+    },
+    itemDescIcon:{
+        x: 50,
+        y: 220
     }
 };
