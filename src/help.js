@@ -92,6 +92,42 @@ var PlayerRotateLayer = cc.LayerColor.extend({
         this._super();
         if( 'accelerometer' in cc.sys.capabilities )
             cc.inputManager.setAccelerometerEnabled(false);
+    },
+    makeLabel:function(text, x, y, fontSize){
+        var fontSize = fontSize || 30;
+        var label = new ccui.Text(text, "Arial", fontSize );
+        label.enableOutline(colors.tableLabelOutline, 2);
+        label.setTextColor(colors.tableLabel);
+        label.attr({
+            x: x,
+            y: y,
+            zIndex: 50,
+            anchorY: 0.5
+        });
+        return label;
+    },
+    renderButtonGroup:function(x,y,position, callback){
+        var scaleX = 1;
+        var img;
+        if ( position == 0 || position == 2 ) {
+            img = "left-button-group";
+            if ( position == 2 ) {
+                scaleX = -1;
+            }
+        } else {
+            img = "middle-button-group";
+        }
+        var button = new cc.MenuItemImage(
+            cc.spriteFrameCache.getSpriteFrame(img+"-default.png"),
+            cc.spriteFrameCache.getSpriteFrame(img+"-press.png"),
+            callback, this);
+        button.attr({
+            scaleX: scaleX,
+            x: x,
+            y: y
+        });
+        this.menuArray.push(button);
+        return button;
     }
 });
 

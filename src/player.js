@@ -86,6 +86,10 @@ var PlayerModel = Backbone.Model.extend({
         var index = _.indexOf(hands, cardModel);
         hands.splice(index,1);
         gameModel.destroyCard(cardModel);
+
+        statistic.destroyCard = statistic.destroyCard || 0;
+        statistic.destroyCard++;
+
         this.sortHand();
     },
     sortHand:function(){
@@ -267,7 +271,7 @@ var PlayerModel = Backbone.Model.extend({
         return sizeScale;
     },
     maintain:function(){
-        _.each( ["speedUp","speedDown","sizeUp","sizeDown","dizzy","spy","forbid","tornado"],function(attr){
+        _.each( ["speedUp","speedDown","sizeUp","sizeDown","dizzy","spy","forbid","blockSight","tornado"],function(attr){
             var value = this.get(attr);
             if ( value > 0 ) {
                 this.set(attr, value - 1);
@@ -282,6 +286,7 @@ var PlayerModel = Backbone.Model.extend({
             speedUp: 0,
             speedDown: 0,
             dizzy: 0,
+            blockSight: 0,
             tornado: 0,
             spy: 0,
             forbid: 0
@@ -429,6 +434,7 @@ var PlayerSprite = cc.Sprite.extend({
     ctor:function(options) {
         this._super();
         this.model = options.model;
+        this.isAI = this.model.get("type") === PLAYER_TYPE_AI;
 
         this.model.set("showHand", false);
         this.lookHand = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("show-hand.png"));
@@ -532,8 +538,8 @@ var PlayerSprite = cc.Sprite.extend({
             this.moneyLabel.attr({
                 //color: colors.tableLabel,
                 x: isWebIOS?(45+offsetX):(cc.winSize.width - 45),
-                y: cc.winSize.height - 65,
-                rotation: 180
+                y: cc.winSize.height - 65 - (this.isAI?10:0),
+                rotation: this.isAI ? 0:180
             });
         }
         this.addChild(this.moneyLabel, 0);
@@ -552,7 +558,7 @@ var PlayerSprite = cc.Sprite.extend({
                 y: cc.winSize.height-20,
                 scaleX: 0.5,
                 scaleY: 0.5,
-                rotation: 180
+                rotation: this.isAI ? 0:180
             });
         }
         this.addChild(targetMoneySprite);
@@ -570,8 +576,8 @@ var PlayerSprite = cc.Sprite.extend({
             this.targetMoneyLabel.attr({
                 //color: colors.tableLabel,
                 x: isWebIOS?(70+offsetX):(cc.winSize.width - 70),
-                y: cc.winSize.height - 15,
-                rotation: 180
+                y: cc.winSize.height - 15 - (this.isAI?10:0),
+                rotation: this.isAI ? 0:180
             });
         }
         this.addChild(this.targetMoneyLabel, 0);
@@ -581,7 +587,7 @@ var PlayerSprite = cc.Sprite.extend({
             event: cc.EventListener.TOUCH_ONE_BY_ONE,
             swallowTouches: true,
             onTouchBegan: function (touch, event) {
-                if ( self.model.get("type") === PLAYER_TYPE_AI ) return false;
+                if ( self.isAI ) return false;
                 var target = event.getCurrentTarget();
 
                 var locationInNode = target.convertToNodeSpace(touch.getLocation());

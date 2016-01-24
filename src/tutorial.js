@@ -19,6 +19,7 @@ var clearTutorial = function(){
 }
 
 var isTutorialPassed = function(sceneName, stepName){
+    if ( tutorialPassed.off ) return true;
     if ( !tutorialPassed[sceneName] ) tutorialPassed[sceneName] = {};
     return tutorialPassed[sceneName][stepName];
 }
@@ -223,7 +224,7 @@ var TutorialModel = Backbone.Model.extend({
             labels: [],
             images: [],
             points: [],
-            passCondition: "touch" //touch
+            condition: "touchAny" //touch
         }
     },
     getNext:function(){
@@ -525,6 +526,47 @@ var initTutorialMapVsAI = function(){
                 ],
                 next: {
                     sceneName:"main",
+                    stepName:"compareHands3"
+                }
+            }),
+            "compareHands3": new TutorialModel({
+                points:[
+                    {
+                        x: cc.winSize.width/2,
+                        y: 120,
+                        width: cc.winSize.width * 350/600,
+                        height: 60
+                    },
+                    {
+                        x: cc.winSize.width/2,
+                        y: cc.winSize.height - 120,
+                        width: cc.winSize.width * 350/600,
+                        height: 60
+                    },
+                    {
+                        x: cc.winSize.width/2,
+                        y: 50,
+                        width: cc.winSize.width * 350/600,
+                        height: 100
+                    },
+                    {
+                        x: cc.winSize.width/2,
+                        y: cc.winSize.height - 50,
+                        width: cc.winSize.width * 350/600,
+                        height: 100
+                    }
+                ],
+                labels: [
+                    {
+                        x: cc.winSize.width/2,
+                        y: 270,
+                        text: texts.tutorials.compareHands3
+                    }
+                ],
+                images: [
+                ],
+                next: {
+                    sceneName:"main",
                     stepName:"betHelp"
                 }
             }),
@@ -588,7 +630,11 @@ var initTutorialMapVsAI = function(){
                         scaleY: 1,
                         scaleX: -1
                     }
-                ]
+                ],
+                callback:function(){
+                    mainLayer.showHelp();
+                },
+                condition: "touchAllPoints"
             }),
             "betRateIncrease": new TutorialModel({
                 points:[
@@ -1040,6 +1086,53 @@ var initTutorialMap = function(){
                 ],
                 next: {
                     sceneName:"main",
+                    stepName:"compareHands3"
+                }
+            }),
+            "compareHands3": new TutorialModel({
+                points:[
+                    {
+                        x: cc.winSize.width/2,
+                        y: 120,
+                        width: cc.winSize.width * 350/600,
+                        height: 60
+                    },
+                    {
+                        x: cc.winSize.width/2,
+                        y: cc.winSize.height - 120,
+                        width: cc.winSize.width * 350/600,
+                        height: 60
+                    },
+                    {
+                        x: cc.winSize.width/2,
+                        y: 50,
+                        width: cc.winSize.width * 350/600,
+                        height: 100
+                    },
+                    {
+                        x: cc.winSize.width/2,
+                        y: cc.winSize.height - 50,
+                        width: cc.winSize.width * 350/600,
+                        height: 100
+                    }
+                ],
+                labels: [
+                    {
+                        x: cc.winSize.width/2,
+                        y: 270,
+                        text: texts.tutorials.compareHands3
+                    },
+                    {
+                        x: cc.winSize.width/2,
+                        y: cc.winSize.height - 270,
+                        text: texts.tutorials.compareHands3,
+                        rotation: 180
+                    }
+                ],
+                images: [
+                ],
+                next: {
+                    sceneName:"main",
                     stepName:"betHelp"
                 }
             }),
@@ -1137,7 +1230,11 @@ var initTutorialMap = function(){
                         scaleY: -1,
                         scaleX: -1
                     }
-                ]
+                ],
+                callback:function(){
+                    mainLayer.showHelp();
+                },
+                condition: "touchAllPoints"
             }),
             "betRateIncrease": new TutorialModel({
                 points:[

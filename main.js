@@ -49,8 +49,30 @@
 var texts;
 var statistic;
 
+var loadStatistic = function(){
+    var store = cc.sys.localStorage.getItem("poker_fighter.statistic");
+    if ( store ) {
+        //cc.log(store)
+        statistic = JSON.parse(store);
+    } else {
+        statistic = {
+        }
+    }
+}
+
 var saveStatistic = function(){
     cc.sys.localStorage.setItem("poker_fighter.statistic",JSON.stringify(statistic));
+}
+
+var initTexts = function(){
+    var lang = cc.sys.localStorage.getItem("poker_fighter.lang")
+    if ( lang ) {
+    } else {
+        lang = cc.sys.language
+    }
+    texts = texts_locale[lang];
+    if ( !texts )
+        texts = texts_locale["en"];
 }
 
 var isWebIOS = false;
@@ -76,20 +98,9 @@ cc.game.onStart = function(){
     cc.view.resizeWithBrowserSize(true);
     //load resources
     cc.LoaderScene.preload(g_resources, function () {
-        texts = texts_locale[cc.sys.language];
-        if ( !texts )
-            texts = texts_locale["en"];
+        initTexts();
 
-        //loadStatistic;
-        var store = cc.sys.localStorage.getItem("poker_fighter.statistic");
-        if ( store ) {
-            //cc.log(store)
-            statistic = JSON.parse(store);
-        } else {
-            statistic = {
-
-            }
-        }
+        loadStatistic();
 
         loadTutorial();
 

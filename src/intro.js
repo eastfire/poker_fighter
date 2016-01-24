@@ -34,8 +34,6 @@ var IntroLayer = cc.Layer.extend({
         vsItem.attr({
             x: cc.winSize.width/2,
             y: -500,
-            scaleX: 1.1,
-            scaleY: 1.1,
             rotation: 0//-5
         });
 
@@ -58,27 +56,19 @@ var IntroLayer = cc.Layer.extend({
         vsAIItem.attr({
             x: cc.winSize.width/2,
             y: -500,
-            scaleX: 1.1,
-            scaleY: 1.1,
             rotation: 0//5
         });
 
-        var helpItem = new cc.MenuItemImage(
-            cc.spriteFrameCache.getSpriteFrame("help-menu.png"),
-            cc.spriteFrameCache.getSpriteFrame("help-menu.png"),
+        var settingItem = new cc.MenuItemImage(
+            cc.spriteFrameCache.getSpriteFrame("setting-menu.png"),
+            cc.spriteFrameCache.getSpriteFrame("setting-menu.png"),
             function () {
                 cc.audioEngine.playEffect(res.click_mp3,false);
-                clearTutorial();
-                cc.director.runScene(new MainScene({
-                    mode: "vs",
-                    itemPool : INIT_ITEMS
-                }));
+                cc.director.pushScene(new SettingScene());
             }, this);
-        helpItem.attr({
+        settingItem.attr({
             x: cc.winSize.width/2,
             y: -500,
-            scaleX: 1.1,
-            scaleY: 1.1,
             rotation: 0//5
         });
 
@@ -94,13 +84,13 @@ var IntroLayer = cc.Layer.extend({
         },this), cc.spawn(
             cc.moveTo(dealTime, cc.winSize.width/2-15+30*Math.random(), y+Math.random()*50),
             cc.rotateTo(dealTime, 5- Math.random()*10))))
-        helpItem.runAction(cc.sequence(cc.delayTime(0.5), cc.callFunc(function(){
+        settingItem.runAction(cc.sequence(cc.delayTime(0.5), cc.callFunc(function(){
             cc.audioEngine.playEffect(res.card_slide_mp3, false);
         },this), cc.spawn(
-            cc.moveTo(dealTime, cc.winSize.width/2+120 - 15 + 30*Math.random(), y+Math.random()*50),
+            cc.moveTo(dealTime, cc.winSize.width/2+120 - 15 + 30*Math.random(), y-Math.random()*50),
             cc.rotateTo(dealTime, 5+Math.random()*10))))
 
-        var menu = new cc.Menu([vsItem, vsAIItem, helpItem]);
+        var menu = new cc.Menu([vsItem, vsAIItem, settingItem]);
         menu.x = 0;
         menu.y = 0;
         this.addChild(menu);

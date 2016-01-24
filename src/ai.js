@@ -165,6 +165,15 @@ var AIPlayerModel = PlayerModel.extend({
 })
 
 var SimpleAIPlayerModel = AIPlayerModel.extend({
+    initialize:function(options){
+        options = options || {};
+        this.scheduleLength = 0.7;
+        this.set({
+            dizzyMistakeRate: 0.25,
+            blockSightMistakeRate: 0.5,
+            shrinkMistakeRate: 0.25
+        })
+    },
     onStartNewRound:function(){
     },
     onGetCard:function(cardModel){
@@ -174,6 +183,24 @@ var SimpleAIPlayerModel = AIPlayerModel.extend({
     onStartCountDown:function(){
     },
     evaluatePokerCard:function(sprite, opponent){
+        if ( this.get("dizzy") && Math.random() < this.get("dizzyMistakeRate") ) {
+            return {
+                direction: DIRECTION_OPPONENT,
+                value:0
+            }
+        }
+        if ( this.get("blockSight") && Math.random() < this.get("blockSightMistakeRate") ) {
+            return {
+                direction: DIRECTION_OPPONENT,
+                value:0
+            }
+        }
+        if ( this.get("shrink") && Math.random() < this.get("shrinkMistakeRate") ) {
+            return {
+                direction: DIRECTION_OPPONENT,
+                value:0
+            }
+        }
         var number = sprite.model.get("number");
         var suit = sprite.model.get("suit");
         var value = 0;

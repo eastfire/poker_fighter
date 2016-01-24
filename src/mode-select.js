@@ -20,8 +20,8 @@ var setting = {};
 
 var ITEM_PER_LINE = 5;
 
-var INIT_ITEMS = ["ace","bomb","cloud","diamond", "dizzy","enlarge","fast","forbid","kiss","leaf","hammer", "shrink","spy","slow","sniper","thief", "tornado", "two"];
-var UNLOCKABLE_ITEMS = [ "magnet","nuke" ];
+var INIT_ITEMS = ["bomb","cloud","diamond", "dizzy","fast","shrink","spy","slow","sniper", "tornado"];
+var UNLOCKABLE_ITEMS = ["two","enlarge","kiss","ace","leaf","forbid","magnet","thief","hammer","nuke" ];
 
 var ModeSelectLayer = PlayerRotateLayer.extend({
     ctor:function(options){
@@ -107,19 +107,7 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
         this.renderItemAppear();
         this.renderItemMenus();
     },
-    makeLabel:function(text, x, y, fontSize){
-        var fontSize = fontSize || 30;
-        var label = new ccui.Text(text, "Arial", fontSize );
-        label.enableOutline(colors.tableLabelOutline, 2);
-        label.setTextColor(colors.tableLabel);
-        label.attr({
-            x: x,
-            y: y,
-            zIndex: 50,
-            anchorY: 0.5
-        });
-        return label;
-    },
+
     initData:function(){
         this.defaultSetting = {
             playerInitMoney : [DEFAULT_INIT_MONEY,DEFAULT_INIT_MONEY],
@@ -141,23 +129,19 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
 
         this.initItems = INIT_ITEMS;
         this.unlockableItems = UNLOCKABLE_ITEMS;
-        this.unlockedItems = [
-
-        ];
-        this.usedItems = [
-
-        ];
         this.allItems = _.union( this.initItems, this.unlockableItems  )
+        this.initLockedItems();
+    },
+    initLockedItems:function(){
+        this.lockedItems = {};
+        _.each(this.unlockableItems,function(item){
+            this.lockedItems[item] = CHECK_UNLOCKED_FUNC_MAP[item]();
+        },this)
     },
     useDefaultSetting:function(){
         setting = JSON.parse(JSON.stringify(this.defaultSetting));
     },
     initMenu:function(){
-        this.renderButtonGroup( 45, dimens.startGame.y, 2, function(){
-            cc.director.runScene(new IntroScene());
-        });
-        this.addChild( this.makeLabel(texts.returnToIntro, 45, dimens.startGame.y, 25));
-
         this.playerInitMoneyLeft = [];
         this.playerInitMoneyRight = [];
 
@@ -300,6 +284,11 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
         this.addChild( this.makeLabel(texts.normal, cc.winSize.width/2 + 45+offset, dimens.flyingItem.y, 25));
         this.addChild( this.makeLabel(texts.many, cc.winSize.width/2 + 135+offset, dimens.flyingItem.y, 25));
 
+        this.renderButtonGroup( 45, dimens.startGame.y, 2, function(){
+            cc.director.runScene(new IntroScene());
+        });
+        this.addChild( this.makeLabel(texts.returnToIntro, 45, dimens.startGame.y, 20));
+
         var startGame = new cc.MenuItemImage(
             cc.spriteFrameCache.getSpriteFrame("start-game-default.png"),
             cc.spriteFrameCache.getSpriteFrame("start-game-press.png"),
@@ -307,7 +296,11 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
                 cc.audioEngine.playEffect(res.click_mp3,false);
                 this.saveSetting();
                 setting.itemPool = _.difference(this.allItems, _.keys(setting.itemOff));
+                setting.itemPool = _.difference(setting.itemPool, _.map(this.lockedItems,function(value,item){
+                    return this.isItemLocked(item) ? item : null;
+                },this))
                 setting.mode = this.options.mode;
+                setting.isFair = setting.playerInitMoney[0] === setting.playerInitMoney[1] && setting.playerTargetMoney[0] === setting.playerTargetMoney[1]
                 cc.director.runScene(new MainScene(setting));
             }, this);
         startGame.attr({
@@ -324,37 +317,47 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
             this.render();
             this.saveSetting();
         });
-        this.addChild( this.makeLabel(texts.useDefault, cc.winSize.width - 45, dimens.startGame.y, 25));
+        this.addChild( this.makeLabel(texts.useDefault, cc.winSize.width - 45, dimens.startGame.y, 20));
 
         var itemX = cc.winSize.width/ITEM_PER_LINE/2;
         var itemY = dimens.itemList.y;
         _.each(this.allItems,function(item){
-            if ( statistic.useItem[item] ) {
+            if ( this.isItemLocked(item) ) {
                 this.itemMenus[item] = new cc.MenuItemImage(
-                    cc.spriteFrameCache.getSpriteFrame("item-fg-mask.png"),
-                    cc.spriteFrameCache.getSpriteFrame("item-fg-mask.png"),
+                    cc.spriteFrameCache.getSpriteFrame("locked-item.png"),
+                    cc.spriteFrameCache.getSpriteFrame("locked-item.png"),
                     function () {
                         cc.audioEngine.playEffect(res.click_mp3, false);
-                        if (!this.isItemOff(item))
-                            setting.itemOff[item] = true;
-                        else delete setting.itemOff[item];
-                        this.renderItemMenu(item);
-                        this.showItemDescription(item);
+                        this.showItemDescription("locked", item);
                     }, this);
-                var itemSprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("item-"+item+".png"))
-                itemSprite.attr({
-                    x: this.itemMenus[item].width/2,
-                    y: this.itemMenus[item].height/2
-                })
-                this.itemMenus[item].addChild(itemSprite)
             } else {
-                this.itemMenus[item] = new cc.MenuItemImage(
-                    cc.spriteFrameCache.getSpriteFrame("unknown-item.png"),
-                    cc.spriteFrameCache.getSpriteFrame("unknown-item.png"),
-                    function () {
-                        cc.audioEngine.playEffect(res.click_mp3, false);
-                        this.showItemDescription("unknown",item);
-                    }, this);
+                if (statistic.useItem[item]) {
+                    this.itemMenus[item] = new cc.MenuItemImage(
+                        cc.spriteFrameCache.getSpriteFrame("item-fg-mask.png"),
+                        cc.spriteFrameCache.getSpriteFrame("item-fg-mask.png"),
+                        function () {
+                            cc.audioEngine.playEffect(res.click_mp3, false);
+                            if (!this.isItemOff(item))
+                                setting.itemOff[item] = true;
+                            else delete setting.itemOff[item];
+                            this.renderItemMenu(item);
+                            this.showItemDescription(item);
+                        }, this);
+                    var itemSprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("item-" + item + ".png"))
+                    itemSprite.attr({
+                        x: this.itemMenus[item].width / 2,
+                        y: this.itemMenus[item].height / 2
+                    })
+                    this.itemMenus[item].addChild(itemSprite)
+                } else {
+                    this.itemMenus[item] = new cc.MenuItemImage(
+                        cc.spriteFrameCache.getSpriteFrame("unknown-item.png"),
+                        cc.spriteFrameCache.getSpriteFrame("unknown-item.png"),
+                        function () {
+                            cc.audioEngine.playEffect(res.click_mp3, false);
+                            this.showItemDescription("unknown", item);
+                        }, this);
+                }
             }
             this.itemMenus[item].attr({
                 x: itemX,
@@ -372,7 +375,9 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
     isItemOff:function(item){
         return setting.itemOff[item] !== undefined && setting.itemOff[item];
     },
-
+    isItemLocked:function(item){
+        return this.lockedItems[item] && typeof this.lockedItems[item] === "string";
+    },
     saveSetting:function(){
         cc.sys.localStorage.setItem("prevSetting", JSON.stringify(setting));
     },
@@ -402,29 +407,6 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
         });
         this.menuArray.push(arrow);
         return arrow;
-    },
-    renderButtonGroup:function(x,y,position, callback){
-        var scaleX = 1;
-        var img;
-        if ( position == 0 || position == 2 ) {
-            img = "left-button-group";
-            if ( position == 2 ) {
-                scaleX = -1;
-            }
-        } else {
-            img = "middle-button-group";
-        }
-        var button = new cc.MenuItemImage(
-            cc.spriteFrameCache.getSpriteFrame(img+"-default.png"),
-            cc.spriteFrameCache.getSpriteFrame(img+"-press.png"),
-            callback, this);
-        button.attr({
-            scaleX: scaleX,
-            x: x,
-            y: y
-        });
-        this.menuArray.push(button);
-        return button;
     },
     renderDeckSetting:function(){
         if ( setting.deck === 8 ) {
@@ -478,7 +460,7 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
     },
     renderItemMenu:function(item){
         if ( !statistic.useItem[item] ) return;
-        if ( this.isItemOff(item) ) {
+        if ( !this.isItemLocked(item) && this.isItemOff(item) ) {
             this.itemMenus[item].attr({
                 opacity: 100,
                 scaleX: 0.8,
@@ -554,6 +536,25 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
                 cc.p(cc.winSize.width, cc.winSize.height),
                 cc.p(0, cc.winSize.height)], colors.itemMask, 1, colors.itemMask);
             itemSprite.addChild(mask);
+        } else if ( item === "locked" ) {
+            var itemSprite = new cc.ClippingNode();
+
+            title = texts.items.locked;
+            text = CHECK_UNLOCKED_FUNC_MAP[realItem]();
+            //itemSprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("unknown-item.png"));
+            var stencilSprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("item-" + realItem + ".png"));
+            stencilSprite.attr({
+                x: dimens.itemDescIcon.x,
+                y: dimens.itemDescIcon.y
+            })
+            itemSprite.setAlphaThreshold(0)
+            itemSprite.stencil = stencilSprite;
+
+            var mask = new cc.DrawNode();
+            mask.drawPoly([cc.p(0, 0), cc.p(cc.winSize.width, 0),
+                cc.p(cc.winSize.width, cc.winSize.height),
+                cc.p(0, cc.winSize.height)], colors.itemMask, 1, colors.itemMask);
+            itemSprite.addChild(mask);
         } else {
             itemFGSprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("item-fg-mask.png"))
             itemFGSprite.attr({
@@ -589,7 +590,7 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
         var titleLabel = new cc.LabelTTF(title, null, 30);
         titleLabel.attr({
             color: colors.tableLabel,
-            x: 150,
+            x: 240,
             y: 250,
             anchorX: 0.5,
             anchorY: 1

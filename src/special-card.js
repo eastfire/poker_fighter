@@ -37,8 +37,16 @@ var MoneySpecialCardSprite = NormalCardSprite.extend({
             new cc.CallFunc(function(){
                 var mp3 = res["chip"+ _.sample([0,1,2,3])+"_mp3"];
                 cc.audioEngine.playEffect(mp3, false);
-                player.set("money", player.get("money") + this.model.get("money"));
+                var amount = this.model.get("money");
+                player.set("money", player.get("money") + amount);
                 gameModel.destroyCard(this.model);
+
+                if ( player.get("type") === PLAYER_TYPE_PLAYER ) {
+                    statistic.takeToken = statistic.takeToken || 0;
+                    statistic.takeToken++;
+                    statistic.takeTokenAmount = statistic.takeTokenAmount || 0;
+                    statistic.takeTokenAmount += amount;
+                }
             },this)
             ));
 
@@ -123,6 +131,12 @@ var BombSpecialCardSprite = NormalCardSprite.extend({
         this.runAction(cc.sequence( cc.moveTo(times.getMoney, cc.winSize.width/2, player == gameModel.player1 ? dimens.player1HandPosition.y : dimens.player2HandPosition.y ) ,
             cc.callFunc(function(){
                 cc.audioEngine.playEffect(res.explosion_mp3, false);
+
+                if ( player.get("type") === PLAYER_TYPE_PLAYER ) {
+                    statistic.takeBomb = statistic.takeBomb || 0;
+                    statistic.takeBomb++;
+                }
+
                 if ( player.canTakeCard() ) {
                     //Destroy hand
                     player.discardRandomCard();
@@ -172,6 +186,11 @@ var ThiefSpecialCardSprite = NormalCardSprite.extend({
             new cc.CallFunc(function(){
                 player.set("money", Math.max(1, player.get("money") - this.model.power * gameModel.get("betRate")));
                 cc.audioEngine.playEffect(res.thief_mp3, false);
+
+                if ( player.get("type") === PLAYER_TYPE_PLAYER ) {
+                    statistic.takeThief = statistic.takeThief || 0;
+                    statistic.takeThief++;
+                }
             },this),
             cc.moveTo( 0.1, player == gameModel.player1 ? - dimens.card_size.width : cc.winSize.width + dimens.card_size.width, playerSprite.moneyLabel.y ),
             cc.callFunc(function(){

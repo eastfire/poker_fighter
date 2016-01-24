@@ -63,8 +63,7 @@ var MainLayer = cc.LayerColor.extend({
             cc.spriteFrameCache.getSpriteFrame("help-default.png"),
             cc.spriteFrameCache.getSpriteFrame("help-press.png"),
             function () {
-                cc.audioEngine.playEffect(res.click_mp3,false);
-                cc.director.pushScene(new HelpScene());
+                this.showHelp();
             }, this);
         helpItem.attr({
             x: cc.winSize.width,
@@ -120,7 +119,7 @@ var MainLayer = cc.LayerColor.extend({
             //color: colors.tableLabel,
             x: cc.winSize.width/2,
             y: cc.winSize.height - 120,
-            rotation: 180
+            rotation: this.model.get("mode") === "vs-ai"?0:180
         });
         this.addChild(this.handTypeLabel2, 0);
         this.handTypeLabel2.setVisible(false);
@@ -143,7 +142,7 @@ var MainLayer = cc.LayerColor.extend({
             //color: colors.tableLabel,
             x: cc.winSize.width/2,
             y: cc.winSize.height - 250,
-            rotation: 180
+            rotation: this.model.get("mode") === "vs-ai"?0:180
         });
         this.addChild(this.winLoseLabel2, 0);
         this.winLoseLabel2.setVisible(false);
@@ -166,7 +165,7 @@ var MainLayer = cc.LayerColor.extend({
             //color: colors.tableLabel,
             x: cc.winSize.width/2,
             y: cc.winSize.height - 180,
-            rotation: 180
+            rotation: this.model.get("mode") === "vs-ai"?0:180
         });
         this.addChild(this.betMoneyLabel2, 0);
         this.betMoneyLabel2.setVisible(false);
@@ -219,6 +218,10 @@ var MainLayer = cc.LayerColor.extend({
         this.scheduleTutorial("main", "takeCard",4)
 
         return true;
+    },
+    showHelp:function(){
+        cc.audioEngine.playEffect(res.click_mp3,false);
+        cc.director.pushScene(new HelpScene());
     },
     renderBetRate:function(){
         this.betRateLabel1.setString("×"+this.model.get("betRate"));
@@ -405,6 +408,17 @@ var MainLayer = cc.LayerColor.extend({
             this.player2Sprite.forceShowHand();
             var player1Feature = this.player1.getFeature();
             var player2Feature = this.player2.getFeature();
+
+            statistic.handType = statistic.handType || {};
+            if ( this.player1.get("type") !== PLAYER_TYPE_AI ) {
+                statistic.handType[player1Feature.type] = statistic.handType[player1Feature.type] || 0;
+                statistic.handType[player1Feature.type]++;
+            }
+            if ( this.player2.get("type") !== PLAYER_TYPE_AI ) {
+                statistic.handType[player2Feature.type] = statistic.handType[player2Feature.type] || 0;
+                statistic.handType[player2Feature.type]++;
+            }
+
             this.handTypeLabel1.setVisible(true);
             this.handTypeLabel1.setString(texts.handTypeDisplayName[player1Feature.type]);
             this.handTypeLabel2.setVisible(true);
@@ -415,7 +429,7 @@ var MainLayer = cc.LayerColor.extend({
             this.betMoneyLabel1.setVisible(true);
             this.betMoneyLabel2.setVisible(true);
             var money = this.model.get("betRate") * (player1Feature.rate + player2Feature.rate);
-            var winner = 0;
+            this.winner = 0;
             if (player1Feature.power > player2Feature.power) {
                 this.winLoseLabel1.setString(texts.win);
                 this.winLoseLabel2.setString(texts.lose);
@@ -425,7 +439,7 @@ var MainLayer = cc.LayerColor.extend({
                     this.giveMoney(money, this.player2Sprite, this.player1Sprite);
                 },times.readResult);
                 cc.audioEngine.playEffect(res[player1Feature.type], false);
-                winner = 1;
+                this.winner = 1;
             } else if (player2Feature.power > player1Feature.power) {
                 this.winLoseLabel1.setString(texts.lose);
                 this.winLoseLabel2.setString(texts.win);
@@ -435,7 +449,7 @@ var MainLayer = cc.LayerColor.extend({
                     this.giveMoney(money, this.player1Sprite, this.player2Sprite);
                 },times.readResult);
                 cc.audioEngine.playEffect(res[player2Feature.type], false);
-                winner = 2;
+                this.winner = 2;
             } else {
                 this.winLoseLabel1.setString(texts.tie);
                 this.winLoseLabel2.setString(texts.tie);
@@ -445,9 +459,9 @@ var MainLayer = cc.LayerColor.extend({
             }
             this.scheduleOnce(function () {
                 this.model.set("betRate", this.model.get("betRate") + 1);
-                if (this.player1.get("money") <= 0 || ( this.player2.get("money") >= this.player2.get("targetMoney") && winner === 2 )) {
+                if (this.player1.get("money") <= 0 || ( this.player2.get("money") >= this.player2.get("targetMoney") && this.winner === 2 )) {
                     this.gameOver();
-                } else if (this.player2.get("money") <= 0 || ( this.player1.get("money") >= this.player1.get("targetMoney") && winner === 1)) {
+                } else if (this.player2.get("money") <= 0 || ( this.player1.get("money") >= this.player1.get("targetMoney") && this.winner === 1)) {
                     this.gameOver();
                 } else {
                     this.player1.cleanStatus();
@@ -804,6 +818,19 @@ var MainLayer = cc.LayerColor.extend({
         statistic.game[gameModel.get("mode")] = statistic.game[gameModel.get("mode")] || 0;
         statistic.game[gameModel.get("mode")]++;
 
+        if ( gameModel.get("mode") === "vs-ai" ){
+            if ( this.winner == 1) {
+                if ( gameModel.get("isFair") ) {
+                    statistic.winAI = statistic.winAI || 0;
+                    statistic.winAI++;
+                }
+            } else {
+                if ( gameModel.get("isFair") ) {
+                    statistic.loseAI = statistic.loseAI || 0;
+                    statistic.loseAI++;
+                }
+            }
+        }
 
         saveStatistic();
 
@@ -951,8 +978,6 @@ var GameModel = Backbone.Model.extend({
             this.set("itemAppearRate", 0 );
         }
 //        cc.log(this.itemPool)
-//        cc.log(this.get("tokenAppearRate"))
-//        cc.log(this.get("itemAppearRate"))
     },
     getPlayerByPosition:function(position){
         if ( position === PLAYER_POSITION_DOWN ) {
@@ -1019,6 +1044,20 @@ var GameModel = Backbone.Model.extend({
         _.each( deleteList, function(cardModel){
             this.destroyCard(cardModel)
         },this)
+    },
+    countPokerCards:function(){
+        return _.reduce(this.cidToModel, function(memo, cardModel){
+            if ( cardModel instanceof PokerCardModel) {
+                return memo+1;
+            } return memo;
+        }, 0);
+    },
+    countAll:function(){
+        return _.reduce(this.cidToModel, function(memo, cardModel){
+            if ( cardModel !=null ) {
+                return memo+1;
+            } return memo;
+        }, 0);
     },
     clearCards:function(){
         var deleteList = [];

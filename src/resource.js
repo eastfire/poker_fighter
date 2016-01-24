@@ -58,6 +58,17 @@ for (var i in res) {
     g_resources.push(res[i]);
 }
 
+var ACE_UNLOCK_CONDITION = 3;
+var ENLARGE_UNLOCK_CONDITION = 5;
+var FORBID_UNLOCK_CONDITION = 100;
+var HAMMER_UNLOCK_CONDITION = 1;
+var KISS_UNLOCK_CONDITION = 10;
+var LEAF_UNLOCK_CONDITION = 1;
+var MAGNET_UNLOCK_CONDITION = 400;
+var NUKE_UNLOCK_CONDITION = 1000;
+var THIEF_UNLOCK_CONDITION = 1000;
+var TWO_UNLOCK_CONDITION = 2;
+
 var texts_locale = {
     zh: {
         win:"胜利",
@@ -90,6 +101,11 @@ var texts_locale = {
         many: "很多",
         mania: "疯狂",
 
+        followSystem:"跟随系统",
+        enLang:"English",
+        zhLang:"简体中文",
+        clearData:"",
+
         startGame: "开始游戏",
         useDefault: "默认",
         returnToIntro: "返回",
@@ -104,10 +120,11 @@ var texts_locale = {
             thisIsYourTarget: "这是你的目标金钱。\n如果你的钱达到这个数字，\n并且赢了一局，你就赢得游戏胜利！",
             thisIsForbidLine: "这是iOS浏览器的禁断之线。\n请勿在此区域向右滑动\n否则世界就会毁灭！",
             thisIsCountDown:"当任何一方得到５张手牌\n留给另一方的时间只剩下５秒",
-            compareHands: "当倒计时结束，\n将比较双方的牌型。\n牌型较强的一方胜。",
-            compareHands2: "如果牌型相同，\n则比较参与牌型的关键牌中最大的一张牌。\n(例如：满堂红中组成三条的牌)",
-            betHelp:"牌型胜者得到败者的钱。\n钱数由双方的牌型对应的赌注之和，\n乘以当前赔率得到",
-            handHelp: "如需牌型大小及其对应赌注的帮助，\n可以点击此按钮。",
+            compareHands: "当倒计时结束，\n将亮出双方的牌，\n比较规则类似简化的梭哈或德州扑克\n首先比较牌型，牌型较强的一方胜。",
+            compareHands2: "如果牌型相同，\n比较参与牌型的关键牌中最大的一张牌的数字\n(例如：满堂红中组成三条的牌)",
+            compareHands3: "如果仍旧相同，\n则双方算平手。\n不再比较花色或其他牌。",
+            betHelp:"牌型胜者得到败者的钱。\n钱数等于双方的牌型对应的赌注之和，\n乘以当前赔率。",
+            handHelp: "点击此按钮查看\n牌型大小及其对应的赌注金额。",
             betRateIncrease: "赔率每经过一局会增加１"
         },
 
@@ -117,11 +134,13 @@ var texts_locale = {
             charge_after: "次)",
             on: "已开启",
             off: "已关闭",
+            locked: "未解锁",
 
             "unused":"你需要使用过这个道具一次才能在配置中停用或启用这个道具。",
             "ace":{
                 name:"A",
-                desc:"召唤一张无花色的A朝自己移动。"
+                desc:"召唤一张无花色的A朝自己移动。",
+                unlock: "在公平竞赛中战胜A.I."+ACE_UNLOCK_CONDITION+"次后解锁本道具。"
             },
             bomb:{
                 name:"炸弹",
@@ -141,7 +160,8 @@ var texts_locale = {
             },
             enlarge:{
                 name:"放大",
-                desc:"放大自己的牌、筹码、道具，持续10秒。"
+                desc:"放大自己的牌、筹码、道具，持续10秒。",
+                unlock: "双人对战"+ENLARGE_UNLOCK_CONDITION+"次后解锁本道具。"
             },
             fast:{
                 name:"快进",
@@ -149,27 +169,33 @@ var texts_locale = {
             },
             forbid:{
                 name:"禁止",
-                desc:"对手无法使用或获得道具。"
+                desc:"对手无法使用或获得道具。",
+                unlock: "使用道具"+FORBID_UNLOCK_CONDITION+"次后解锁本道具。"
             },
             hammer:{
                 name:"雷神之锤",
-                desc:"召唤一个神锤击向对方区域。消灭任何打到的东西，吹飞敌方区域所有东西。"
+                desc:"召唤一个神锤击向对方区域。消灭任何打到的东西，吹飞敌方区域所有东西。",
+                unlock: "得到"+HAMMER_UNLOCK_CONDITION+"次五条的牌型后解锁本道具。"
             },
             kiss:{
                 name:"热吻",
-                desc:"吸引全场的K和J朝自己移动。"
+                desc:"吸引全场的K和J朝自己移动。",
+                unlock: "双人对战"+KISS_UNLOCK_CONDITION+"次后解锁本道具。"
             },
             leaf:{
                 name:"落叶",
-                desc:"召唤很多落叶干扰对手的视线。"
+                desc:"召唤很多落叶干扰对手的视线。",
+                unlock: "得到"+LEAF_UNLOCK_CONDITION+"次同花顺的牌型后解锁本道具。"
             },
             magnet:{
                 name:"金钱磁铁",
-                desc:"吸引全场的筹码朝自己移动（包括假的）"
+                desc:"吸引全场的筹码朝自己移动（包括假的）",
+                unlock:"得到"+MAGNET_UNLOCK_CONDITION+"次筹码后解锁本道具。"
             },
             nuke:{
                 name:"核弹",
-                desc:"消灭全场的牌、筹码和所有玩家的手牌。倒计时也会取消。"
+                desc:"消灭全场的牌、筹码和所有玩家的手牌。倒计时也会取消。",
+                unlock: "消灭"+NUKE_UNLOCK_CONDITION+"张牌后解锁本道具。"
             },
             shrink:{
                 name:"缩小",
@@ -189,7 +215,8 @@ var texts_locale = {
             },
             thief:{
                 name:"小偷",
-                desc:"放出一个化装成筹码的小偷，如果进入对手的金库，可以偷走对手一些钱（数量受当前赔率影响）"
+                desc:"放出一个化装成筹码的小偷，如果进入对手的金库，可以偷走对手一些钱（数量受当前赔率影响）。",
+                unlock: "得到总价$"+THIEF_UNLOCK_CONDITION +"的筹码后解锁本道具。"
             },
             tornado:{
                 name:"旋风",
@@ -197,7 +224,8 @@ var texts_locale = {
             },
             two:{
                 name:"2",
-                desc:"召唤一张无花色的2朝对手移动。"
+                desc:"召唤一张无花色的2朝对手移动。",
+                unlock: "玩总共"+TWO_UNLOCK_CONDITION+"次游戏后解锁本道具。"
             }
         }
     },
@@ -232,38 +260,46 @@ var texts_locale = {
         many: "many",
         mania: "mania",
 
-        startGame: "START GAME",
-        useDefault: "DEFAULT",
-        returnToIntro: "RETURN",
+        followSystem:"System",
+        enLang:"English",
+        zhLang:"简体中文",
+        clearData:"Clear Data",
+
+        startGame: "Start Game",
+        useDefault: "Default",
+        returnToIntro: "Back",
 
         gameOver: "GAME OVER",
 
         tutorials: {
             touchThisCard: "Touch this card.\nCards can also be swiped or dragged.",
             showYourCard: "You got you first card.\nCheck you hands by long press this area.\nDon't let opponent peek your cards ;)",
-            collectYourCard:"Keep collecting cards.\nForm your cards to a Poker Hands.\nWin opponent's money by beat his hands.",
+            collectYourCard:"Keep collecting cards.\nForm your cards to a Poker Hand.\nWin opponent's money by beat his hands.",
             thisIsYourMoney: "This is your money.\nIf your money is gone, you lose!",
             thisIsYourTarget: "This is your victory goal.\nIf your money reach this goal \nafter winning a round,you win the game!",
             thisIsForbidLine: "This is a forbid line for iOS Browser.\nPlease don't swipe from this area.\nOr the game will be closed!",
-            thisIsCountDown:"When any player get their fifth card.\nThe other player only has five seconds left.",
-            compareHands: "When count down finish,\nrevealed and compared both players' cards.\nPlayer with stronger hand win.",
-            compareHands2: "If there is a tie,\ncompare key highest card that form the Hand.\n(e.g.:Card that form triple in Full House.)",
+            thisIsCountDown:"When any player get their fifth card.\nThe other player only has 5 seconds left.",
+            compareHands: "When count down finish,\nBoth players' hands are revealed\nand compared in simplified POKER rule.\nStronger Poker category win this round.",
+            compareHands2: "If they are in same category,\ncompare number of highest card's number\nthat form the Poker Hand.\n(e.g.:Card that form triple in Full House.)",
+            compareHands3: "If there is still a tie,\ntwo player tie this round.\nNo need to compare suit or other cards.",
             betHelp:"Winner get money from loser.\nMoney amount equal to total of\nboth players hands' gambit,\nmultiplied by current bet rate.",
-            handHelp: "If you need more info of\nPoker Hand and its gambit,\nclick this button.",
+            handHelp: "Click this button to checkout\nall Poker Hand and their gambit.",
             betRateIncrease: "Bet rate increase 1 per round."
         },
 
         items: {
             unknown: "UNKNOWN",
             charge_before: "(",
-            charge_after: "charges)",
+            charge_after: " charges)",
             on: "ON",
             off: "OFF",
+            locked: "LOCKED",
 
             "unused":"Use this item at least once, then you can switch it on or off in game options.",
             "ace":{
                 name:"ACE",
-                desc:"Summon an ace card which has no suit move toward you."
+                desc:"Summon an ace card which has no suit move toward you.",
+                unlock: "Defeat A.I. "+ACE_UNLOCK_CONDITION+" times in fair game to unlock this item."
             },
             bomb:{
                 name:"BOMB",
@@ -271,11 +307,11 @@ var texts_locale = {
             },
             cloud:{
                 name:"CLOUD",
-                desc:"Summon many clouds to disturb opponent sight."
+                desc:"Summon many clouds to disturb opponent's sight."
             },
             diamond:{
                 name:"DIAMOND",
-                desc:"Attract all Qs toward you."
+                desc:"Attract all Q cards toward you."
             },
             dizzy:{
                 name:"DIZZY",
@@ -283,35 +319,42 @@ var texts_locale = {
             },
             enlarge:{
                 name:"ENLARGE",
-                desc:"Enlarge all your cards,tokens and items for 10 seconds."
+                desc:"Enlarge all your cards,tokens and items for 10 seconds.",
+                unlock: "PvP "+ENLARGE_UNLOCK_CONDITION+" times to unlock this item."
             },
             fast:{
                 name:"FAST FORWARD",
-                desc:"All opponent's cards,tokens and items move fast for 10 seconds."
+                desc:"All opponent's cards,tokens and items move faster for 10 seconds."
             },
             forbid:{
                 name:"Forbid",
-                desc:"Opponent cant use item or get item for 10 seconds."
+                desc:"Opponent cant use item or get item for 10 seconds.",
+                unlock: "use item "+FORBID_UNLOCK_CONDITION+" times to unlock this item."
             },
             hammer:{
                 name:"HAMMER OF GOD",
-                desc:"Summon a hammer toward opponent.It will destroy anything it hit and blow away everything in opponent's field."
+                desc:"Summon a hammer toward opponent.It will destroy anything it hit and blow away everything in opponent's field.",
+                unlock: "Get five-of-a-kind "+HAMMER_UNLOCK_CONDITION+" time to unlock this item."
             },
             kiss:{
                 name:"KISS",
-                desc:"Attract all Ks and Js toward you."
+                desc:"Attract all K cards and J cards toward you.",
+                unlock: "PvP "+KISS_UNLOCK_CONDITION+" times to unlock this item."
             },
             leaf:{
                 name:"FALLING LEAVES",
-                desc:"Summon many falling leaves to disturb opponent sight."
+                desc:"Summon many falling leaves to disturb opponent's sight.",
+                unlock: "Get straight-flush "+LEAF_UNLOCK_CONDITION+" time to unlock this item."
             },
             magnet:{
                 name:"TOKEN MAGNET",
-                desc:"Attract all tokens toward you(including fake one)."
+                desc:"Attract all tokens toward you(including fake one).",
+                unlock: "Get token "+MAGNET_UNLOCK_CONDITION+" times to unlock this item."
             },
             nuke:{
                 name:"NUKE",
-                desc:"Destroy all cards and tokens and all players' hands.Count down will also be cancelled."
+                desc:"Destroy all cards and tokens and all players' hands.Count down will also be cancelled.",
+                unlock: "destroy "+NUKE_UNLOCK_CONDITION+" cards to unlock this item."
             },
             shrink:{
                 name:"SHRINK",
@@ -319,7 +362,7 @@ var texts_locale = {
             },
             spy:{
                 name:"SPY",
-                desc:"Opponent show you his hand for 10 seconds."
+                desc:"Opponent show you their hand for 10 seconds."
             },
             slow:{
                 name:"SLOW FORWARD",
@@ -331,15 +374,17 @@ var texts_locale = {
             },
             thief:{
                 name:"THIEF",
-                desc:"Summon a thief who disguised as a token move toward opponent.If thief enter player's hand, he will steal money from him.(Money amount if effected by current bet rate)"
+                desc:"Summon a thief who disguised as a token move toward opponent.If thief enter player's hand, he will steal money from him.(Money amount if effected by current bet rate)",
+                unlock: "Get totally $"+THIEF_UNLOCK_CONDITION +" tokens to unlock this item."
             },
             tornado:{
                 name:"TORNADO",
-                desc:"Summon many tornadoes in opponent's field which will disturb his taking card or token."
+                desc:"Summon many tornadoes in opponent's field which will disturb they taking card or token."
             },
             two:{
                 name:"2",
-                desc:"Summon a 2 card which has no suit move toward opponent."
+                desc:"Summon a 2 card which has no suit move toward opponent.",
+                unlock: "Play "+TWO_UNLOCK_CONDITION+" games to unlock this item."
             }
         }
     }

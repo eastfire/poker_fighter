@@ -220,6 +220,12 @@ var NormalCardSprite = cc.Sprite.extend({
             player.addHand(this.model);
             this.alreadyTaken = true;
             this.model.alreadyTaken = true;
+
+            if ( this.lastTouchBy !== player.get("position") ) {
+                statistic.takeOpponentSendCard = statistic.takeOpponentSendCard || 0;
+                statistic.takeOpponentSendCard++;
+            }
+
         } else {
             this.bounceBack();
         }

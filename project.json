@@ -24,6 +24,7 @@
         "src/ai.js",
         "src/pause.js",
         "src/help.js",
+        "src/setting.js",
         "src/intro.js",
         "src/mode-select.js",
         "src/tutorial.js",

@@ -40,7 +40,7 @@ var CloudItemModel = ItemModel.extend({
         var rotation = opponentPlayerSprite.model.get("position") === PLAYER_POSITION_DOWN ? 0 : 180;
         var rect = opponentPlayerSprite.getEffectRect();
         var scale = this.get("cloudScale");
-        var effectTime = this.get("effectTime");
+        opponentPlayerSprite.model.set("blockSight", this.get("effectTime"));
         for ( var i = 0; i < this.get("cloudCount") ; i ++ ) {
             var cloud = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("cloud.png"));
             cloud.attr( {
@@ -205,6 +205,9 @@ var HammerItemModel = ItemModel.extend({
                         var dy = sprite.y - y;
                         if ( Math.abs(dx) < hammerWidth && Math.abs(dy) < hammerHeight ) {
                             gameModel.destroyCard(sprite.model);
+
+                            statistic.destroyCard = statistic.destroyCard || 0;
+                            statistic.destroyCard++;
                         } else {
                             var d = Math.sqrt(dx*dx+dy*dy);
                             sprite.speedX = NATURE_SPEED*2*dx/d;
@@ -465,6 +468,9 @@ var SniperItemModel = ItemModel.extend({
                         cc.audioEngine.playEffect(res.sniper_mp3, false);
 
                         gameModel.destroyCard(currentSprite.model);
+
+                        statistic.destroyCard = statistic.destroyCard || 0;
+                        statistic.destroyCard++;
                     } else {
                         sniperSprite.removeFromParent(true);
                     }
@@ -492,6 +498,9 @@ var NukeItemModel = ItemModel.extend({
 
         playerSprite.model.set("hands", []);
         opponentPlayerSprite.model.set("hands", []);
+
+        statistic.destroyCard = statistic.destroyCard || 0;
+        statistic.destroyCard+=gameModel.countPokerCards();
 
         gameModel.clearCards();
 
@@ -730,7 +739,8 @@ var LeafItemModel = ItemModel.extend({
             showCharge: false,
             leafCount : 40,
             leafScale: 1,
-            fallTime: 4
+            fallTime: 4,
+            effectTime: 10
         }
     },
     effect:function(playerSprite, opponentPlayerSprite){
@@ -740,6 +750,7 @@ var LeafItemModel = ItemModel.extend({
         var endY = isDown ? (rect.y+20): (rect.y  + rect.height-20) ;
         var fallTime = this.get("fallTime");
 
+        opponentPlayerSprite.model.set("blockSight", this.get("effectTime"));
         var scale = this.get("leafScale");
         for ( var i = 0; i < this.get("leafCount") ; i ++ ) {
             var leaf = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("leaf.png"));
@@ -1052,5 +1063,114 @@ var ITEM_MODEL_CLASS_MAP = {
     "thief": ThiefItemModel,
     "tornado": TornadoItemModel,
     "two": TwoItemModel
+}
 
+var CHECK_UNLOCKED_FUNC_MAP = {
+    "ace": function(){
+        statistic.winAI = statistic.winAI || 0;
+        if ( statistic.winAI >= ACE_UNLOCK_CONDITION ) {
+            return true;
+        } else
+            return texts.items.ace.unlock+"("+statistic.winAI+"/"+ACE_UNLOCK_CONDITION+")";
+        return true
+    },
+    "bomb": function(){
+        return true
+    },
+    "cloud": function(){
+        return true
+    },
+    "diamond": function(){
+        return true
+    },
+    "dizzy": function(){
+        return true
+    },
+    "enlarge":function(){
+        statistic.game = statistic.game || {};
+        statistic.game["vs"] = statistic.game["vs"] || 0;
+        if ( statistic.game["vs"] >= ENLARGE_UNLOCK_CONDITION ) {
+            return true
+        } else
+            return texts.items.enlarge.unlock+"("+statistic.game["vs"]+"/"+ENLARGE_UNLOCK_CONDITION+")";
+    },
+    "fast": function(){
+        return true
+    },
+    "forbid": function(){
+        statistic.totalUseItem = statistic.totalUseItem || 0;
+        if ( statistic.totalUseItem >= FORBID_UNLOCK_CONDITION ) {
+            return true
+        } else
+            return texts.items.forbid.unlock+"("+statistic.totalUseItem+"/"+FORBID_UNLOCK_CONDITION+")";
+    },
+    "hammer": function(){
+        statistic.handType = statistic.handType || {};
+        var count = statistic.handType["five-of-a-kind"] || 0;
+        if ( count >= HAMMER_UNLOCK_CONDITION ) {
+            return true
+        } else
+            return texts.items.hammer.unlock+"("+count+"/"+HAMMER_UNLOCK_CONDITION+")";
+    },
+    "kiss": function(){
+        statistic.game = statistic.game || {};
+        statistic.game["vs"] = statistic.game["vs"] || 0;
+        if ( statistic.game["vs"] >= KISS_UNLOCK_CONDITION ) {
+            return true
+        } else
+            return texts.items.kiss.unlock+"("+statistic.game["vs"]+"/"+KISS_UNLOCK_CONDITION+")";
+    },
+    "leaf": function(){
+        statistic.handType = statistic.handType || {};
+        var count = statistic.handType["straight-flush"] || 0;
+        if ( count >= LEAF_UNLOCK_CONDITION ) {
+            return true
+        } else
+            return texts.items.leaf.unlock+"("+count+"/"+LEAF_UNLOCK_CONDITION+")";
+    },
+    "magnet": function(){
+        statistic.takeToken = statistic.takeToken || 0;
+        if ( statistic.takeToken >= MAGNET_UNLOCK_CONDITION ) {
+            return true
+        } else
+            return texts.items.magnet.unlock+"("+statistic.takeToken+"/"+MAGNET_UNLOCK_CONDITION+")";
+    },
+    "nuke": function(){
+        statistic.destroyCard = statistic.destroyCard || 0;
+        if ( statistic.destroyCard >= NUKE_UNLOCK_CONDITION ) {
+            return true
+        } else
+            return texts.items.nuke.unlock+"("+statistic.destroyCard+"/"+NUKE_UNLOCK_CONDITION+")";
+    },
+    "shrink":function(){
+        return true
+    },
+    "slow": function(){
+        return true
+    },
+    "sniper": function(){
+        return true
+    },
+    "spy": function(){
+        return true
+    },
+    "thief": function(){
+        statistic.takeTokenAmount = statistic.takeTokenAmount || 0;
+        if ( statistic.takeTokenAmount >= THIEF_UNLOCK_CONDITION ) {
+            return true
+        } else
+            return texts.items.thief.unlock+"("+statistic.takeTokenAmount+"/"+THIEF_UNLOCK_CONDITION+")";
+    },
+    "tornado": function(){
+        return true
+    },
+    "two": function(){
+        statistic.game = statistic.game || {};
+        var count = statistic.game["vs"] || 0;
+        count += statistic.game["vs-ai"] || 0;
+        if ( count >= TWO_UNLOCK_CONDITION ) {
+            return true
+        } else
+            return texts.items.two.unlock+"("+count+"/"+TWO_UNLOCK_CONDITION+")";
+    }
 }

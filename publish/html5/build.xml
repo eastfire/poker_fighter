@@ -217,6 +217,7 @@
                 <file name="src/ai.js"/>
                 <file name="src/pause.js"/>
                 <file name="src/help.js"/>
+                <file name="src/setting.js"/>
                 <file name="src/intro.js"/>
                 <file name="src/mode-select.js"/>
                 <file name="src/tutorial.js"/>
