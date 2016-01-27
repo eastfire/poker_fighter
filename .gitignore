@@ -1,6 +1,7 @@
 raw
 simulator
-public/android
+publish/android
+publish/html5/res/Icon*.png
 .idea
 frameworks
 *.swp

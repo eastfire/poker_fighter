@@ -22,7 +22,7 @@ var IntroLayer = cc.Layer.extend({
                 cc.audioEngine.playEffect(res.click_mp3, false);
                 statistic.game = statistic.game || {};
                 var playedOnce = statistic.game.vs || statistic.game["vs-ai"]
-                if ( playedOnce && isTutorialPassed("main","betRateIncrease")) {
+                if ( playedOnce ) {
                     cc.director.runScene(new ModeSelectScene({mode: "vs"}));
                 } else {
                     cc.director.runScene(new MainScene({
@@ -44,7 +44,7 @@ var IntroLayer = cc.Layer.extend({
                 cc.audioEngine.playEffect(res.click_mp3,false);
                 statistic.game = statistic.game || {};
                 var playedOnce = statistic.game.vs || statistic.game["vs-ai"]
-                if ( playedOnce && isTutorialPassed("main","betRateIncrease") ) {
+                if ( playedOnce ) {
                     cc.director.runScene(new ModeSelectScene({mode: "vs-ai"}));
                 } else {
                     cc.director.runScene(new MainScene({

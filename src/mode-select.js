@@ -96,6 +96,10 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
         this.addChild(sprite);
 
         this.render();
+        cc.log("sdfasf")
+        if ( !isTutorialPassed("modeSelect","modeSelectIntro") ) {
+            showTutorial(this, "modeSelect", "modeSelectIntro")
+        }
     },
     render:function(){
         this.renderPlayerInitMoney(0);

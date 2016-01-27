@@ -125,7 +125,15 @@ var texts_locale = {
             compareHands3: "如果仍旧相同，\n则双方算平手。\n不再比较花色或其他牌。",
             betHelp:"牌型胜者得到败者的钱。\n钱数等于双方的牌型对应的赌注之和，\n乘以当前赔率。",
             handHelp: "点击此按钮查看\n牌型大小及其对应的赌注金额。",
-            betRateIncrease: "赔率每经过一局会增加１"
+            betRateIncrease: "赔率每经过一局会增加１",
+
+            modeSelectIntro: "在这里，你可以定制每一局的玩法",
+            selectInitMoney: "你可以调整每个玩家的起始金钱",
+            selectTargetMoney: "你可以调整每个玩家的胜利目标",
+            selectDeck: "你可以决定游戏使用的牌堆\n是8～A共28张牌\n或是2～A共52张牌",
+            selectToken: "你可以调整游戏中筹码的出现概率",
+            selectItem: "你可以调整游戏中道具的出现概率",
+            selectEachItem: "你还可以单独控制每种道具是否出现"
         },
 
         items: {

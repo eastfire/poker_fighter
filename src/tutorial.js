@@ -26,10 +26,7 @@ var isTutorialPassed = function(sceneName, stepName){
 
 var showTutorial = function(scene, sceneName, stepName){
     if ( !tutorialMap ) {
-        if ( gameModel.get("mode") === "vs" )
-            initTutorialMap();
-        else if ( gameModel.get("mode") === "vs-ai" )
-            initTutorialMapVsAI();
+        initTutorialMap();
     }
 
     if ( !tutorialPassed[sceneName] ) tutorialPassed[sceneName] = {};
@@ -38,12 +35,29 @@ var showTutorial = function(scene, sceneName, stepName){
     if ( tutorialMap[sceneName] && (tutorialModel = tutorialMap[sceneName][stepName]) ) {
         if (!tutorialPassed[sceneName][stepName]) {
 
+            if ( typeof tutorialModel === "function") tutorialModel = tutorialModel.call();
             var layer = new TutorialLayer({
                 sceneName: sceneName,
                 stepName: stepName,
                 model: tutorialModel,
                 callback: function () {
                     tutorialPassed[sceneName][stepName] = true;
+                    var sameAs = tutorialModel.get("sameAs");
+                    if ( sameAs ) {
+                        cc.log(sameAs)
+                        if ( sameAs.sceneName ) {
+                            if ( !tutorialPassed[sameAs.sceneName] ) tutorialPassed[sameAs.sceneName] = {};
+                            if ( sameAs.stepName ) {
+                                tutorialPassed[sameAs.sceneName][sameAs.stepName] = true;
+                            } else {
+                                tutorialPassed[sameAs.sceneName][stepName] = true;
+                            }
+                        } else {
+                            if ( sameAs.stepName ) {
+                                tutorialPassed[sceneName][sameAs.stepName] = true;
+                            }
+                        }
+                    }
                     saveTutorial();
                     var next = tutorialModel.getNext()
                     if ( next ) {
@@ -237,9 +251,160 @@ var TutorialModel = Backbone.Model.extend({
 })
 
 var tutorialMap = null;
-var initTutorialMapVsAI = function(){
+
+var initTutorialMap = function(){
     tutorialMap = {
-        "main":{
+        "modeSelect":{
+            "modeSelectIntro":new TutorialModel({
+                points:[],
+                labels: [
+                    {
+                        x: cc.winSize.width / 2,
+                        y: cc.winSize.height / 2,
+                        text: texts.tutorials.modeSelectIntro
+                    }
+                ],
+                images: [
+                ],
+                next: {
+                    sceneName:"modeSelect",
+                    stepName:"selectInitMoney"
+                }
+            }),
+            "selectInitMoney":new TutorialModel({
+                points:[{
+                    x: cc.winSize.width/3+45,
+                    y: dimens.player1InitMoneyPosition.y,
+                    width: 150,
+                    height: 50
+                },{
+                    x: cc.winSize.width/3+45,
+                    y: dimens.player2InitMoneyPosition.y,
+                    width: 150,
+                    height: 50
+                }],
+                labels: [
+                    {
+                        x: cc.winSize.width / 2,
+                        y: 600,
+                        text: texts.tutorials.selectInitMoney
+                    }
+                ],
+                images: [
+                ],
+                next: {
+                    sceneName:"modeSelect",
+                    stepName:"selectTargetMoney"
+                }
+            }),
+            "selectTargetMoney":new TutorialModel({
+                points:[{
+                    x: cc.winSize.width*2/3+40+45,
+                    y: dimens.player1InitMoneyPosition.y,
+                    width: 150,
+                    height: 50
+                },{
+                    x: cc.winSize.width*2/3+40+45,
+                    y: dimens.player2InitMoneyPosition.y,
+                    width: 150,
+                    height: 50
+                }],
+                labels: [
+                    {
+                        x: cc.winSize.width / 2,
+                        y: 600,
+                        text: texts.tutorials.selectTargetMoney
+                    }
+                ],
+                images: [
+                ],
+                next: {
+                    sceneName:"modeSelect",
+                    stepName:"selectDeck"
+                }
+            }),
+            "selectDeck":new TutorialModel({
+                points:[{
+                    x: cc.winSize.width / 2,
+                    y: dimens.usingDeckPosition.y,
+                    width: 450,
+                    height: 50
+                }],
+                labels: [
+                    {
+                        x: cc.winSize.width / 2,
+                        y: 540,
+                        text: texts.tutorials.selectDeck
+                    }
+                ],
+                images: [
+                ],
+                next: {
+                    sceneName:"modeSelect",
+                    stepName:"selectToken"
+                }
+            }),
+            "selectToken":new TutorialModel({
+                points:[{
+                    x: cc.winSize.width / 2,
+                    y: dimens.flyingMoney.y,
+                    width: 450,
+                    height: 60
+                }],
+                labels: [
+                    {
+                        x: cc.winSize.width / 2,
+                        y: 500,
+                        text: texts.tutorials.selectToken
+                    }
+                ],
+                images: [
+                ],
+                next: {
+                    sceneName:"modeSelect",
+                    stepName:"selectItem"
+                }
+            }),
+            "selectItem":new TutorialModel({
+                points:[{
+                    x: cc.winSize.width / 2,
+                    y: dimens.flyingItem.y,
+                    width: 450,
+                    height: 60
+                }],
+                labels: [
+                    {
+                        x: cc.winSize.width / 2,
+                        y: 450,
+                        text: texts.tutorials.selectItem
+                    }
+                ],
+                images: [
+                ],
+                next: {
+                    sceneName:"modeSelect",
+                    stepName:"selectEachItem"
+                }
+            }),
+            "selectEachItem":new TutorialModel({
+                points:[{
+                    x: cc.winSize.width / 2,
+                    y: 300,
+                    width: 700,
+                    height: 400
+                }],
+                labels: [
+                    {
+                        x: cc.winSize.width / 2,
+                        y: 550,
+                        text: texts.tutorials.selectEachItem
+                    }
+                ],
+                images: [
+                ]
+            })
+        },
+        "main-vs-ai":{
             "takeCard": new TutorialModel({
                 points:[
                     {
@@ -286,7 +451,10 @@ var initTutorialMapVsAI = function(){
                         }
                     })
                 },
-                condition: "touchAllPoints"
+                condition: "touchAllPoints",
+                sameAs:{
+                    sceneName:"main-vs"
+                }
             }),
             "showCard": new TutorialModel({
                 points: [
@@ -313,8 +481,11 @@ var initTutorialMapVsAI = function(){
                     }
                 ],
                 next: {
-                    sceneName:"main",
+                    sceneName:"main-vs-ai",
                     stepName:"cardCollect"
+                },
+                sameAs:{
+                    sceneName:"main-vs"
                 }
             }),
             "cardCollect": new TutorialModel({
@@ -336,71 +507,83 @@ var initTutorialMapVsAI = function(){
                 images: [
                 ],
                 next: {
-                    sceneName:"main",
+                    sceneName:"main-vs-ai",
                     stepName:"initMoney"
+                },
+                sameAs:{
+                    sceneName:"main-vs"
                 }
             }),
-            "initMoney": new TutorialModel({
-                points:[
-                    {
-                        x: mainLayer.player1Sprite.moneyLabel.x,
-                        y: mainLayer.player1Sprite.moneyLabel.y,
-                        width: mainLayer.player1Sprite.moneyLabel.width,
-                        height: mainLayer.player1Sprite.moneyLabel.height
-                    }
-                ],
-                labels: [
-                    {
-                        x: cc.winSize.width/2,
-                        y: mainLayer.player1Sprite.moneyLabel.y + 110,
-                        text: texts.tutorials.thisIsYourMoney
-                    }
-                ],
-                images: [
-                    {
-                        x: mainLayer.player1Sprite.moneyLabel.x + 80,
-                        y: mainLayer.player1Sprite.moneyLabel.y + 50,
-                        scaleY: -1
-                    }
-                ],
-                next: {
-                    sceneName:"main",
-                    stepName:"targetMoney"
-                }
-                //condition: "touchAny" // touchAny, touchAnyPoint, touchAllPoints
-            }),
-            "targetMoney": new TutorialModel({
-                points:[
-                    {
-                        x: mainLayer.player1Sprite.targetMoneyLabel.x,
-                        y: mainLayer.player1Sprite.targetMoneyLabel.y,
-                        width: mainLayer.player1Sprite.targetMoneyLabel.width,
-                        height: mainLayer.player1Sprite.targetMoneyLabel.height
-                    }
-                ],
-                labels: [
-                    {
-                        x: cc.winSize.width/2,
-                        y: mainLayer.player1Sprite.targetMoneyLabel.y + 120,
-                        text: texts.tutorials.thisIsYourTarget
-                    }
-                ],
-                images: [
-                    {
-                        x: mainLayer.player1Sprite.targetMoneyLabel.x + 80,
-                        y: mainLayer.player1Sprite.targetMoneyLabel.y + 50,
-                        scaleY: -1
-                    }
-                ],
-                next: function(){
-                    if ( isWebIOS ) {
-                        return {
-                            sceneName:"main",
-                            stepName:"forbidLine"
+            "initMoney":function(){
+                return new TutorialModel({
+                    points:[
+                        {
+                            x: mainLayer.player1Sprite.moneyLabel.x,
+                            y: mainLayer.player1Sprite.moneyLabel.y,
+                            width: mainLayer.player1Sprite.moneyLabel.width,
+                            height: mainLayer.player1Sprite.moneyLabel.height
                         }
-                    } else return null;
-                }
-            }),
+                    ],
+                    labels: [
+                        {
+                            x: cc.winSize.width/2,
+                            y: mainLayer.player1Sprite.moneyLabel.y + 110,
+                            text: texts.tutorials.thisIsYourMoney
+                        }
+                    ],
+                    images: [
+                        {
+                            x: mainLayer.player1Sprite.moneyLabel.x + 80,
+                            y: mainLayer.player1Sprite.moneyLabel.y + 50,
+                            scaleY: -1
+                        }
+                    ],
+                    next: {
+                        sceneName:"main-vs-ai",
+                        stepName:"targetMoney"
+                    },
+                    sameAs:{
+                        sceneName:"main-vs"
+                    }
+                })
+            },
+            "targetMoney": function() {
+                return new TutorialModel({
+                    points: [
+                        {
+                            x: mainLayer.player1Sprite.targetMoneyLabel.x,
+                            y: mainLayer.player1Sprite.targetMoneyLabel.y,
+                            width: mainLayer.player1Sprite.targetMoneyLabel.width,
+                            height: mainLayer.player1Sprite.targetMoneyLabel.height
+                        }
+                    ],
+                    labels: [
+                        {
+                            x: cc.winSize.width / 2,
+                            y: mainLayer.player1Sprite.targetMoneyLabel.y + 120,
+                            text: texts.tutorials.thisIsYourTarget
+                        }
+                    ],
+                    images: [
+                        {
+                            x: mainLayer.player1Sprite.targetMoneyLabel.x + 80,
+                            y: mainLayer.player1Sprite.targetMoneyLabel.y + 50,
+                            scaleY: -1
+                        }
+                    ],
+                    next: function () {
+                        if (isWebIOS) {
+                            return {
+                                sceneName: "main-vs-ai",
+                                stepName: "forbidLine"
+                            }
+                        } else return null;
+                    },
+                    sameAs: {
+                        sceneName: "main-vs"
+                    }
+                })
+            },
             "forbidLine": new TutorialModel({
                 points:[
                     {
@@ -422,7 +605,10 @@ var initTutorialMapVsAI = function(){
                         x: 80,
                         y: 300
                     }
-                ]
+                ],
+                sameAs:{
+                    sceneName:"main-vs"
+                }
             }),
             "countDown": new TutorialModel({
                 points:[
@@ -445,7 +631,10 @@ var initTutorialMapVsAI = function(){
                         x: cc.winSize.width/2+120,
                         y: 300
                     }
-                ]
+                ],
+                sameAs:{
+                    sceneName:"main-vs"
+                }
             }),
             "compareHands": new TutorialModel({
                 points:[
@@ -484,8 +673,11 @@ var initTutorialMapVsAI = function(){
                 images: [
                 ],
                 next: {
-                    sceneName:"main",
+                    sceneName:"main-vs-ai",
                     stepName:"compareHands2"
+                },
+                sameAs:{
+                    sceneName:"main-vs"
                 }
             }),
             "compareHands2": new TutorialModel({
@@ -525,8 +717,11 @@ var initTutorialMapVsAI = function(){
                 images: [
                 ],
                 next: {
-                    sceneName:"main",
+                    sceneName:"main-vs-ai",
                     stepName:"compareHands3"
+                },
+                sameAs:{
+                    sceneName:"main-vs"
                 }
             }),
             "compareHands3": new TutorialModel({
@@ -566,45 +761,53 @@ var initTutorialMapVsAI = function(){
                 images: [
                 ],
                 next: {
-                    sceneName:"main",
+                    sceneName:"main-vs-ai",
                     stepName:"betHelp"
+                },
+                sameAs:{
+                    sceneName:"main-vs"
                 }
             }),
-            "betHelp": new TutorialModel({
-                points:[
-                    {
-                        x: cc.winSize.width/2,
-                        y: mainLayer.betMoneyLabel1.y,
-                        width: 350,
-                        height: 50
+            "betHelp": function() {
+                return new TutorialModel({
+                    points: [
+                        {
+                            x: cc.winSize.width / 2,
+                            y: mainLayer.betMoneyLabel1.y,
+                            width: 350,
+                            height: 50
+                        },
+                        {
+                            x: cc.winSize.width / 2,
+                            y: cc.winSize.height / 2,
+                            width: 100,
+                            height: 100
+                        }
+                    ],
+                    labels: [
+                        {
+                            x: cc.winSize.width / 2,
+                            y: 260,
+                            text: texts.tutorials.betHelp
+                        }
+                    ],
+                    images: [
+                        {
+                            x: cc.winSize.width / 2 + 100,
+                            y: cc.winSize.height / 2 - 10,
+                            anchorX: 0,
+                            anchorY: 1
+                        }
+                    ],
+                    next: {
+                        sceneName: "main-vs-ai",
+                        stepName: "handHelp"
                     },
-                    {
-                        x: cc.winSize.width/2,
-                        y: cc.winSize.height/2,
-                        width: 100,
-                        height: 100
+                    sameAs: {
+                        sceneName: "main-vs"
                     }
-                ],
-                labels: [
-                    {
-                        x: cc.winSize.width/2,
-                        y: 260,
-                        text: texts.tutorials.betHelp
-                    }
-                ],
-                images: [
-                    {
-                        x: cc.winSize.width/2 + 100,
-                        y: cc.winSize.height/2 - 10,
-                        anchorX:0,
-                        anchorY:1
-                    }
-                ],
-                next: {
-                    sceneName:"main",
-                    stepName:"handHelp"
-                }
-            }),
+                })
+            },
             "handHelp": new TutorialModel({
                 points:[
                     {
@@ -634,7 +837,10 @@ var initTutorialMapVsAI = function(){
                 callback:function(){
                     mainLayer.showHelp();
                 },
-                condition: "touchAllPoints"
+                condition: "touchAllPoints",
+                sameAs:{
+                    sceneName:"main-vs"
+                }
             }),
             "betRateIncrease": new TutorialModel({
                 points:[
@@ -659,96 +865,99 @@ var initTutorialMapVsAI = function(){
                         anchorX:0,
                         anchorY:1
                     }
-                ]
+                ],
+                sameAs:{
+                    sceneName:"main-vs"
+                }
             })
-        }
-    }
-}
-
-var initTutorialMap = function(){
-    tutorialMap = {
-        "main":{
-            "takeCard": new TutorialModel({
-                points:[
-                    {
-                        x: function(){
-                            return _.find(mainLayer.getChildren(),function(sprite){
-                                return sprite instanceof PokerCardSprite && sprite.y < cc.winSize.height/2
-                            }).x
+        },
+        "main-vs":{
+            "takeCard": function() {
+                return new TutorialModel({
+                    points: [
+                        {
+                            x: function () {
+                                return _.find(mainLayer.getChildren(), function (sprite) {
+                                    return sprite instanceof PokerCardSprite && sprite.y < cc.winSize.height / 2
+                                }).x
+                            },
+                            y: function () {
+                                return _.find(mainLayer.getChildren(), function (sprite) {
+                                    return sprite instanceof PokerCardSprite && sprite.y < cc.winSize.height / 2
+                                }).y
+                            },
+                            width: function () {
+                                return _.find(mainLayer.getChildren(), function (sprite) {
+                                    return sprite instanceof PokerCardSprite && sprite.y < cc.winSize.height / 2
+                                }).contentSprite.width * 1.4
+                            },
+                            height: function () {
+                                return _.find(mainLayer.getChildren(), function (sprite) {
+                                    return sprite instanceof PokerCardSprite && sprite.y < cc.winSize.height / 2
+                                }).contentSprite.height * 1.4
+                            }
                         },
-                        y: function(){
-                            return _.find(mainLayer.getChildren(),function(sprite){
-                                return sprite instanceof PokerCardSprite && sprite.y < cc.winSize.height/2
-                            }).y
-                        },
-                        width: function(){
-                            return _.find(mainLayer.getChildren(),function(sprite){
-                                return sprite instanceof PokerCardSprite && sprite.y < cc.winSize.height/2
-                            }).contentSprite.width*1.4
-                        },
-                        height: function(){
-                            return _.find(mainLayer.getChildren(),function(sprite){
-                                return sprite instanceof PokerCardSprite && sprite.y < cc.winSize.height/2
-                            }).contentSprite.height*1.4
-                        }
-                    },
-                    {
-                        x: function(){
-                            return _.find(mainLayer.getChildren(),function(sprite){
-                                return sprite instanceof PokerCardSprite && sprite.y > cc.winSize.height/2
-                            }).x
-                        },
-                        y: function(){
-                            return _.find(mainLayer.getChildren(),function(sprite){
-                                return sprite instanceof PokerCardSprite && sprite.y > cc.winSize.height/2
-                            }).y
-                        },
-                        width: function(){
-                            return _.find(mainLayer.getChildren(),function(sprite){
-                                return sprite instanceof PokerCardSprite && sprite.y > cc.winSize.height/2
-                            }).contentSprite.width*1.4
-                        },
-                        height: function(){
-                            return _.find(mainLayer.getChildren(),function(sprite){
-                                return sprite instanceof PokerCardSprite && sprite.y > cc.winSize.height/2
-                            }).contentSprite.height*1.4
-                        }
-                    }
-                ],
-                labels: [
-                    {
-                        x: cc.winSize.width/2,
-                        y: 340,
-                        text: texts.tutorials.touchThisCard
-                    },
-                    {
-                        x: cc.winSize.width/2,
-                        y: cc.winSize.height - 340,
-                        text: texts.tutorials.touchThisCard,
-                        rotation: 180
-                    }
-                ],
-                images: [
-                ],
-                callback:function(){
-                    _.each(mainLayer.getChildren(),function(sprite){
-                        if ( sprite instanceof PokerCardSprite ) {
-                            if ( sprite.y < cc.winSize.height/2){
-                                sprite.speedY = -NATURE_SPEED;
-                                sprite.speedX = 0;
-                                sprite.lastTouchBy = PLAYER_POSITION_DOWN;
-                                sprite.onTouchRelease()
-                            } else {
-                                sprite.speedY = NATURE_SPEED;
-                                sprite.speedX = 0;
-                                sprite.lastTouchBy = PLAYER_POSITION_UP;
-                                sprite.onTouchRelease()
+                        {
+                            x: function () {
+                                return _.find(mainLayer.getChildren(), function (sprite) {
+                                    return sprite instanceof PokerCardSprite && sprite.y > cc.winSize.height / 2
+                                }).x
+                            },
+                            y: function () {
+                                return _.find(mainLayer.getChildren(), function (sprite) {
+                                    return sprite instanceof PokerCardSprite && sprite.y > cc.winSize.height / 2
+                                }).y
+                            },
+                            width: function () {
+                                return _.find(mainLayer.getChildren(), function (sprite) {
+                                    return sprite instanceof PokerCardSprite && sprite.y > cc.winSize.height / 2
+                                }).contentSprite.width * 1.4
+                            },
+                            height: function () {
+                                return _.find(mainLayer.getChildren(), function (sprite) {
+                                    return sprite instanceof PokerCardSprite && sprite.y > cc.winSize.height / 2
+                                }).contentSprite.height * 1.4
                             }
                         }
-                    })
-                },
-                condition: "touchAllPoints"
-            }),
+                    ],
+                    labels: [
+                        {
+                            x: cc.winSize.width / 2,
+                            y: 340,
+                            text: texts.tutorials.touchThisCard
+                        },
+                        {
+                            x: cc.winSize.width / 2,
+                            y: cc.winSize.height - 340,
+                            text: texts.tutorials.touchThisCard,
+                            rotation: 180
+                        }
+                    ],
+                    images: [
+                    ],
+                    callback: function () {
+                        _.each(mainLayer.getChildren(), function (sprite) {
+                            if (sprite instanceof PokerCardSprite) {
+                                if (sprite.y < cc.winSize.height / 2) {
+                                    sprite.speedY = -NATURE_SPEED;
+                                    sprite.speedX = 0;
+                                    sprite.lastTouchBy = PLAYER_POSITION_DOWN;
+                                    sprite.onTouchRelease()
+                                } else {
+                                    sprite.speedY = NATURE_SPEED;
+                                    sprite.speedX = 0;
+                                    sprite.lastTouchBy = PLAYER_POSITION_UP;
+                                    sprite.onTouchRelease()
+                                }
+                            }
+                        })
+                    },
+                    condition: "touchAllPoints",
+                    sameAs: {
+                        sceneName: "main-vs-ai"
+                    }
+                })
+            },
             "showCard": new TutorialModel({
                 points: [
                     {
@@ -792,8 +1001,11 @@ var initTutorialMap = function(){
                     }
                 ],
                 next: {
-                    sceneName:"main",
+                    sceneName:"main-vs",
                     stepName:"cardCollect"
+                },
+                sameAs:{
+                    sceneName:"main-vs-ai"
                 }
             }),
             "cardCollect": new TutorialModel({
@@ -827,105 +1039,118 @@ var initTutorialMap = function(){
                 images: [
                 ],
                 next: {
-                    sceneName:"main",
+                    sceneName:"main-vs",
                     stepName:"initMoney"
+                },
+                sameAs:{
+                    sceneName:"main-vs-ai"
                 }
             }),
-            "initMoney": new TutorialModel({
-                points:[
-                    {
-                        x: mainLayer.player1Sprite.moneyLabel.x,
-                        y: mainLayer.player1Sprite.moneyLabel.y,
-                        width: mainLayer.player1Sprite.moneyLabel.width,
-                        height: mainLayer.player1Sprite.moneyLabel.height
-                    },
-                    {
-                        x: mainLayer.player2Sprite.moneyLabel.x,
-                        y: mainLayer.player2Sprite.moneyLabel.y,
-                        width: mainLayer.player2Sprite.moneyLabel.width,
-                        height: mainLayer.player2Sprite.moneyLabel.height
-                    }
-                ],
-                labels: [
-                    {
-                        x: cc.winSize.width/2,
-                        y: mainLayer.player1Sprite.moneyLabel.y + 110,
-                        text: texts.tutorials.thisIsYourMoney
-                    },
-                    {
-                        x: cc.winSize.width/2,
-                        y: mainLayer.player2Sprite.moneyLabel.y - 110,
-                        text: texts.tutorials.thisIsYourMoney,
-                        rotation: 180
-                    }
-                ],
-                images: [
-                    {
-                        x: mainLayer.player1Sprite.moneyLabel.x + 80,
-                        y: mainLayer.player1Sprite.moneyLabel.y + 50,
-                        scaleY: -1
-                    },
-                    {
-                        x: mainLayer.player2Sprite.moneyLabel.x + (isWebIOS ? 80 : -80),
-                        y: mainLayer.player2Sprite.moneyLabel.y - 50,
-                        scaleX: isWebIOS ? 1 : -1
-                    }
-                ],
-                next: {
-                    sceneName:"main",
-                    stepName:"targetMoney"
-                }
-                //condition: "touchAny" // touchAny, touchAnyPoint, touchAllPoints
-            }),
-            "targetMoney": new TutorialModel({
-                points:[
-                    {
-                        x: mainLayer.player1Sprite.targetMoneyLabel.x,
-                        y: mainLayer.player1Sprite.targetMoneyLabel.y,
-                        width: mainLayer.player1Sprite.targetMoneyLabel.width,
-                        height: mainLayer.player1Sprite.targetMoneyLabel.height
-                    },
-                    {
-                        x: mainLayer.player2Sprite.targetMoneyLabel.x,
-                        y: mainLayer.player2Sprite.targetMoneyLabel.y,
-                        width: mainLayer.player2Sprite.targetMoneyLabel.width,
-                        height: mainLayer.player2Sprite.targetMoneyLabel.height
-                    }
-                ],
-                labels: [
-                    {
-                        x: cc.winSize.width/2,
-                        y: mainLayer.player1Sprite.targetMoneyLabel.y + 120,
-                        text: texts.tutorials.thisIsYourTarget
-                    },
-                    {
-                        x: cc.winSize.width/2,
-                        y: mainLayer.player2Sprite.targetMoneyLabel.y - 120,
-                        text: texts.tutorials.thisIsYourTarget,
-                        rotation: 180
-                    }
-                ],
-                images: [
-                    {
-                        x: mainLayer.player1Sprite.targetMoneyLabel.x + 80,
-                        y: mainLayer.player1Sprite.targetMoneyLabel.y + 50,
-                        scaleY: -1
-                    },
-                    {
-                        x: mainLayer.player2Sprite.targetMoneyLabel.x + (isWebIOS ? 80 : -80),
-                        y: mainLayer.player2Sprite.targetMoneyLabel.y - 50,
-                        scaleX: isWebIOS ? 1 : -1
-                    }
-                ],
-                next: function(){
-                    if ( isWebIOS ) {
-                        return {
-                            sceneName:"main",
-                            stepName:"forbidLine"
+            "initMoney": function() {
+                return new TutorialModel({
+                    points: [
+                        {
+                            x: mainLayer.player1Sprite.moneyLabel.x,
+                            y: mainLayer.player1Sprite.moneyLabel.y,
+                            width: mainLayer.player1Sprite.moneyLabel.width,
+                            height: mainLayer.player1Sprite.moneyLabel.height
+                        },
+                        {
+                            x: mainLayer.player2Sprite.moneyLabel.x,
+                            y: mainLayer.player2Sprite.moneyLabel.y,
+                            width: mainLayer.player2Sprite.moneyLabel.width,
+                            height: mainLayer.player2Sprite.moneyLabel.height
                         }
-                    } else return null;
-                }
-            }),
+                    ],
+                    labels: [
+                        {
+                            x: cc.winSize.width / 2,
+                            y: mainLayer.player1Sprite.moneyLabel.y + 110,
+                            text: texts.tutorials.thisIsYourMoney
+                        },
+                        {
+                            x: cc.winSize.width / 2,
+                            y: mainLayer.player2Sprite.moneyLabel.y - 110,
+                            text: texts.tutorials.thisIsYourMoney,
+                            rotation: 180
+                        }
+                    ],
+                    images: [
+                        {
+                            x: mainLayer.player1Sprite.moneyLabel.x + 80,
+                            y: mainLayer.player1Sprite.moneyLabel.y + 50,
+                            scaleY: -1
+                        },
+                        {
+                            x: mainLayer.player2Sprite.moneyLabel.x + (isWebIOS ? 80 : -80),
+                            y: mainLayer.player2Sprite.moneyLabel.y - 50,
+                            scaleX: isWebIOS ? 1 : -1
+                        }
+                    ],
+                    next: {
+                        sceneName: "main-vs",
+                        stepName: "targetMoney"
+                    },
+                    sameAs: {
+                        sceneName: "main-vs-ai"
+                    }
+                    //condition: "touchAny" // touchAny, touchAnyPoint, touchAllPoints
+                })
+            },
+            "targetMoney": function() {
+                return new TutorialModel({
+                    points: [
+                        {
+                            x: mainLayer.player1Sprite.targetMoneyLabel.x,
+                            y: mainLayer.player1Sprite.targetMoneyLabel.y,
+                            width: mainLayer.player1Sprite.targetMoneyLabel.width,
+                            height: mainLayer.player1Sprite.targetMoneyLabel.height
+                        },
+                        {
+                            x: mainLayer.player2Sprite.targetMoneyLabel.x,
+                            y: mainLayer.player2Sprite.targetMoneyLabel.y,
+                            width: mainLayer.player2Sprite.targetMoneyLabel.width,
+                            height: mainLayer.player2Sprite.targetMoneyLabel.height
+                        }
+                    ],
+                    labels: [
+                        {
+                            x: cc.winSize.width / 2,
+                            y: mainLayer.player1Sprite.targetMoneyLabel.y + 120,
+                            text: texts.tutorials.thisIsYourTarget
+                        },
+                        {
+                            x: cc.winSize.width / 2,
+                            y: mainLayer.player2Sprite.targetMoneyLabel.y - 120,
+                            text: texts.tutorials.thisIsYourTarget,
+                            rotation: 180
+                        }
+                    ],
+                    images: [
+                        {
+                            x: mainLayer.player1Sprite.targetMoneyLabel.x + 80,
+                            y: mainLayer.player1Sprite.targetMoneyLabel.y + 50,
+                            scaleY: -1
+                        },
+                        {
+                            x: mainLayer.player2Sprite.targetMoneyLabel.x + (isWebIOS ? 80 : -80),
+                            y: mainLayer.player2Sprite.targetMoneyLabel.y - 50,
+                            scaleX: isWebIOS ? 1 : -1
+                        }
+                    ],
+                    next: function () {
+                        if (isWebIOS) {
+                            return {
+                                sceneName: "main-vs",
+                                stepName: "forbidLine"
+                            }
+                        } else return null;
+                    },
+                    sameAs: {
+                        sceneName: "main-vs-ai"
+                    }
+                })
+            },
             "forbidLine": new TutorialModel({
                 points:[
                     {
@@ -958,7 +1183,10 @@ var initTutorialMap = function(){
                         y: cc.winSize.height - 300,
                         scaleY: -1
                     }
-                ]
+                ],
+                sameAs:{
+                    sceneName:"main-vs-ai"
+                }
             }),
             "countDown": new TutorialModel({
                 points:[
@@ -993,7 +1221,10 @@ var initTutorialMap = function(){
                         scaleY: -1,
                         scaleX: -1
                     }
-                ]
+                ],
+                sameAs:{
+                    sceneName:"main-vs-ai"
+                }
             }),
             "compareHands": new TutorialModel({
                 points:[
@@ -1038,8 +1269,11 @@ var initTutorialMap = function(){
                 images: [
                 ],
                 next: {
-                    sceneName:"main",
+                    sceneName:"main-vs",
                     stepName:"compareHands2"
+                },
+                sameAs:{
+                    sceneName:"main-vs-ai"
                 }
             }),
             "compareHands2": new TutorialModel({
@@ -1085,8 +1319,11 @@ var initTutorialMap = function(){
                 images: [
                 ],
                 next: {
-                    sceneName:"main",
+                    sceneName:"main-vs",
                     stepName:"compareHands3"
+                },
+                sameAs:{
+                    sceneName:"main-vs-ai"
                 }
             }),
             "compareHands3": new TutorialModel({
@@ -1132,65 +1369,73 @@ var initTutorialMap = function(){
                 images: [
                 ],
                 next: {
-                    sceneName:"main",
+                    sceneName:"main-vs",
                     stepName:"betHelp"
+                },
+                sameAs:{
+                    sceneName:"main-vs-ai"
                 }
             }),
-            "betHelp": new TutorialModel({
-                points:[
-                    {
-                        x: cc.winSize.width/2,
-                        y: mainLayer.betMoneyLabel1.y,
-                        width: 350,
-                        height: 50
+            "betHelp": function() {
+                return new TutorialModel({
+                    points: [
+                        {
+                            x: cc.winSize.width / 2,
+                            y: mainLayer.betMoneyLabel1.y,
+                            width: 350,
+                            height: 50
+                        },
+                        {
+                            x: cc.winSize.width / 2,
+                            y: mainLayer.betMoneyLabel2.y,
+                            width: 350,
+                            height: 50
+                        },
+                        {
+                            x: cc.winSize.width / 2,
+                            y: cc.winSize.height / 2,
+                            width: 100,
+                            height: 100
+                        }
+                    ],
+                    labels: [
+                        {
+                            x: cc.winSize.width / 2,
+                            y: 260,
+                            text: texts.tutorials.betHelp
+                        },
+                        {
+                            x: cc.winSize.width / 2,
+                            y: cc.winSize.height - 260,
+                            text: texts.tutorials.betHelp,
+                            rotation: 180
+                        }
+                    ],
+                    images: [
+                        {
+                            x: cc.winSize.width / 2 + 100,
+                            y: cc.winSize.height / 2 - 10,
+                            anchorX: 0,
+                            anchorY: 1
+                        },
+                        {
+                            x: cc.winSize.width / 2 - 100,
+                            y: cc.winSize.height / 2 + 10,
+                            anchorX: 0,
+                            anchorY: 1,
+                            scaleY: -1,
+                            scaleX: -1
+                        }
+                    ],
+                    next: {
+                        sceneName: "main-vs",
+                        stepName: "handHelp"
                     },
-                    {
-                        x: cc.winSize.width/2,
-                        y: mainLayer.betMoneyLabel2.y,
-                        width: 350,
-                        height: 50
-                    },
-                    {
-                        x: cc.winSize.width/2,
-                        y: cc.winSize.height/2,
-                        width: 100,
-                        height: 100
+                    sameAs: {
+                        sceneName: "main-vs-ai"
                     }
-                ],
-                labels: [
-                    {
-                        x: cc.winSize.width/2,
-                        y: 260,
-                        text: texts.tutorials.betHelp
-                    },
-                    {
-                        x: cc.winSize.width/2,
-                        y: cc.winSize.height - 260,
-                        text: texts.tutorials.betHelp,
-                        rotation: 180
-                    }
-                ],
-                images: [
-                    {
-                        x: cc.winSize.width/2 + 100,
-                        y: cc.winSize.height/2 - 10,
-                        anchorX:0,
-                        anchorY:1
-                    },
-                    {
-                        x: cc.winSize.width/2 - 100,
-                        y: cc.winSize.height/2 + 10,
-                        anchorX:0,
-                        anchorY:1,
-                        scaleY: -1,
-                        scaleX: -1
-                    }
-                ],
-                next: {
-                    sceneName:"main",
-                    stepName:"handHelp"
-                }
-            }),
+                })
+            },
             "handHelp": new TutorialModel({
                 points:[
                     {
@@ -1234,7 +1479,10 @@ var initTutorialMap = function(){
                 callback:function(){
                     mainLayer.showHelp();
                 },
-                condition: "touchAllPoints"
+                condition: "touchAllPoints",
+                sameAs:{
+                    sceneName:"main-vs-ai"
+                }
             }),
             "betRateIncrease": new TutorialModel({
                 points:[
@@ -1273,7 +1521,10 @@ var initTutorialMap = function(){
                         scaleY: -1,
                         scaleX: -1
                     }
-                ]
+                ],
+                sameAs:{
+                    sceneName:"main-vs-ai"
+                }
             })
         }
     }

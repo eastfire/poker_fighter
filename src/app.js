@@ -235,16 +235,16 @@ var MainLayer = cc.LayerColor.extend({
         this.scheduleTutorial("main", "betRateIncrease",0.4)
     },
     onPlayerGetCardTutorial:function(){
-        if ( !isTutorialPassed("main","showCard") ) {
+        if ( !isTutorialPassed("main-"+this.model.get("mode"),"showCard") ) {
             if ( this.player1.get("hands").length &&  this.player2.get("hands").length ) {
                 this.scheduleOnce(function(){
-                    showTutorial(mainLayer, "main","showCard")
+                    showTutorial(mainLayer, "main-"+this.model.get("mode"),"showCard")
                 },1);
             }
         }
     },
     initEvent:function(){
-        if ( !isTutorialPassed("main","showCard") ) {
+        if ( !isTutorialPassed("main-"+this.model.get("mode"),"showCard") ) {
             this.player1.on("change:hands", this.onPlayerGetCardTutorial, this);
             this.player2.on("change:hands", this.onPlayerGetCardTutorial, this);
         }
@@ -472,6 +472,7 @@ var MainLayer = cc.LayerColor.extend({
         }, times.takeCard+0.1);
     },
     scheduleTutorial:function(sceneName, stepName, time){
+        var sceneName = sceneName+"-"+gameModel.get("mode")
         if ( !isTutorialPassed(sceneName,stepName) ) {
             this.scheduleOnce(function () {
                 showTutorial(this, sceneName, stepName)
@@ -690,7 +691,7 @@ var MainLayer = cc.LayerColor.extend({
         _.each(list, function(entry){
             var cardModel;
             var sprite;
-            var tokenAppearRate = isTutorialPassed("main","takeCard") ? this.model.get("tokenAppearRate") : 0;
+            var tokenAppearRate = isTutorialPassed("main-"+this.model.get("mode"),"takeCard") ? this.model.get("tokenAppearRate") : 0;
             if ( Math.random() < tokenAppearRate) {
                 var money = 1;
                 var isRare = false;
@@ -817,6 +818,10 @@ var MainLayer = cc.LayerColor.extend({
         statistic.game = statistic.game || {};
         statistic.game[gameModel.get("mode")] = statistic.game[gameModel.get("mode")] || 0;
         statistic.game[gameModel.get("mode")]++;
+        statistic.maxBetRate = statistic.maxBetRate || 0;
+        if ( gameModel.get("betRate") > statistic.maxBetRate ) {
+            statistic.maxBetRate = gameModel.get("betRate");
+        }
 
         if ( gameModel.get("mode") === "vs-ai" ){
             if ( this.winner == 1) {
@@ -994,7 +999,7 @@ var GameModel = Backbone.Model.extend({
 
         for (var number = this.get("deck"); number <= 14; number++) {
             for (var suit = 0; suit <= 3; suit++) {
-                if ( !isTutorialPassed("main","takeCard") ) {
+                if ( !isTutorialPassed("main-"+this.get("mode"),"takeCard") ) {
                     if (number === 13 && (suit === 0 || suit === 1)) continue;
                 }
                 deck.push(new PokerCardModel({ number: number,
@@ -1004,7 +1009,7 @@ var GameModel = Backbone.Model.extend({
             }
         }
         this.deck = _.shuffle(deck);
-        if ( !isTutorialPassed("main","takeCard") ) {
+        if ( !isTutorialPassed("main-"+this.get("mode"),"takeCard") ) {
             this.deck.push( new PokerCardModel({ number: 13,
                 suit: 0,
                 isRare: false
@@ -1083,7 +1088,7 @@ var GameModel = Backbone.Model.extend({
         delete this.cidToModel[cardModel.cid];
     },
     getPattern:function(){
-        if ( !isTutorialPassed("main","takeCard") ) {
+        if ( !isTutorialPassed("main-"+this.get("mode"),"takeCard") ) {
             return new TutorialPatternModel();
         }
         return _.sample( this.patternPool );
