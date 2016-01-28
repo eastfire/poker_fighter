@@ -916,7 +916,7 @@ var TornadoSprite = cc.Sprite.extend({
         }
         var animation = new cc.Animation(animateFrames, 0.1,true);
         var tornadoAction = new cc.Animate(animation);
-        this.runAction(tornadoAction).repeatForever();
+        this.runAction(tornadoAction.repeatForever());
 
     },
     moveRandomly:function(){
