@@ -155,7 +155,7 @@ var HelpPokerLayer = PlayerRotateLayer.extend({
 
         }, this);
 
-        var featureLabel = new ccui.Text(texts.handTypeDisplayName[feature], "Arial", 30 );
+        var featureLabel = new ccui.Text(texts.handTypeDisplayName[feature], "Arial", 28 );
         featureLabel.setTextColor(colors.tableLabel);
         featureLabel.attr({
             x: this.featureLabelX,
@@ -163,7 +163,7 @@ var HelpPokerLayer = PlayerRotateLayer.extend({
         });
         this.addChild(featureLabel);
 
-        var betRateLabel = new ccui.Text("$"+dimens.bonus[feature], "Arial", 30 );
+        var betRateLabel = new ccui.Text("$"+dimens.bonus[feature], "Arial", 28 );
         betRateLabel.setTextColor(colors.tableLabel);
         betRateLabel.attr({
             x: this.betRateLabelX,
@@ -182,7 +182,7 @@ var HelpPokerLayer = PlayerRotateLayer.extend({
         this.currentY = cc.winSize.height - 50;
         this.startX = 50;
         this.featureLabelX = cc.winSize.width*2/3;
-        this.betRateLabelX = cc.winSize.width - 65;
+        this.betRateLabelX = cc.winSize.width - 62;
         var totalHeight = cc.winSize.height - 90;
         this.stepY = totalHeight / 9;
         var fiveOfAKindAppeared = cc.sys.localStorage.getItem("fiveOfAKindAppeared");

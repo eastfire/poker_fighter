@@ -1,3 +1,5 @@
+var APPID = 1079424965;
+
 var IntroLayer = cc.Layer.extend({
     ctor:function(){
         this._super();
@@ -69,7 +71,26 @@ var IntroLayer = cc.Layer.extend({
         settingItem.attr({
             x: cc.winSize.width/2,
             y: -500,
-            rotation: 0//5
+            rotation: 0
+        });
+
+        var heartItem = new cc.MenuItemImage(
+            cc.spriteFrameCache.getSpriteFrame("rate-menu.png"),
+            cc.spriteFrameCache.getSpriteFrame("rate-menu.png"),
+            function () {
+                cc.audioEngine.playEffect(res.click_mp3,false);
+                var url;
+                if ( cc.sys.isNative ) {
+                    url = "http://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?id="+APPID+"&pageNumber=0&sortOrdering=2&type=Purple+Software&mt=8";
+                } else {
+                    url = "http://eastfire.github.io";
+                }
+                cc.sys.openURL(url);
+            }, this);
+        heartItem.attr({
+            x: cc.winSize.width/2,
+            y: -500,
+            rotation: 0
         });
 
         var dealTime = 0.5;
@@ -77,20 +98,25 @@ var IntroLayer = cc.Layer.extend({
         vsItem.runAction(cc.sequence(cc.delayTime(0), cc.callFunc(function(){
             cc.audioEngine.playEffect(res.card_slide_mp3, false);
         },this), cc.spawn(
-            cc.moveTo(dealTime, cc.winSize.width/2 - 120 - 15 + 30*Math.random(), y+Math.random()*50),
-            cc.rotateTo(dealTime, -5 - Math.random()*10))))
-        vsAIItem.runAction(cc.sequence(cc.delayTime(0.25), cc.callFunc(function(){
+            cc.moveTo(dealTime, cc.winSize.width/2 - 80 - 15 + 30*Math.random(), y+Math.random()*30),
+            cc.rotateTo(dealTime, - Math.random()*10))))
+        vsAIItem.runAction(cc.sequence(cc.delayTime(0.2), cc.callFunc(function(){
             cc.audioEngine.playEffect(res.card_slide_mp3, false);
         },this), cc.spawn(
-            cc.moveTo(dealTime, cc.winSize.width/2-15+30*Math.random(), y+Math.random()*50),
-            cc.rotateTo(dealTime, 5- Math.random()*10))))
-        settingItem.runAction(cc.sequence(cc.delayTime(0.5), cc.callFunc(function(){
+            cc.moveTo(dealTime, cc.winSize.width/2 + 80-15+30*Math.random(), y+Math.random()*30),
+            cc.rotateTo(dealTime, Math.random()*10))))
+        settingItem.runAction(cc.sequence(cc.delayTime(0.4), cc.callFunc(function(){
             cc.audioEngine.playEffect(res.card_slide_mp3, false);
         },this), cc.spawn(
-            cc.moveTo(dealTime, cc.winSize.width/2+120 - 15 + 30*Math.random(), y-Math.random()*50),
-            cc.rotateTo(dealTime, 5+Math.random()*10))))
+            cc.moveTo(dealTime, cc.winSize.width/2 - 80 - 15 + 30*Math.random(), y - 120 -Math.random()*30),
+            cc.rotateTo(dealTime, -Math.random()*10))))
+        heartItem.runAction(cc.sequence(cc.delayTime(0.6), cc.callFunc(function(){
+            cc.audioEngine.playEffect(res.card_slide_mp3, false);
+        },this), cc.spawn(
+            cc.moveTo(dealTime, cc.winSize.width/2+80 - 15 + 30*Math.random(), y- 120-Math.random()*30),
+            cc.rotateTo(dealTime, Math.random()*10))))
 
-        var menu = new cc.Menu([vsItem, vsAIItem, settingItem]);
+        var menu = new cc.Menu([vsItem, vsAIItem, settingItem,heartItem]);
         menu.x = 0;
         menu.y = 0;
         this.addChild(menu);

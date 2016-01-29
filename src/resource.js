@@ -243,16 +243,16 @@ var texts_locale = {
         tie:"TIE",
         handTypeDisplayName: {
             "five-of-a-kind": "5 of a kind",
-            "straight-flush": "straight flush",
+            "straight-flush": "Straight Flush",
             "four-of-a-kind": "4 of a kind",
-            "full-house": "full house",
-            "flush": "flush",
-            "straight": "straight",
+            "full-house": "Full House",
+            "flush": "Flush",
+            "straight": "Straight",
             "three-of-a-kind": "3 of a kind",
-            "two-pair": "two pairs",
-            "one-pair": "one pair",
-            "high-card": "high card",
-            "no-card": "no card"
+            "two-pair": "Two Pairs",
+            "one-pair": "One Pair",
+            "high-card": "High Card",
+            "no-card": "No Card"
         },
 
         letMeSee: "Let me see",
