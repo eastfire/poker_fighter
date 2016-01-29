@@ -152,7 +152,7 @@ var texts_locale = {
             },
             bomb:{
                 name:"炸弹",
-                desc:"朝对手扔出一颗炸弹。如进入他的手牌，可以随机破坏他的一张手牌，但如果对手手牌已满则无效。"
+                desc:"朝对手扔出一颗炸弹。如进入他的手牌，可以随机破坏他的一张手牌，但如果对手手牌已满则无效。小心，对手可以把它丢回来哦。"
             },
             cloud:{
                 name:"行云",
@@ -306,12 +306,12 @@ var texts_locale = {
             "unused":"Use this item at least once, then you can switch it on or off in game options.",
             "ace":{
                 name:"ACE",
-                desc:"Summon an ace card which has no suit move toward you.",
+                desc:"Send an ace card which has no suit move toward you.",
                 unlock: "Defeat A.I. "+ACE_UNLOCK_CONDITION+" times in fair game to unlock this item."
             },
             bomb:{
                 name:"BOMB",
-                desc:"Summon a bomb toward opponent.If it reach player's hand, bomb will randomly destroy one of his card.(If player's hand is full, bomb has no effect)"
+                desc:"Send a bomb toward opponent.If it reach player's hand, bomb will randomly destroy one of his card.(If player's hand is full, bomb has no effect) Watch out!It can be send back."
             },
             cloud:{
                 name:"CLOUD",
@@ -391,7 +391,7 @@ var texts_locale = {
             },
             two:{
                 name:"2",
-                desc:"Summon a 2 card which has no suit move toward opponent.",
+                desc:"Send a 2 card which has no suit move toward opponent.",
                 unlock: "Play "+TWO_UNLOCK_CONDITION+" games to unlock this item."
             }
         }
