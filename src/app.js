@@ -181,6 +181,8 @@ var MainLayer = cc.LayerColor.extend({
         this.addChild(this.countDownLabel, 50);
         this.countDownLabel.setVisible(false);
 
+        this.startTime = new Date().getTime();
+
         if ( this.need_read_fight ) {
             this.chipSprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("ready.png"));
             this.chipSprite.attr({
@@ -821,6 +823,14 @@ var MainLayer = cc.LayerColor.extend({
         statistic.maxBetRate = statistic.maxBetRate || 0;
         if ( gameModel.get("betRate") > statistic.maxBetRate ) {
             statistic.maxBetRate = gameModel.get("betRate");
+        }
+        var timeElapsed = Math.round((new Date().getTime() - this.startTime)/1000);
+        staticstic.gameTime = statistice.gameTime || {}
+        statistic.gameTime[gameModel.get("mode")] = statistic.gameTime[gameModel.get("mode")] || 0;
+        statistic.game[gameModel.get("mode")]+=timeElapsed;
+        statistic.maxGameTime = statistic.maxGameTime || 0;
+        if ( timeElapsed > statistic.maxGameTime ) {
+            statistic.maxGameTime = timeElapsed;
         }
 
         if ( gameModel.get("mode") === "vs-ai" ){
