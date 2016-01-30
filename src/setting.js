@@ -49,6 +49,7 @@ var SettingLayer = PlayerRotateLayer.extend({
         this.menuArray = [this.tutorialItem, this.muteItem ]
 
         var y = cc.winSize.height*1/8
+        this.addChild(this.langSelectLabel = this.makeLabel("", cc.winSize.width/2, y+40, 24))
         this.sysLang = this.renderButtonGroup(cc.winSize.width/2-90, y, 0, function(){
             cc.audioEngine.playEffect(res.click_mp3,false);
             cc.sys.localStorage.removeItem("poker_fighter.lang")
@@ -120,6 +121,7 @@ var SettingLayer = PlayerRotateLayer.extend({
             this.enLang.setNormalSpriteFrame(cc.spriteFrameCache.getSpriteFrame("left-button-group-default.png"));
         }
         this.sysLangLabel.setString(texts.followSystem)
+        this.langSelectLabel.setString(texts.language)
     }
 })
 

@@ -2,6 +2,7 @@ var APPID = 1079424965;
 
 var IntroLayer = cc.Layer.extend({
     ctor:function(){
+        //this._super(colors.table);
         this._super();
         var sprite = new cc.Sprite(res.intro_png);
         sprite.attr({
@@ -108,12 +109,12 @@ var IntroLayer = cc.Layer.extend({
         settingItem.runAction(cc.sequence(cc.delayTime(0.4), cc.callFunc(function(){
             cc.audioEngine.playEffect(res.card_slide_mp3, false);
         },this), cc.spawn(
-            cc.moveTo(dealTime, cc.winSize.width/2 - 80 - 15 + 30*Math.random(), y - 120 -Math.random()*30),
+            cc.moveTo(dealTime, cc.winSize.width/2 - 80 - 15 + 30*Math.random(), y - 130 -Math.random()*30),
             cc.rotateTo(dealTime, -Math.random()*10))))
         heartItem.runAction(cc.sequence(cc.delayTime(0.6), cc.callFunc(function(){
             cc.audioEngine.playEffect(res.card_slide_mp3, false);
         },this), cc.spawn(
-            cc.moveTo(dealTime, cc.winSize.width/2+80 - 15 + 30*Math.random(), y- 120-Math.random()*30),
+            cc.moveTo(dealTime, cc.winSize.width/2+80 - 15 + 30*Math.random(), y- 130-Math.random()*30),
             cc.rotateTo(dealTime, Math.random()*10))))
 
         var menu = new cc.Menu([vsItem, vsAIItem, settingItem,heartItem]);

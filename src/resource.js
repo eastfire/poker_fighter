@@ -101,6 +101,7 @@ var texts_locale = {
         many: "很多",
         mania: "疯狂",
 
+        language: "语言",
         followSystem:"跟随系统",
         enLang:"English",
         zhLang:"简体中文",
@@ -113,7 +114,7 @@ var texts_locale = {
         gameOver: "GAME OVER",
 
         tutorials: {
-            touchThisCard: "请点击这张牌。\n牌也可以被滑动或拖动。",
+            touchThisCard: "请点击这张牌。",
             showYourCard: "你得到了自己的第一张牌\n长按这个区域可以查看自己的手牌\n别让对手偷瞄到哦 ;)",
             collectYourCard:"在游戏过程中，你要不断收集手牌\n将手牌组成扑克牌的牌型\n牌型比对手大时就能赢得对手的钱。",
             thisIsYourMoney: "这是你的钱。\n如果你没钱了，你就输掉了游戏！",
@@ -268,6 +269,7 @@ var texts_locale = {
         many: "many",
         mania: "mania",
 
+        language: "Language",
         followSystem:"System",
         enLang:"English",
         zhLang:"简体中文",
@@ -280,7 +282,7 @@ var texts_locale = {
         gameOver: "GAME OVER",
 
         tutorials: {
-            touchThisCard: "Touch this card.\nCards can also be swiped or dragged.",
+            touchThisCard: "Touch this card please.",
             showYourCard: "You got you first card.\nCheck you hands by long press this area.\nDon't let opponent peek your cards ;)",
             collectYourCard:"Keep collecting cards.\nForm your cards to a Poker Hand.\nWin opponent's money by beat his hands.",
             thisIsYourMoney: "This is your money.\nIf your money is gone, you lose!",
@@ -292,7 +294,15 @@ var texts_locale = {
             compareHands3: "If there is still a tie,\ntwo player tie this round.\nNo need to compare suit or other cards.",
             betHelp:"Winner get money from loser.\nMoney amount equal to total of\nboth players hands' gambit,\nmultiplied by current bet rate.",
             handHelp: "Click this button to checkout\nall Poker Hand and their gambit.",
-            betRateIncrease: "Bet rate increase 1 per round."
+            betRateIncrease: "Bet rate increase 1 per round.",
+
+            modeSelectIntro: "You can customize your game here.",
+            selectInitMoney: "You can adjust initial money\nfor both players.",
+            selectTargetMoney: "You can adjust target money\nfor both players.",
+            selectDeck: "You can decide which deck\nwill be use in game:\neither 8～A(28 cards totally)\nor 2～A(52 cards totally).",
+            selectToken: "You can adjust tokens' rate of appearance.",
+            selectItem: "You can adjust items' rate of appearance.",
+            selectEachItem: "You can switch each item on or off."
         },
 
         items: {
