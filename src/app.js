@@ -825,7 +825,7 @@ var MainLayer = cc.LayerColor.extend({
             statistic.maxBetRate = gameModel.get("betRate");
         }
         var timeElapsed = Math.round((new Date().getTime() - this.startTime)/1000);
-        staticstic.gameTime = statistice.gameTime || {}
+        statistic.gameTime = statistic.gameTime || {}
         statistic.gameTime[gameModel.get("mode")] = statistic.gameTime[gameModel.get("mode")] || 0;
         statistic.game[gameModel.get("mode")]+=timeElapsed;
         statistic.maxGameTime = statistic.maxGameTime || 0;

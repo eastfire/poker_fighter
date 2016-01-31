@@ -81,11 +81,11 @@ var IntroLayer = cc.Layer.extend({
             function () {
                 cc.audioEngine.playEffect(res.click_mp3,false);
                 var url;
-                if ( cc.sys.isNative ) {
+//                if ( cc.sys.isNative ) {
                     url = "http://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?id="+APPID+"&pageNumber=0&sortOrdering=2&type=Purple+Software&mt=8";
-                } else {
-                    url = "http://eastfire.github.io";
-                }
+//                } else {
+//                    url = "http://eastfire.github.io";
+//                }
                 cc.sys.openURL(url);
             }, this);
         heartItem.attr({
