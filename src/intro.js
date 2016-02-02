@@ -1,9 +1,9 @@
 var APPID = 1079424965;
 
-var IntroLayer = cc.Layer.extend({
+var IntroLayer = cc.LayerColor.extend({
     ctor:function(){
-        //this._super(colors.table);
-        this._super();
+        this._super(new cc.color(0x01,0x2c,0x00));
+//        this._super();
         var sprite = new cc.Sprite(res.intro_png);
         sprite.attr({
             x: cc.winSize.width/2,
@@ -22,17 +22,18 @@ var IntroLayer = cc.Layer.extend({
             cc.spriteFrameCache.getSpriteFrame("2player-menu.png"),
             cc.spriteFrameCache.getSpriteFrame("2player-menu.png"),
             function () {
-                cc.audioEngine.playEffect(res.click_mp3, false);
-                statistic.game = statistic.game || {};
-                var playedOnce = statistic.game.vs || statistic.game["vs-ai"]
-                if ( playedOnce ) {
-                    cc.director.runScene(new ModeSelectScene({mode: "vs"}));
-                } else {
-                    cc.director.runScene(new MainScene({
-                        mode: "vs",
-                        itemPool : INIT_ITEMS
-                    }));
-                }
+                this.putStack(vsItem.x,vsItem.y,function(){
+                    statistic.game = statistic.game || {};
+                    var playedOnce = statistic.game.vs || statistic.game["vs-ai"]
+                    if ( playedOnce ) {
+                        cc.director.runScene(new ModeSelectScene({mode: "vs"}));
+                    } else {
+                        cc.director.runScene(new MainScene({
+                            mode: "vs",
+                            itemPool : INIT_ITEMS
+                        }));
+                    }
+                })
             }, this);
         vsItem.attr({
             x: cc.winSize.width/2,
@@ -44,17 +45,18 @@ var IntroLayer = cc.Layer.extend({
             cc.spriteFrameCache.getSpriteFrame("vs-ai-menu.png"),
             cc.spriteFrameCache.getSpriteFrame("vs-ai-menu.png"),
             function () {
-                cc.audioEngine.playEffect(res.click_mp3,false);
-                statistic.game = statistic.game || {};
-                var playedOnce = statistic.game.vs || statistic.game["vs-ai"]
-                if ( playedOnce ) {
-                    cc.director.runScene(new ModeSelectScene({mode: "vs-ai"}));
-                } else {
-                    cc.director.runScene(new MainScene({
-                        mode: "vs-ai",
-                        itemPool : INIT_ITEMS
-                    }));
-                }
+                this.putStack(vsAIItem.x,vsAIItem.y,function() {
+                    statistic.game = statistic.game || {};
+                    var playedOnce = statistic.game.vs || statistic.game["vs-ai"]
+                    if (playedOnce) {
+                        cc.director.runScene(new ModeSelectScene({mode: "vs-ai"}));
+                    } else {
+                        cc.director.runScene(new MainScene({
+                            mode: "vs-ai",
+                            itemPool: INIT_ITEMS
+                        }));
+                    }
+                })
             }, this);
         vsAIItem.attr({
             x: cc.winSize.width/2,
@@ -66,8 +68,9 @@ var IntroLayer = cc.Layer.extend({
             cc.spriteFrameCache.getSpriteFrame("setting-menu.png"),
             cc.spriteFrameCache.getSpriteFrame("setting-menu.png"),
             function () {
-                cc.audioEngine.playEffect(res.click_mp3,false);
-                cc.director.pushScene(new SettingScene());
+                this.putStack(settingItem.x,settingItem.y,function() {
+                    cc.director.pushScene(new SettingScene());
+                })
             }, this);
         settingItem.attr({
             x: cc.winSize.width/2,
@@ -79,13 +82,13 @@ var IntroLayer = cc.Layer.extend({
             cc.spriteFrameCache.getSpriteFrame("rate-menu.png"),
             cc.spriteFrameCache.getSpriteFrame("rate-menu.png"),
             function () {
-                cc.audioEngine.playEffect(res.click_mp3,false);
+                cc.audioEngine.playEffect(res.click_mp3, false);
                 var url;
-//                if ( cc.sys.isNative ) {
-                    url = "http://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?id="+APPID+"&pageNumber=0&sortOrdering=2&type=Purple+Software&mt=8";
-//                } else {
-//                    url = "http://eastfire.github.io";
-//                }
+                //                if ( cc.sys.isNative ) {
+                url = "http://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?id=" + APPID + "&pageNumber=0&sortOrdering=2&type=Purple+Software&mt=8";
+                //                } else {
+                //                    url = "http://eastfire.github.io";
+                //                }
                 cc.sys.openURL(url);
             }, this);
         heartItem.attr({
@@ -133,6 +136,36 @@ var IntroLayer = cc.Layer.extend({
     },
     initTutorial:function(){
         tutorialMap = null;
+    },
+    putStack:function(x,y,callback){
+        if ( this.alreadyPutting ) return;
+        this.alreadyPutting = true;
+
+        cc.audioEngine.playEffect(res.chips2_mp3,false);
+
+        var initY = y + 100;
+        var interval = 0.06;
+        var last = 5;
+        var tokenHeight = 10;
+        var tokens = [];
+        for ( var i = 0; i < last; i++ ) {
+            var tokenFrame = _.sample(["token-green.png","token-red.png","token-black.png"])
+            var token = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame(tokenFrame))
+            token.attr({
+                x: x,
+                y: initY,
+                opacity: 0
+            })
+            this.addChild(token);
+            token.runAction(new cc.sequence(
+                new cc.delayTime(i*interval),
+                new cc.fadeIn(0.01),
+                new cc.moveTo(0.2, x, y+i*tokenHeight).easing(cc.easeOut(3.0)),
+                i === last-1 ? new cc.callFunc(function(){
+                    callback.call();
+                }) : new cc.callFunc(function(){})
+            ))
+        }
     }
 });
 
