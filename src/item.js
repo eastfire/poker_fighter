@@ -779,6 +779,34 @@ var LeafItemModel = ItemModel.extend({
     }
 });
 
+var UpwardItemModel = ItemModel.extend({
+    defaults:function(){
+        return {
+            name:"upward",
+            maxCharge: 1,
+            maxCoolDown: 10,
+            showCharge: false
+        }
+    },
+    effect:function(playerSprite, opponentPlayerSprite){
+        gameModel.set("betRate",gameModel.get("originBetRate")+Math.floor(Math.random()*4+1));
+    }
+});
+
+var DownwardItemModel = ItemModel.extend({
+    defaults:function(){
+        return {
+            name:"downward",
+            maxCharge: 1,
+            maxCoolDown: 10,
+            showCharge: false
+        }
+    },
+    effect:function(playerSprite, opponentPlayerSprite){
+        gameModel.set("betRate",Math.max(1,gameModel.get("originBetRate")-Math.floor(Math.random()*4+1)));
+    }
+});
+
 var ThiefItemModel = ItemModel.extend({
     defaults:function(){
         return {
@@ -1048,6 +1076,7 @@ var ITEM_MODEL_CLASS_MAP = {
     "cloud": CloudItemModel,
     "diamond": DiamondItemModel,
     "dizzy": DizzyItemModel,
+    "downward":DownwardItemModel,
     "enlarge":EnlargeItemModel,
     "fast": FastItemModel,
     "forbid": ForbidItemModel,
@@ -1062,7 +1091,8 @@ var ITEM_MODEL_CLASS_MAP = {
     "spy": SpyItemModel,
     "thief": ThiefItemModel,
     "tornado": TornadoItemModel,
-    "two": TwoItemModel
+    "two": TwoItemModel,
+    "upward":UpwardItemModel
 }
 
 var CHECK_UNLOCKED_FUNC_MAP = {
@@ -1085,6 +1115,13 @@ var CHECK_UNLOCKED_FUNC_MAP = {
     },
     "dizzy": function(){
         return true
+    },
+    "downward": function(){
+        statistic.maxBetRate = statistic.maxBetRate || 0;
+        if ( statistic.maxBetRate >= DOWNWARD_UNLOCK_CONDITION ) {
+            return true
+        } else
+            return texts.items.downward.unlock+"("+statistic.maxBetRate+"/"+DOWNWARD_UNLOCK_CONDITION+")";
     },
     "enlarge":function(){
         statistic.game = statistic.game || {};
@@ -1172,5 +1209,12 @@ var CHECK_UNLOCKED_FUNC_MAP = {
             return true
         } else
             return texts.items.two.unlock+"("+count+"/"+TWO_UNLOCK_CONDITION+")";
+    },
+    "upward": function(){
+        statistic.maxBetRate = statistic.maxBetRate || 0;
+        if ( statistic.maxBetRate >= UPWARD_UNLOCK_CONDITION ) {
+            return true
+        } else
+            return texts.items.upward.unlock+"("+statistic.maxBetRate+"/"+UPWARD_UNLOCK_CONDITION+")";
     }
 }

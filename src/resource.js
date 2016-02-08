@@ -59,6 +59,7 @@ for (var i in res) {
 }
 
 var ACE_UNLOCK_CONDITION = 3;
+var DOWNWARD_UNLOCK_CONDITION = 15;
 var ENLARGE_UNLOCK_CONDITION = 5;
 var FORBID_UNLOCK_CONDITION = 100;
 var HAMMER_UNLOCK_CONDITION = 1;
@@ -68,6 +69,7 @@ var MAGNET_UNLOCK_CONDITION = 400;
 var NUKE_UNLOCK_CONDITION = 1000;
 var THIEF_UNLOCK_CONDITION = 1000;
 var TWO_UNLOCK_CONDITION = 2;
+var UPWARD_UNLOCK_CONDITION = 10;
 
 var texts_locale = {
     zh: {
@@ -167,6 +169,11 @@ var texts_locale = {
                 name:"眩晕",
                 desc:"对手的牌、筹码、道具不停旋转，持续10秒。"
             },
+            downward:{
+                name:"赔率下降",
+                desc:"本轮赔率随机下降１～４，但不会小于１。\n多个本道具的效果不会叠加，而是覆盖之前的数值。",
+                unlock: "赔率达到"+DOWNWARD_UNLOCK_CONDITION+"后解锁本道具。"
+            },
             enlarge:{
                 name:"放大",
                 desc:"放大自己的牌、筹码、道具，持续10秒。",
@@ -235,6 +242,11 @@ var texts_locale = {
                 name:"2",
                 desc:"召唤一张无花色的2朝对手移动。",
                 unlock: "玩总共"+TWO_UNLOCK_CONDITION+"次游戏后解锁本道具。"
+            },
+            upward:{
+                name:"赔率上升",
+                desc:"本轮赔率随机上升1～4。\n多个本道具的效果不会叠加，而是覆盖之前的数值。",
+                unlock: "赔率达到"+UPWARD_UNLOCK_CONDITION+"后解锁本道具。"
             }
         }
     },
@@ -335,6 +347,11 @@ var texts_locale = {
                 name:"DIZZY",
                 desc:"All opponent's cards,tokens and items will rotate repeatedly for 10 seconds."
             },
+            downward:{
+                name:"DECREASE BET RATE",
+                desc:"Decrease bet rate of this round by 1～4(not less than 1).\n(Multiply items' effect will not be accumulated.)",
+                unlock: "Bet rate reach "+DOWNWARD_UNLOCK_CONDITION+" to unlock this item."
+            },
             enlarge:{
                 name:"ENLARGE",
                 desc:"Enlarge all your cards,tokens and items for 10 seconds.",
@@ -403,6 +420,11 @@ var texts_locale = {
                 name:"2",
                 desc:"Send a 2 card which has no suit move toward opponent.",
                 unlock: "Play "+TWO_UNLOCK_CONDITION+" games to unlock this item."
+            },
+            upward:{
+                name:"INCREASE BET RATE",
+                desc:"Increase bet rate of this round by 1～4.\n(Multiply items' effect will not be accumulated.)",
+                unlock: "Bet rate reach "+UPWARD_UNLOCK_CONDITION+" to unlock this item."
             }
         }
     }
@@ -419,7 +441,10 @@ var colors = {
 
     itemMask: cc.color.GRAY,
     itemOn: cc.color.GREEN,
-    itemOff: cc.color.RED
+    itemOff: cc.color.RED,
+
+    upwardBetRate: new cc.color(0xff,0x0d,0x00),
+    downwardBetRate: new cc.color(0x4f,0x9c,0x00)
 };
 
 var times = {
@@ -521,7 +546,7 @@ var dimens = {
     },
     itemList: {
         y: 445,
-        stepY: 90
+        stepY: 83
     },
     startGame:{
         y: 40

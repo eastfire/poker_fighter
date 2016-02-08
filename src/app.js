@@ -226,8 +226,18 @@ var MainLayer = cc.LayerColor.extend({
         cc.director.pushScene(new HelpScene());
     },
     renderBetRate:function(){
-        this.betRateLabel1.setString("×"+this.model.get("betRate"));
-        this.betRateLabel2.setString("×"+this.model.get("betRate"));
+        var betRate = this.model.get("betRate");
+        this.betRateLabel1.setString("×"+betRate);
+        this.betRateLabel2.setString("×"+betRate);
+        var originBetRate = this.model.get("originBetRate");
+        var color;
+        if ( betRate > originBetRate ) {
+            labelColor = colors.upwardBetRate;
+        } else if ( betRate < originBetRate ) {
+            labelColor = colors.downwardBetRate;
+        } else {
+            labelColor = colors.tableLabel;
+        }
     },
     onBetRateChange:function(){
         var seq = new cc.Sequence(new cc.ScaleTo(0.2,2,2),new cc.ScaleTo(0.2,1,1));
@@ -460,12 +470,13 @@ var MainLayer = cc.LayerColor.extend({
                 cc.audioEngine.playEffect(res.tie, false);
             }
             this.scheduleOnce(function () {
-                this.model.set("betRate", this.model.get("betRate") + 1);
                 if (this.player1.get("money") <= 0 || ( this.player2.get("money") >= this.player2.get("targetMoney") && this.winner === 2 )) {
                     this.gameOver();
                 } else if (this.player2.get("money") <= 0 || ( this.player1.get("money") >= this.player1.get("targetMoney") && this.winner === 1)) {
                     this.gameOver();
                 } else {
+                    this.model.set("originBetRate", this.model.get("originBetRate") + 1);
+                    this.model.set("betRate", this.model.get("originBetRate"));
                     this.player1.cleanStatus();
                     this.player2.cleanStatus();
                     this.startNewRound();
@@ -911,6 +922,7 @@ var GameModel = Backbone.Model.extend({
         this.generateItemCountDown = GENERATE_ITEM_INTERVAL-1+Math.round(Math.random()*3);
 
         this.set("betRate", 1);
+        this.set("originBetRate",1);
         this.set("status", "ready");
         this.totalTime = 0;
 

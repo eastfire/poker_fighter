@@ -21,7 +21,7 @@ var setting = {};
 var ITEM_PER_LINE = 5;
 
 var INIT_ITEMS = ["bomb","cloud","diamond", "dizzy","fast","shrink","spy","slow","sniper", "tornado"];
-var UNLOCKABLE_ITEMS = ["two","enlarge","kiss","ace","leaf","forbid","magnet","thief","hammer","nuke" ];
+var UNLOCKABLE_ITEMS = ["two","enlarge","kiss","ace","leaf","forbid","magnet","thief","upward","downward","hammer","nuke" ];
 
 var ModeSelectLayer = PlayerRotateLayer.extend({
     ctor:function(options){
@@ -96,7 +96,6 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
         this.addChild(sprite);
 
         this.render();
-        cc.log("sdfasf")
         if ( !isTutorialPassed("modeSelect","modeSelectIntro") ) {
             showTutorial(this, "modeSelect", "modeSelectIntro")
         }
