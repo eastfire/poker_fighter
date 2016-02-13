@@ -171,15 +171,25 @@ var NormalCardSprite = cc.Sprite.extend({
         } else if ( gameModel.player1.get("type") == PLAYER_TYPE_AI && this.y < cc.winSize.height/2 - this.height/2 ) return false;
         return true;
     },
-    bounceBack:function(){
+    bounceBackByFullHand:function(){
         cc.audioEngine.playEffect(res.spring_mp3, false);
+        this.bounceBack();
+    },
+    bounceBackByShield:function(){
+        cc.audioEngine.playEffect(res.shield_hit_mp3, false);
+        this.bounceBack();
+    },
+    bounceBack:function(){
         this.stopAllActions();
         if ( this.y < cc.winSize.height/2 ) {
             this.y = dimens.player1Y + 1;
-        } else this.y = dimens.player2Y - 1;
+            this.lastTouchBy = null;
+        } else {
+            this.y = dimens.player2Y - 1;
+            this.lastTouchBy = null;
+        }
 
         this.speedY = -this.speedY;
-        this.lastTouchBy = null;
         this.onTouchRelease();
     },
     blowAway:function(tornadoX, tornadoW){
@@ -213,6 +223,9 @@ var NormalCardSprite = cc.Sprite.extend({
         if ( mainLayer.getPlayerSpriteByModel(player).checkBlowAway(this) ) {
             return;
         }
+        if ( mainLayer.getPlayerSpriteByModel(player).checkShield(this) ) {
+            return;
+        }
         if ( player.canTakeCard() ) {
             this.stopAllActions();
             this.isNewHand = true;
@@ -227,7 +240,7 @@ var NormalCardSprite = cc.Sprite.extend({
             }
 
         } else {
-            this.bounceBack();
+            this.bounceBackByFullHand();
         }
     },
     moveToPoint:function(x,y, callback, context){

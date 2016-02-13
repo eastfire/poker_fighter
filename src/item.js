@@ -480,6 +480,24 @@ var SniperItemModel = ItemModel.extend({
     }
 });
 
+var ShieldItemModel = ItemModel.extend({
+    defaults:function(){
+        return {
+            name:"shield",
+            maxCharge: 1,
+            maxCoolDown: 1,
+            showCharge: false,
+            effectTime: 10
+        }
+    },
+    effect:function(playerSprite, opponentPlayerSprite){
+        cc.audioEngine.playEffect(res.shield_up_mp3, false);
+        playerSprite.model.set({
+            "shield":this.get("effectTime")
+        });
+    }
+});
+
 var NukeItemModel = ItemModel.extend({
     defaults:function(){
         return {
@@ -1085,6 +1103,7 @@ var ITEM_MODEL_CLASS_MAP = {
     "leaf": LeafItemModel,
     "magnet": MagnetItemModel,
     "nuke": NukeItemModel,
+    "shield":ShieldItemModel,
     "shrink":ShrinkItemModel,
     "slow": SlowItemModel,
     "sniper": SniperItemModel,
@@ -1178,6 +1197,13 @@ var CHECK_UNLOCKED_FUNC_MAP = {
             return true
         } else
             return texts.items.nuke.unlock+"("+statistic.destroyCard+"/"+NUKE_UNLOCK_CONDITION+")";
+    },
+    "shield":function(){
+        statistic.takeOpponentSendCard = statistic.takeOpponentSendCard || 0;
+        if ( statistic.takeOpponentSendCard >= SHIELD_UNLOCK_CONDITION ) {
+            return true
+        } else
+            return texts.items.shield.unlock+"("+statistic.takeOpponentSendCard+"/"+SHIELD_UNLOCK_CONDITION+")";
     },
     "shrink":function(){
         return true

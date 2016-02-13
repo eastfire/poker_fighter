@@ -2,7 +2,7 @@ var APPID = 1079424965;
 
 var IntroLayer = cc.LayerColor.extend({
     ctor:function(){
-        this._super(new cc.color(0x01,0x2c,0x00));
+        this._super(new cc.color(0x0,0x0,0x0));
 //        this._super();
         var sprite = new cc.Sprite(res.intro_png);
         sprite.attr({

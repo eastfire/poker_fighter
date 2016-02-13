@@ -52,6 +52,10 @@ var PLAYER_TYPE_AI = 1;
 var DEFAULT_INIT_MONEY = 300;
 var DEFAULT_TARGET_MONEY = DEFAULT_INIT_MONEY*2;
 
+var SHIELD_STEP_X = 110.4;
+var SHIELD_DEFAULT_OPACITY = 65;
+var SHIELD_HIT_OPACITY = 215;
+
 var PlayerModel = Backbone.Model.extend({
     defaults:function(){
         return {
@@ -64,6 +68,7 @@ var PlayerModel = Backbone.Model.extend({
             sizeUp: 0,
             sizeDown: 0,
             dizzy: 0,
+            shield: 0,
             tornado: 0,
             spy: 0,
             forbid: 0,
@@ -271,7 +276,7 @@ var PlayerModel = Backbone.Model.extend({
         return sizeScale;
     },
     maintain:function(){
-        _.each( ["speedUp","speedDown","sizeUp","sizeDown","dizzy","spy","forbid","blockSight","tornado"],function(attr){
+        _.each( ["speedUp","speedDown","sizeUp","sizeDown","dizzy","spy","forbid","blockSight","tornado", "shield"],function(attr){
             var value = this.get(attr);
             if ( value > 0 ) {
                 this.set(attr, value - 1);
@@ -288,6 +293,7 @@ var PlayerModel = Backbone.Model.extend({
             dizzy: 0,
             blockSight: 0,
             tornado: 0,
+            shield: 0,
             spy: 0,
             forbid: 0
         })
@@ -632,6 +638,7 @@ var PlayerSprite = cc.Sprite.extend({
         this.model.on("change:showHand",this.onShowHandChange,this);
         this.model.on("change:forbid",this.onForbidChange,this);
         this.model.on("change:tornado",this.onTornadoChange,this);
+        this.model.on("change:shield",this.onShieldChange,this);
     },
     closeEvent:function(){
         this.model.off("change:hands",this.onHandChange);
@@ -640,6 +647,7 @@ var PlayerSprite = cc.Sprite.extend({
         this.model.off("change:showHand",this.onShowHandChange);
         this.model.off("change:forbid",this.onForbidChange);
         this.model.off("change:tornado",this.onTornadoChange);
+        this.model.off("change:shield",this.onShieldChange);
     },
     renderMoney:function(){
         if ( this.model.get("money") >= this.model.get("targetMoney") && this.model.previous("money") < this.model.get("targetMoney") ) {
@@ -750,6 +758,61 @@ var PlayerSprite = cc.Sprite.extend({
                 }, this);
                 this.tornadoSprites = [];
             }
+        }
+    },
+    onShieldChange:function(){
+        var prev = this.model.previous("shield");
+        var current = this.model.get("shield");
+        if ( !prev && current ) {
+            var y;
+            var rotation;
+            if ( this.model.get("position") == PLAYER_POSITION_DOWN ) {
+                y = dimens.player1Y - 30 ;
+                rotation = 0;
+            } else {
+                y = dimens.player2Y + 30 ;
+                rotation = 180;
+            }
+
+            this.shieldSprites = [];
+            var x = 0;
+            var stepX = SHIELD_STEP_X;
+            var count = Math.ceil(cc.winSize.width/ stepX)+1;
+            var totalTime = 0.8;
+            var fadeInTime = 0.2;
+            var waitTime = (totalTime - fadeInTime) / count;
+            for ( var i = 0; i < count; i++ ) {
+                var sprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("shield.png"));
+                sprite.attr({
+                    x: x,
+                    y: y,
+                    rotation: rotation,
+                    opacity: 0
+                });
+
+                this.addChild(sprite);
+                sprite.runAction(cc.sequence(
+                    cc.delayTime( i*waitTime),
+                    cc.fadeTo(fadeInTime,SHIELD_DEFAULT_OPACITY)
+                ))
+                this.shieldSprites[i] = sprite;
+                x+= stepX;
+            }
+        } else if ( prev && !current ) {
+            var count = this.shieldSprites.length;
+            var i = 0;
+            var totalTime = 0.5;
+            var fadeOutTime = 0.15;
+            var waitTime = (totalTime - fadeOutTime) / count;
+            _.each(this.shieldSprites,function(sprite){
+                sprite.runAction(cc.sequence(
+                    cc.delayTime( i*waitTime),
+                    cc.fadeTo(fadeOutTime,0),
+                    cc.removeSelf()
+                ))
+                i++;
+            });
+            this.shieldSprites = [];
         }
     },
     isHandVisible:function(){
@@ -894,6 +957,22 @@ var PlayerSprite = cc.Sprite.extend({
                 return false;
             },this);
         } else return false;
+    },
+    checkShield:function(sprite){
+        if ( !this.model.get("shield") ) return false;
+        if ( sprite.lastTouchBy !== this.model.get("position") ) {
+            var number = Math.floor((sprite.x+138*2/5) / SHIELD_STEP_X);
+            if ( this.shieldSprites && this.shieldSprites.length > number && this.shieldSprites[number] ) {
+                this.shieldSprites[number].runAction(
+                    cc.sequence(
+                        cc.fadeTo(0.3, SHIELD_HIT_OPACITY),
+                        cc.fadeTo(0.4, SHIELD_DEFAULT_OPACITY)
+                    )
+                )
+            }
+            sprite.bounceBackByShield();
+            return true;
+        }
     },
     canUseItem:function(){
         return this.itemSlotSprite.canPressItem() && !this.model.get("forbid");

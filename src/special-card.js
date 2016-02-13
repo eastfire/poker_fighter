@@ -73,6 +73,9 @@ var ItemSpecialCardSprite = NormalCardSprite.extend({
         if ( mainLayer.getPlayerSpriteByModel(player).checkBlowAway(this) ) {
             return;
         }
+        if ( mainLayer.getPlayerSpriteByModel(player).checkShield(this) ) {
+            return;
+        }
         if (player.get("forbid")) {
             this.bounceBack();
             return;
@@ -110,6 +113,9 @@ var BombSpecialCardSprite = NormalCardSprite.extend({
         if ( this.alreadyTaken )
             return;
         if ( mainLayer.getPlayerSpriteByModel(player).checkBlowAway(this) ) {
+            return;
+        }
+        if ( mainLayer.getPlayerSpriteByModel(player).checkShield(this) ) {
             return;
         }
         this.stopAllActions();
@@ -174,6 +180,9 @@ var ThiefSpecialCardSprite = NormalCardSprite.extend({
         if ( this.alreadyTaken )
             return;
         if ( mainLayer.getPlayerSpriteByModel(player).checkBlowAway(this) ) {
+            return;
+        }
+        if ( mainLayer.getPlayerSpriteByModel(player).checkShield(this) ) {
             return;
         }
         this.stopAllActions();

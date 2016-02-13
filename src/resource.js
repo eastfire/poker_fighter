@@ -5,6 +5,8 @@ var res = {
     intro_png : "res/intro.png",
 
     card_slide_mp3: "res/card-slide.mp3",
+
+    //item effect
     explosion_mp3: "res/explosion.mp3",
     spring_mp3: "res/spring-boing.mp3",
     slot_machine_mp3: "res/slot-machine.mp3",
@@ -19,8 +21,13 @@ var res = {
     enlarge_mp3: "res/enlarge.mp3",
     forbid_mp3: "res/forbid.mp3",
     tornado_mp3: "res/tornado.mp3",
-    click_mp3: "res/click-button.mp3",
+    shield_up_mp3: "res/shield-up.mp3",
+    shield_hit_mp3: "res/shield-hit.mp3",
     thief_mp3: "res/thief.mp3",
+    vase_break_mp3: "res/vase-break.mp3",
+
+    click_mp3: "res/click-button.mp3",
+
     chip0_mp3: "res/chip0.mp3",
     chip1_mp3: "res/chip1.mp3",
     chip2_mp3: "res/chip2.mp3",
@@ -67,6 +74,7 @@ var KISS_UNLOCK_CONDITION = 10;
 var LEAF_UNLOCK_CONDITION = 1;
 var MAGNET_UNLOCK_CONDITION = 400;
 var NUKE_UNLOCK_CONDITION = 1000;
+var SHIELD_UNLOCK_CONDITION = 100;
 var THIEF_UNLOCK_CONDITION = 1000;
 var TWO_UNLOCK_CONDITION = 2;
 var UPWARD_UNLOCK_CONDITION = 10;
@@ -212,6 +220,11 @@ var texts_locale = {
                 name:"核弹",
                 desc:"消灭全场的牌、筹码和所有玩家的手牌。倒计时也会取消。",
                 unlock: "消灭"+NUKE_UNLOCK_CONDITION+"张牌后解锁本道具。"
+            },
+            shield:{
+                name:"护盾",
+                desc:"弹回对手送来的任何东西，持续10秒。",
+                unlock: "得到由对手送来的“礼物”"+SHIELD_UNLOCK_CONDITION+"次后解锁本道具。"
             },
             shrink:{
                 name:"缩小",
@@ -389,7 +402,12 @@ var texts_locale = {
             nuke:{
                 name:"NUKE",
                 desc:"Destroy all cards and tokens and all players' hands.Count down will also be cancelled.",
-                unlock: "destroy "+NUKE_UNLOCK_CONDITION+" cards to unlock this item."
+                unlock: "Destroy "+NUKE_UNLOCK_CONDITION+" cards to unlock this item."
+            },
+            shield:{
+                name:"SHIELD",
+                desc:"Bounce back everything sent by opponent for 10 seconds.",
+                unlock: "Get "+SHIELD_UNLOCK_CONDITION+" \"gifts\" sent by opponent to unlock this item."
             },
             shrink:{
                 name:"SHRINK",

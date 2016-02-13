@@ -306,6 +306,14 @@ var SimpleAIPlayerModel = AIPlayerModel.extend({
                 break;
             case "nuke":
                 return opponentSprite.model.get("hands").length > playerSprite.model.get("hands").length + 1 ? 50 : 0;
+            case "upward":
+                var myFeature = this.getFeature();
+                var opponentFeature = opponentSprite.model.getFeature();
+                return myFeature.power > opponentFeature.power ? 50 : 0;
+            case "downward":
+                var myFeature = this.getFeature();
+                var opponentFeature = opponentSprite.model.getFeature();
+                return myFeature.power < opponentFeature.power ? 50 : 0;
         }
         return 30;
     },

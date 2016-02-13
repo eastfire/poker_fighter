@@ -238,6 +238,12 @@ var MainLayer = cc.LayerColor.extend({
         } else {
             labelColor = colors.tableLabel;
         }
+        this.betRateLabel1.attr({
+            color: labelColor
+        })
+        this.betRateLabel2.attr({
+            color: labelColor
+        })
     },
     onBetRateChange:function(){
         var seq = new cc.Sequence(new cc.ScaleTo(0.2,2,2),new cc.ScaleTo(0.2,1,1));
@@ -277,12 +283,10 @@ var MainLayer = cc.LayerColor.extend({
                             sprite.contentSprite.height*sprite.contentSprite.scaleY);
                         if (cc.rectContainsPoint(rect, locationInNode)){
                             sprite.touchingInstanceId = touchId;
-                            if (sprite.y >= cc.winSize.height / 2) {
+                            if (locationInNode.y >= cc.winSize.height / 2) {
                                 sprite.speedY = NATURE_SPEED;
-                                sprite.lastTouchBy = PLAYER_POSITION_UP;
                             } else {
                                 sprite.speedY = -NATURE_SPEED;
-                                sprite.lastTouchBy = PLAYER_POSITION_DOWN;
                             }
                             sprite.speedX = 0;
                         }
@@ -326,11 +330,13 @@ var MainLayer = cc.LayerColor.extend({
                             } else {
                                 sprite.touchingInstanceId = null;
                                 delete target._touchInstanceUsed[touchId];
+                                sprite.lastTouchBy = (locationInNode.y >= cc.winSize.height / 2) ? PLAYER_POSITION_UP : PLAYER_POSITION_DOWN;
                                 sprite.onTouchRelease.call(sprite);
                             }
                         } else if ( sprite.touchingInstanceId === touchId ) {
                             sprite.touchingInstanceId = null;
                             delete target._touchInstanceUsed[touchId];
+                            sprite.lastTouchBy = (locationInNode.y >= cc.winSize.height / 2) ? PLAYER_POSITION_UP : PLAYER_POSITION_DOWN;
                             sprite.onTouchRelease.call(sprite);
                         }
                     }
@@ -347,6 +353,7 @@ var MainLayer = cc.LayerColor.extend({
                         //Check the click area
                         if ( sprite.touchingInstanceId === touchId ){
                             sprite.touchingInstanceId = null;
+                            sprite.lastTouchBy = (locationInNode.y >= cc.winSize.height / 2) ? PLAYER_POSITION_UP : PLAYER_POSITION_DOWN;
                             sprite.onTouchRelease.call(sprite);
                         }
                     }
