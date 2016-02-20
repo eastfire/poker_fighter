@@ -937,23 +937,23 @@ var VaseSprite = cc.Sprite.extend({
         this._super();
 
         this.vase = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("vase"+this.vaseType+".png"))
-        this.attr({
+        this.vase.attr({
             opacity: 0
         })
         this.addChild(this.vase)
 
         this.status = "appear";
 
-        this.runAction(cc.sequence(
-            cc.fadeIn(0.2),
+        this.vase.runAction(cc.sequence(
+            cc.fadeIn(0.5),
             cc.callFunc(function(){
                 this.status = "ready"
             },this)
         ))
         this.scheduleOnce(function(){
             this.status = "disappear"
-            this.runAction(cc.sequence(
-                cc.fadeOut(0.2),
+            this.vase.runAction(cc.sequence(
+                cc.fadeOut(0.5),
                 cc.callFunc(this.removeSelf, this)
             ))
         },this.durationTime);

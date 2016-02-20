@@ -160,7 +160,7 @@ var IntroLayer = cc.LayerColor.extend({
             })
             tokens.push(token)
             this.addChild(token);
-            token.runAction(new cc.sequence(
+            token.runAction(cc.sequence(
                 cc.delayTime(i*interval),
                 cc.fadeIn(0.01),
                 cc.moveTo(0.2, x, y+i*tokenHeight).easing(cc.easeOut(3.0)),

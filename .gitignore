@@ -6,4 +6,5 @@ publish/html5/res/Icon*.png
 frameworks
 *.swp
 */*.swp
-
+.DS_Store
+*/.DS_Store
