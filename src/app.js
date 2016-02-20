@@ -181,8 +181,6 @@ var MainLayer = cc.LayerColor.extend({
         this.addChild(this.countDownLabel, 50);
         this.countDownLabel.setVisible(false);
 
-        this.startTime = new Date().getTime();
-
         if ( this.need_read_fight ) {
             this.chipSprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("ready.png"));
             this.chipSprite.attr({
@@ -238,12 +236,8 @@ var MainLayer = cc.LayerColor.extend({
         } else {
             labelColor = colors.tableLabel;
         }
-        this.betRateLabel1.attr({
-            color: labelColor
-        })
-        this.betRateLabel2.attr({
-            color: labelColor
-        })
+        this.betRateLabel1.setTextColor(labelColor)
+        this.betRateLabel2.setTextColor(labelColor)
     },
     onBetRateChange:function(){
         var seq = new cc.Sequence(new cc.ScaleTo(0.2,2,2),new cc.ScaleTo(0.2,1,1));
@@ -289,6 +283,7 @@ var MainLayer = cc.LayerColor.extend({
                                 sprite.speedY = -NATURE_SPEED;
                             }
                             sprite.speedX = 0;
+                            sprite.onTouchBegan(locationInNode);
                         }
                     }
                 },target);
@@ -412,6 +407,9 @@ var MainLayer = cc.LayerColor.extend({
         this.scheduleTutorial("main","countDown",0.8);
     },
     compareHands:function(){
+        //clean all managed sprites
+        this.clearManagedItemSprites();
+
         this.model.set("status", "compare");
         this.unschedule(this.schedulePerSec);
         if ( this.aiSchedule1 ) {
@@ -586,6 +584,8 @@ var MainLayer = cc.LayerColor.extend({
         }, time);
     },
     startNewRound:function(){
+        this.itemSprites = [];
+
         this.model.set("status", "game");
         this.model.generateCardCountDown = 0;
         this.handTypeLabel1.setVisible(false);
@@ -835,22 +835,26 @@ var MainLayer = cc.LayerColor.extend({
 
         gameModel.off();
 
+        //game count
         statistic.game = statistic.game || {};
         statistic.game[gameModel.get("mode")] = statistic.game[gameModel.get("mode")] || 0;
         statistic.game[gameModel.get("mode")]++;
+        //max bet
         statistic.maxBetRate = statistic.maxBetRate || 0;
         if ( gameModel.get("betRate") > statistic.maxBetRate ) {
             statistic.maxBetRate = gameModel.get("betRate");
         }
-        var timeElapsed = Math.round((new Date().getTime() - this.startTime)/1000);
+        //game time
+        var timeElapsed = gameModel.totalTime;
         statistic.gameTime = statistic.gameTime || {}
         statistic.gameTime[gameModel.get("mode")] = statistic.gameTime[gameModel.get("mode")] || 0;
-        statistic.game[gameModel.get("mode")]+=timeElapsed;
+        statistic.gameTime[gameModel.get("mode")]+=timeElapsed;
+        //max game time
         statistic.maxGameTime = statistic.maxGameTime || 0;
         if ( timeElapsed > statistic.maxGameTime ) {
             statistic.maxGameTime = timeElapsed;
         }
-
+        //vs ai count
         if ( gameModel.get("mode") === "vs-ai" ){
             if ( this.winner == 1) {
                 if ( gameModel.get("isFair") ) {
@@ -906,6 +910,24 @@ var MainLayer = cc.LayerColor.extend({
             cc.spawn(cc.moveBy(0.066,-x*4,-y*4),cc.rotateBy(0.066,-angle*2)),
             cc.spawn(cc.moveBy(0.066,x*3,y*3),cc.rotateBy(0.066,angle*2)),
             cc.spawn(cc.moveBy(0.066,-x*2,-y*2),cc.rotateBy(0.066,-angle)),cc.moveBy(0.066,x,y)))
+    },
+    manageItemSprites:function(sprite){
+        this.itemSprites.push(sprite);
+    },
+    removeManagedItemSprite:function(sprite){
+        var index = _.indexOf(this.itemSprites, sprite);
+        if ( index !== -1 ) {
+            this.itemSprites.splice(index,1);
+        }
+    },
+    clearManagedItemSprites:function(){
+        _.each(this.itemSprites,function(sprite){
+            sprite.removeFromParent(true);
+        },true)
+        this.itemSprites = [];
+    },
+    eachManagedItemSprite:function(callback, context) {
+        _.each(this.itemSprites, callback, context);
     }
 });
 

@@ -78,6 +78,7 @@ var SHIELD_UNLOCK_CONDITION = 100;
 var THIEF_UNLOCK_CONDITION = 1000;
 var TWO_UNLOCK_CONDITION = 2;
 var UPWARD_UNLOCK_CONDITION = 10;
+var VASE_UNLOCK_CONDITION = 100;
 
 var texts_locale = {
     zh: {
@@ -101,7 +102,11 @@ var texts_locale = {
         letMeSee: "让我看看",
         player1 : "玩家↓",
         player2 : "玩家↑",
-        aiPlayer: "A.I.↑",
+        aiPlayer: "AI↑",
+        easyAI: "简单AI",
+        normalAI: "普通AI",
+        hardAI: "困难AI",
+        madAI: "疯狂AI",
         deck: "使用的牌堆",
         token: "出现筹码",
         item: "出现道具",
@@ -159,7 +164,7 @@ var texts_locale = {
             "ace":{
                 name:"A",
                 desc:"召唤一张无花色的A朝自己移动。",
-                unlock: "在公平竞赛中战胜A.I."+ACE_UNLOCK_CONDITION+"次后解锁本道具。"
+                unlock: "在公平竞赛中战胜AI "+ACE_UNLOCK_CONDITION+"次后解锁本道具。"
             },
             bomb:{
                 name:"炸弹",
@@ -223,7 +228,7 @@ var texts_locale = {
             },
             shield:{
                 name:"护盾",
-                desc:"弹回对手送来的任何东西，持续10秒。",
+                desc:"弹回对手送来的任何坏东西，持续10秒。",
                 unlock: "得到由对手送来的“礼物”"+SHIELD_UNLOCK_CONDITION+"次后解锁本道具。"
             },
             shrink:{
@@ -260,6 +265,11 @@ var texts_locale = {
                 name:"赔率上升",
                 desc:"本轮赔率随机上升1～4。\n多个本道具的效果不会叠加，而是覆盖之前的数值。",
                 unlock: "赔率达到"+UPWARD_UNLOCK_CONDITION+"后解锁本道具。"
+            },
+            vase:{
+                name:"脆弱的花瓶",
+                desc:"在对手区域出现两只花瓶。\n不小心打碎它们的人得照价赔偿。",
+                unlock: "游戏总时长超过"+VASE_UNLOCK_CONDITION+"分钟后解锁本道具。"
             }
         }
     },
@@ -284,7 +294,11 @@ var texts_locale = {
         letMeSee: "Let me see",
         player1 : "player↓",
         player2 : "player↑",
-        aiPlayer: "A.I.↑",
+        aiPlayer: "AI↑",
+        easyAI: "easy AI",
+        normalAI: "normal AI",
+        hardAI: "hard AI",
+        madAI: "mad AI",
         deck: "Using Deck",
         token: "Flying Token",
         item: "Flying Item",
@@ -342,7 +356,7 @@ var texts_locale = {
             "ace":{
                 name:"ACE",
                 desc:"Send an ace card which has no suit move toward you.",
-                unlock: "Defeat A.I. "+ACE_UNLOCK_CONDITION+" times in fair game to unlock this item."
+                unlock: "Defeat AI "+ACE_UNLOCK_CONDITION+" times in fair game to unlock this item."
             },
             bomb:{
                 name:"BOMB",
@@ -443,6 +457,11 @@ var texts_locale = {
                 name:"INCREASE BET RATE",
                 desc:"Increase bet rate of this round by 1～4.\n(Multiply items' effect will not be accumulated.)",
                 unlock: "Bet rate reach "+UPWARD_UNLOCK_CONDITION+" to unlock this item."
+            },
+            vase:{
+                name:"MING VASE",
+                desc:"Two vases appear in opponent's area.\nBreaking them will cost player's money.",
+                unlock: "Accumulate total game time over "+VASE_UNLOCK_CONDITION+" minutes to unlock this item."
             }
         }
     }
@@ -479,7 +498,8 @@ var times = {
     gameOver: 0.9,
     letMeSee: 0.5,
     slot_machine: 2.2,
-    forbid: 0.4
+    forbid: 0.4,
+    breakVase: 0.65
 };
 
 var dimens = {

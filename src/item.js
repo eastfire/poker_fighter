@@ -892,6 +892,149 @@ var TornadoItemModel = ItemModel.extend({
     }
 });
 
+var VaseItemModel = ItemModel.extend({
+    defaults:function(){
+        return {
+            name:"vase",
+            maxCharge: 1,
+            maxCoolDown: 1,
+            showCharge: false,
+            effectTime: 10,
+            vaseCount : 2
+        }
+    },
+    effect:function(playerSprite, opponentPlayerSprite){
+        var isDown = opponentPlayerSprite.model.get("position") === PLAYER_POSITION_DOWN;
+        var rect = opponentPlayerSprite.getEffectRect();
+
+        var vaseCount = this.get("vaseCount");
+        for ( var i = 0; i < vaseCount; i++){
+            var vaseType = _.sample([1,2])
+            var vase = new VaseSprite({
+                vaseType : vaseType,
+                player : opponentPlayerSprite.model,
+                durationTime : this.get("effectTime")
+            });
+            vase.attr( {
+                x: (i + Math.random())*cc.winSize.width/vaseCount ,
+                y: rect.y + rect.height/2,
+                rotation: isDown?0:180
+            } );
+
+            mainLayer.addChild(vase,0);
+            mainLayer.manageItemSprites(vase);
+        }
+
+    }
+});
+
+var VaseSprite = cc.Sprite.extend({
+    ctor:function(options) {
+        this.vaseType = options.vaseType;
+        this.player = options.player;
+        this.durationTime = options.durationTime;
+
+        this._super();
+
+        this.vase = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("vase"+this.vaseType+".png"))
+        this.attr({
+            opacity: 0
+        })
+        this.addChild(this.vase)
+
+        this.status = "appear";
+
+        this.runAction(cc.sequence(
+            cc.fadeIn(0.2),
+            cc.callFunc(function(){
+                this.status = "ready"
+            },this)
+        ))
+        this.scheduleOnce(function(){
+            this.status = "disappear"
+            this.runAction(cc.sequence(
+                cc.fadeOut(0.2),
+                cc.callFunc(this.removeSelf, this)
+            ))
+        },this.durationTime);
+
+        if ( this.player.get("type") === PLAYER_TYPE_PLAYER ) {
+            cc.eventManager.addListener(cc.EventListener.create({
+                event: cc.EventListener.TOUCH_ONE_BY_ONE,
+                swallowTouches: false,
+                onTouchBegan: function (touch, event) {
+                    var target = event.getCurrentTarget();
+
+                    return target.checkBreak(touch.getLocation());
+                },
+                //Trigger when moving touch
+                onTouchMoved: function (touch, event) {
+                },
+                //Process the touch end event
+                onTouchEnded: function (touch, event) {
+                }
+            }), this);
+        }
+    },
+    removeSelf:function(){
+        mainLayer.removeManagedItemSprite(this);
+        this.removeFromParent(true);
+    },
+    checkBreak:function(location){
+        if ( this.status !== "ready") return false;
+
+        var locationInNode = this.vase.convertToNodeSpace(location);
+        var s = this.vase.getContentSize();
+        var rect = cc.rect(0, 0, s.width, s.height);
+        if (cc.rectContainsPoint(rect, locationInNode)) {
+            this.broken();
+            return true;
+        }
+        return false;
+    },
+    broken:function(){
+        this.status = "broken";
+        cc.audioEngine.playEffect(res.vase_break_mp3, false);
+
+        this.piece1 = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("vasepiece"+this.vaseType+"1.png"));
+        this.piece2 = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("vasepiece"+this.vaseType+"2.png"));
+        this.piece3 = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("vasepiece"+this.vaseType+"3.png"));
+        this.addChild(this.piece1)
+        this.addChild(this.piece2)
+        this.addChild(this.piece3)
+        this.priceTag = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("price-tag.png"));
+        this.addChild(this.priceTag)
+
+        this.vase.removeFromParent(true);
+
+        this.piece1.runAction(cc.spawn(
+            cc.moveBy(times.breakVase,0,20+Math.random()*20),
+            cc.rotateBy(times.breakVase, Math.random()*20-10),
+            cc.fadeOut(times.breakVase)
+        ))
+        this.piece2.runAction(cc.spawn(
+            cc.moveBy(times.breakVase,-20,-10-Math.random()*10),
+            cc.rotateBy(times.breakVase, -Math.random()*20+10),
+            cc.fadeOut(times.breakVase)
+        ))
+        this.piece3.runAction(cc.spawn(
+            cc.moveBy(times.breakVase,20,-10-Math.random()*10),
+            cc.rotateBy(times.breakVase, Math.random()*20-10),
+            cc.fadeOut(times.breakVase)
+        ))
+        this.priceTag.runAction(cc.sequence(
+            cc.callFunc(function(){
+                var money = this.player.get("money")
+                var loseMoney = Math.ceil(Math.random()*5)*gameModel.get("betRate")
+                this.player.set("money",Math.max(1, money - loseMoney) )
+            },this),
+            cc.scaleTo(times.breakVase/2, 1.5,1.5),
+            cc.scaleTo(times.breakVase/2, 1,1),
+            cc.callFunc(this.removeSelf,this)
+        ))
+    }
+})
+
 var DUMMY_ITEM_COUNT = 10;
 
 var ItemSlotSprite = cc.Sprite.extend({
@@ -1111,7 +1254,8 @@ var ITEM_MODEL_CLASS_MAP = {
     "thief": ThiefItemModel,
     "tornado": TornadoItemModel,
     "two": TwoItemModel,
-    "upward":UpwardItemModel
+    "upward":UpwardItemModel,
+    "vase":VaseItemModel
 }
 
 var CHECK_UNLOCKED_FUNC_MAP = {
@@ -1242,5 +1386,14 @@ var CHECK_UNLOCKED_FUNC_MAP = {
             return true
         } else
             return texts.items.upward.unlock+"("+statistic.maxBetRate+"/"+UPWARD_UNLOCK_CONDITION+")";
+    },
+    "vase": function(){
+        var count = statistic.gameTime["vs"] || 0;
+        count += statistic.gameTime["vs-ai"] || 0;
+        count = Math.round(count / 60);
+        if ( count >= VASE_UNLOCK_CONDITION ) {
+            return true
+        } else
+            return texts.items.vase.unlock+"("+count+"/"+VASE_UNLOCK_CONDITION+")";
     }
 }

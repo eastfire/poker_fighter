@@ -21,7 +21,7 @@ var setting = {};
 var ITEM_PER_LINE = 5;
 
 var INIT_ITEMS = ["bomb","cloud","diamond", "dizzy","fast","shrink","spy","slow","sniper", "tornado"];
-var UNLOCKABLE_ITEMS = ["two","enlarge","kiss","ace","leaf","forbid","shield","magnet","thief","upward","downward","hammer","nuke" ];
+var UNLOCKABLE_ITEMS = ["two","enlarge","kiss","ace","leaf","forbid","vase","shield","magnet","thief","upward","downward","hammer","nuke" ];
 
 var ModeSelectLayer = PlayerRotateLayer.extend({
     ctor:function(options){

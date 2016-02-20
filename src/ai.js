@@ -13,7 +13,7 @@ var AIPlayerModel = PlayerModel.extend({
             cardSprite.speedX = 0;
             cardSprite.speedY = this.get("position") === PLAYER_POSITION_UP ? NATURE_SPEED*2 : -NATURE_SPEED*2;
         } else if ( direction === DIRECTION_OPPONENT ) {
-            cardSprite.speedX = Math.random()*NATURE_SPEED/5-NATURE_SPEED/8;
+            cardSprite.speedX = (Math.random()-0.5)*NATURE_SPEED/8;
             cardSprite.speedY = this.get("position") === PLAYER_POSITION_UP ? -NATURE_SPEED : NATURE_SPEED;
         } else if ( direction === DIRECTION_OUT ) {
             cardSprite.speedY = 0;
@@ -33,6 +33,15 @@ var AIPlayerModel = PlayerModel.extend({
         ))
         cardSprite.__finger = finger;
         cardSprite.onTouchRelease();
+
+        //check break vase
+        var location = cardSprite.getPosition()
+        cc.log(location);
+        mainLayer.eachManagedItemSprite(function(sprite){
+            if ( sprite instanceof VaseSprite ){
+                sprite.checkBreak(location);
+            }
+        })
     },
     checkMovable:function(sprite) {
         if ( sprite.alreadyTaken || sprite.lastTouchBy === this.get("position")) return false;

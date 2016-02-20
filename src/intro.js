@@ -82,14 +82,16 @@ var IntroLayer = cc.LayerColor.extend({
             cc.spriteFrameCache.getSpriteFrame("rate-menu.png"),
             cc.spriteFrameCache.getSpriteFrame("rate-menu.png"),
             function () {
-                cc.audioEngine.playEffect(res.click_mp3, false);
-                var url;
-                //                if ( cc.sys.isNative ) {
-                url = "http://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?id=" + APPID + "&pageNumber=0&sortOrdering=2&type=Purple+Software&mt=8";
-                //                } else {
-                //                    url = "http://eastfire.github.io";
-                //                }
-                cc.sys.openURL(url);
+                this.putStack(heartItem.x,heartItem.y,function(){
+                    var url;
+                    //                if ( cc.sys.isNative ) {
+                    url = "http://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?id=" + APPID + "&pageNumber=0&sortOrdering=2&type=Purple+Software&mt=8";
+                    //                } else {
+                    //                    url = "http://eastfire.github.io";
+                    //                }
+                    cc.sys.openURL(url);
+                });
+
             }, this);
         heartItem.attr({
             x: cc.winSize.width/2,
@@ -156,14 +158,19 @@ var IntroLayer = cc.LayerColor.extend({
                 y: initY,
                 opacity: 0
             })
+            tokens.push(token)
             this.addChild(token);
             token.runAction(new cc.sequence(
-                new cc.delayTime(i*interval),
-                new cc.fadeIn(0.01),
-                new cc.moveTo(0.2, x, y+i*tokenHeight).easing(cc.easeOut(3.0)),
-                i === last-1 ? new cc.callFunc(function(){
-                    callback.call();
-                }) : new cc.callFunc(function(){})
+                cc.delayTime(i*interval),
+                cc.fadeIn(0.01),
+                cc.moveTo(0.2, x, y+i*tokenHeight).easing(cc.easeOut(3.0)),
+                i === last-1 ? cc.callFunc(function(){
+                    _.each(tokens,function(token){
+                        token.removeFromParent(true);
+                    },this)
+                    this.alreadyPutting = false;
+                    callback.call(this);
+                }, this) : cc.callFunc(function(){}, this)
             ))
         }
     }

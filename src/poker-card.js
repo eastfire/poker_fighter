@@ -325,6 +325,8 @@ var NormalCardSprite = cc.Sprite.extend({
     stopAllActions:function(){
         this._super();
         this.contentSprite.stopAllActions();
+    },
+    onTouchBegan:function(locationInNode){
     }
 });
 
