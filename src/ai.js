@@ -2,10 +2,22 @@ var DIRECTION_ME = 0;
 var DIRECTION_OPPONENT = 1;
 var DIRECTION_OUT = 2;
 
+var AI_DIFFICULTY_EASY = 0;
+var AI_DIFFICULTY_NORMAL = 1;
+var AI_DIFFICULTY_HARD = 2;
+var AI_DIFFICULTY_MAD = 3;
+
 var AIPlayerModel = PlayerModel.extend({
     initialize:function(options){
         options = options || {};
-        this.scheduleLength = 0.7;
+        this.scheduleLength = 1.5;
+        this.difficulty = AI_DIFFICULTY_EASY;
+        this.set({
+            dizzyMistakeRate: 0.9,
+            blockSightMistakeRate: 0.9,
+            shrinkMistakeRate: 0.9
+        })
+        this.pushToOpponentSpeed = NATURE_SPEED/2;
     },
     moveCard:function(cardSprite, direction){
         cardSprite.lastTouchBy = this.get("position");
@@ -14,7 +26,7 @@ var AIPlayerModel = PlayerModel.extend({
             cardSprite.speedY = this.get("position") === PLAYER_POSITION_UP ? NATURE_SPEED*2 : -NATURE_SPEED*2;
         } else if ( direction === DIRECTION_OPPONENT ) {
             cardSprite.speedX = (Math.random()-0.5)*NATURE_SPEED/8;
-            cardSprite.speedY = this.get("position") === PLAYER_POSITION_UP ? -NATURE_SPEED : NATURE_SPEED;
+            cardSprite.speedY = this.get("position") === PLAYER_POSITION_UP ? -this.pushToOpponentSpeed : this.pushToOpponentSpeed;
         } else if ( direction === DIRECTION_OUT ) {
             cardSprite.speedY = 0;
             cardSprite.speedX = Math.random()>0.5?NATURE_SPEED:-NATURE_SPEED;
@@ -36,7 +48,6 @@ var AIPlayerModel = PlayerModel.extend({
 
         //check break vase
         var location = cardSprite.getPosition()
-        cc.log(location);
         mainLayer.eachManagedItemSprite(function(sprite){
             if ( sprite instanceof VaseSprite ){
                 sprite.checkBreak(location);
@@ -81,6 +92,8 @@ var AIPlayerModel = PlayerModel.extend({
         _.each( mainLayer.getChildren(), function(sprite) {
             if (sprite instanceof PokerCardSprite ) {
                 if ( this.checkMovable(sprite) && this.canTakeCard() ) {
+                    var statusEffect = this.checkStatusEffect();
+                    if ( statusEffect ) return statusEffect;
                     var result = this.evaluatePokerCard(sprite, opponent);
                     candidates.push({
                         sprite: sprite,
@@ -90,6 +103,8 @@ var AIPlayerModel = PlayerModel.extend({
                 }
             } else if (sprite instanceof MoneySpecialCardSprite ) {
                 if ( this.checkMovable(sprite) ) {
+                    var statusEffect = this.checkStatusEffect();
+                    if ( statusEffect ) return statusEffect;
                     candidates.push({
                         sprite: sprite,
                         direction: DIRECTION_ME,
@@ -98,6 +113,8 @@ var AIPlayerModel = PlayerModel.extend({
                 }
             } else if (sprite instanceof ItemSpecialCardSprite ) {
                 if ( this.checkMovable(sprite) ) {
+                    var statusEffect = this.checkStatusEffect();
+                    if ( statusEffect ) return statusEffect;
                     var value = this.evaluateItem(sprite)
                     if ( value ) {
                         candidates.push({
@@ -109,6 +126,8 @@ var AIPlayerModel = PlayerModel.extend({
                 }
             } else if (sprite instanceof ThiefSpecialCardSprite ) {
                 if ( this.checkMovable(sprite) ) {
+                    var statusEffect = this.checkStatusEffect();
+                    if ( statusEffect ) return statusEffect;
                     candidates.push({
                         sprite: sprite,
                         direction: DIRECTION_OPPONENT,
@@ -117,6 +136,8 @@ var AIPlayerModel = PlayerModel.extend({
                 }
             } else if (sprite instanceof BombSpecialCardSprite ) {
                 if ( this.checkMovable(sprite) ) {
+                    var statusEffect = this.checkStatusEffect();
+                    if ( statusEffect ) return statusEffect;
                     candidates.push({
                         sprite: sprite,
                         direction: DIRECTION_OPPONENT,
@@ -170,28 +191,8 @@ var AIPlayerModel = PlayerModel.extend({
     },
     pickUpCandidate:function(candidates){
         return _.sample(candidates);
-    }
-})
-
-var SimpleAIPlayerModel = AIPlayerModel.extend({
-    initialize:function(options){
-        options = options || {};
-        this.scheduleLength = 0.7;
-        this.set({
-            dizzyMistakeRate: 0.25,
-            blockSightMistakeRate: 0.5,
-            shrinkMistakeRate: 0.25
-        })
     },
-    onStartNewRound:function(){
-    },
-    onGetCard:function(cardModel){
-    },
-    onOpponentGetCard:function(cardModel){
-    },
-    onStartCountDown:function(){
-    },
-    evaluatePokerCard:function(sprite, opponent){
+    checkStatusEffect:function(){
         if ( this.get("dizzy") && Math.random() < this.get("dizzyMistakeRate") ) {
             return {
                 direction: DIRECTION_OPPONENT,
@@ -210,6 +211,34 @@ var SimpleAIPlayerModel = AIPlayerModel.extend({
                 value:0
             }
         }
+        return null;
+    }
+})
+
+
+var EasyAIPlayerModel = AIPlayerModel;
+
+var HardAIPlayerModel = AIPlayerModel.extend({
+    initialize:function(options){
+        options = options || {};
+        this.scheduleLength = 0.8;
+        this.difficulty = AI_DIFFICULTY_HARD;
+        this.set({
+            dizzyMistakeRate: 0.25,
+            blockSightMistakeRate: 0.5,
+            shrinkMistakeRate: 0.25
+        })
+        this.pushToOpponentSpeed = NATURE_SPEED;
+    },
+    onStartNewRound:function(){
+    },
+    onGetCard:function(cardModel){
+    },
+    onOpponentGetCard:function(cardModel){
+    },
+    onStartCountDown:function(){
+    },
+    evaluatePokerCard:function(sprite, opponent){
         var number = sprite.model.get("number");
         var suit = sprite.model.get("suit");
         var value = 0;
@@ -332,3 +361,31 @@ var SimpleAIPlayerModel = AIPlayerModel.extend({
         }, this);
     }
 })
+
+var NormalAIPlayerModel = HardAIPlayerModel.extend({
+    initialize: function (options) {
+        options = options || {};
+        this.scheduleLength = 1.2;
+        this.difficulty = AI_DIFFICULTY_NORMAL;
+        this.set({
+            dizzyMistakeRate: 0.5,
+            blockSightMistakeRate: 0.7,
+            shrinkMistakeRate: 0.35
+        })
+        this.pushToOpponentSpeed = NATURE_SPEED/2;
+    }
+});
+
+var MadAIPlayerModel = HardAIPlayerModel.extend({
+    initialize: function (options) {
+        options = options || {};
+        this.scheduleLength = 0.5;
+        this.difficulty = AI_DIFFICULTY_NORMAL;
+        this.set({
+            dizzyMistakeRate: 0.1,
+            blockSightMistakeRate: 0.1,
+            shrinkMistakeRate: 0
+        })
+        this.pushToOpponentSpeed = NATURE_SPEED*2;
+    }
+});

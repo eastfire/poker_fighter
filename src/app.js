@@ -858,13 +858,15 @@ var MainLayer = cc.LayerColor.extend({
         if ( gameModel.get("mode") === "vs-ai" ){
             if ( this.winner == 1) {
                 if ( gameModel.get("isFair") ) {
-                    statistic.winAI = statistic.winAI || 0;
-                    statistic.winAI++;
+                    var winAI = "winAI"+gameModel.player2.difficulty;
+                    statistic[winAI] = statistic[winAI] || 0;
+                    statistic[winAI]++;
                 }
             } else {
                 if ( gameModel.get("isFair") ) {
-                    statistic.loseAI = statistic.loseAI || 0;
-                    statistic.loseAI++;
+                    var loseAI = "loseAI"+gameModel.player2.difficulty;
+                    statistic[loseAI] = statistic[loseAI] || 0;
+                    statistic[loseAI]++;
                 }
             }
         }
@@ -941,7 +943,8 @@ var GameModel = Backbone.Model.extend({
             itemAppearRate: 0.5, //0, 0.25, 0.5, 0.75, 1
             gameSpeed: 1,
             deck: 8,
-            mode: "quick-vs" //quick-vs , vs, vs-ai, adventure
+            aiDifficulty: AI_DIFFICULTY_NORMAL,
+            mode: "vs" //vs, vs-ai
         }
     },
     initialize:function(){
@@ -971,12 +974,36 @@ var GameModel = Backbone.Model.extend({
                 position : PLAYER_POSITION_DOWN,
                 type: PLAYER_TYPE_PLAYER
             });
-            this.player2 = new SimpleAIPlayerModel({
-                money: this.get("playerInitMoney")[1],
-                targetMoney: this.get("playerTargetMoney")[1],
-                position: PLAYER_POSITION_UP,
-                type: PLAYER_TYPE_AI
-            });
+            var aiDifficulty = this.get("aiDifficulty");
+            if ( aiDifficulty === AI_DIFFICULTY_HARD) {
+                this.player2 = new HardAIPlayerModel({
+                    money: this.get("playerInitMoney")[1],
+                    targetMoney: this.get("playerTargetMoney")[1],
+                    position: PLAYER_POSITION_UP,
+                    type: PLAYER_TYPE_AI
+                });
+            } else if ( aiDifficulty === AI_DIFFICULTY_EASY) {
+                this.player2 = new EasyAIPlayerModel({
+                    money: this.get("playerInitMoney")[1],
+                    targetMoney: this.get("playerTargetMoney")[1],
+                    position: PLAYER_POSITION_UP,
+                    type: PLAYER_TYPE_AI
+                });
+            } else if ( aiDifficulty === AI_DIFFICULTY_MAD) {
+                this.player2 = new MadAIPlayerModel({
+                    money: this.get("playerInitMoney")[1],
+                    targetMoney: this.get("playerTargetMoney")[1],
+                    position: PLAYER_POSITION_UP,
+                    type: PLAYER_TYPE_AI
+                });
+            } else {
+                this.player2 = new NormalAIPlayerModel({
+                    money: this.get("playerInitMoney")[1],
+                    targetMoney: this.get("playerTargetMoney")[1],
+                    position: PLAYER_POSITION_UP,
+                    type: PLAYER_TYPE_AI
+                });
+            }
         } else {
             this.player1 = new PlayerModel({
                 money: this.get("playerInitMoney")[0],

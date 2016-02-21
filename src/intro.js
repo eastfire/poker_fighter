@@ -30,6 +30,7 @@ var IntroLayer = cc.LayerColor.extend({
                     } else {
                         cc.director.runScene(new MainScene({
                             mode: "vs",
+                            aiDifficulty: AI_DIFFICULTY_EASY,
                             itemPool : INIT_ITEMS
                         }));
                     }
@@ -53,6 +54,7 @@ var IntroLayer = cc.LayerColor.extend({
                     } else {
                         cc.director.runScene(new MainScene({
                             mode: "vs-ai",
+                            aiDifficulty: AI_DIFFICULTY_EASY,
                             itemPool: INIT_ITEMS
                         }));
                     }

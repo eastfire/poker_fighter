@@ -1260,11 +1260,14 @@ var ITEM_MODEL_CLASS_MAP = {
 
 var CHECK_UNLOCKED_FUNC_MAP = {
     "ace": function(){
-        statistic.winAI = statistic.winAI || 0;
-        if ( statistic.winAI >= ACE_UNLOCK_CONDITION ) {
+        statistic.winAI1 = statistic.winAI1 || 0;
+        statistic.winAI2 = statistic.winAI2 || 0;
+        statistic.winAI3 = statistic.winAI3 || 0;
+        var allWinAI = statistic.winAI1 + statistic.winAI2 + statistic.winAI3;
+        if ( allWinAI >= ACE_UNLOCK_CONDITION ) {
             return true;
         } else
-            return texts.items.ace.unlock+"("+statistic.winAI+"/"+ACE_UNLOCK_CONDITION+")";
+            return texts.items.ace.unlock+"("+allWinAI+"/"+ACE_UNLOCK_CONDITION+")";
         return true
     },
     "bomb": function(){

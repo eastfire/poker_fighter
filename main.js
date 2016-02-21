@@ -58,6 +58,28 @@ var loadStatistic = function(){
         statistic = {
         }
     }
+    //maintain
+    statistic.winAI = statistic.winAI || 0;
+    statistic.loseAI = statistic.loseAI || 0;
+
+    statistic.winAI0 = statistic.winAI0 || 0; //easy
+    statistic.winAI1 = statistic.winAI1 || 0; //normal
+    statistic.winAI2 = statistic.winAI2 || 0; //hard
+    statistic.winAI3 = statistic.winAI3 || 0; //mania
+
+    statistic.loseAI0 = statistic.loseAI0 || 0; //easy
+    statistic.loseAI1 = statistic.loseAI1 || 0; //normal
+    statistic.loseAI2 = statistic.loseAI2 || 0; //hard
+    statistic.loseAI3 = statistic.loseAI3 || 0; //mania
+
+    if ( statistic.winAI ) {
+        statistic.winAI2 = statistic.winAI;
+        statistic.winAI = 0;
+    }
+    if ( statistic.loseAI ) {
+        statistic.loseAI2 = statistic.loseAI;
+        statistic.loseAI = 0;
+    }
 }
 
 var saveStatistic = function(){

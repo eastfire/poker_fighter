@@ -34,9 +34,10 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
 
         this.initData();
 
-        this._super({disableRotate:this.options.mode == "vs-ai"});
+        window.isVsAI = this.options.mode == "vs-ai"
+        this._super({disableRotate:isVsAI});
 
-        this.addChild(this.player2Label = this.makeLabel(this.options.mode == "vs-ai" ? texts.aiPlayer : texts.player2, dimens.player2NamePosition.x, dimens.player2NamePosition.y, 28));
+        this.addChild(this.player2Label = this.makeLabel(isVsAI ? texts.aiLevel[setting.aiDifficulty] : texts.player2, dimens.player2NamePosition.x, dimens.player2NamePosition.y,isVsAI ? 20: 28));
         this.addChild(this.player1Label = this.makeLabel(texts.player1, dimens.player1NamePosition.x, dimens.player1NamePosition.y, 28));
 
         var tokenSprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("token-green.png"));
@@ -98,6 +99,10 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
         this.render();
         if ( !isTutorialPassed("modeSelect","modeSelectIntro") ) {
             showTutorial(this, "modeSelect", "modeSelectIntro")
+        } else {
+            if (isVsAI && !isTutorialPassed("modeSelect", "changeAI")) {
+                showTutorial(this, "modeSelect", "changeAI")
+            }
         }
     },
     render:function(){
@@ -119,12 +124,14 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
             tokenAppearRate: 0.2,
             itemAppearRate: 0.5,
             mode: "vs",
-            itemOff: {}
+            itemOff: {},
+            aiDifficulty : AI_DIFFICULTY_NORMAL
         };
         var store = cc.sys.localStorage.getItem("prevSetting");
         if ( store != null ) {
             setting = JSON.parse(store);
             setting.itemOff = setting.itemOff || {};
+            if ( setting.aiDifficulty === undefined ) setting.aiDifficulty = AI_DIFFICULTY_NORMAL
         } else {
             this.useDefaultSetting();
         }
@@ -374,6 +381,13 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
                 itemY -= dimens.itemList.stepY
             }
         },this);
+
+        if ( this.options.mode == "vs-ai" ) {
+            this.aiDifficulty = this.renderButtonGroup(dimens.player2NamePosition.x, dimens.player2NamePosition.y, 1, function () {
+                setting.aiDifficulty = (setting.aiDifficulty+1)%4;
+                this.player2Label.setString(texts.aiLevel[setting.aiDifficulty])
+            });
+        }
     },
     isItemOff:function(item){
         return setting.itemOff[item] !== undefined && setting.itemOff[item];

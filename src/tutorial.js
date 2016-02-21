@@ -401,6 +401,31 @@ var initTutorialMap = function(){
                     }
                 ],
                 images: [
+                ],
+                next: function () {
+                    if (isVsAI) {
+                        return {
+                            sceneName: "modeSelect",
+                            stepName: "changeAI"
+                        }
+                    } else return null;
+                }
+            }),
+            "changeAI":new TutorialModel({
+                points:[{
+                    x: dimens.player2NamePosition.x,
+                    y: dimens.player2NamePosition.y,
+                    width: 100,
+                    height: 50
+                }],
+                labels: [
+                    {
+                        x: cc.winSize.width / 2,
+                        y: dimens.player2NamePosition.y - 100,
+                        text: texts.tutorials.changeAI
+                    }
+                ],
+                images: [
                 ]
             })
         },

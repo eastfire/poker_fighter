@@ -103,10 +103,7 @@ var texts_locale = {
         player1 : "玩家↓",
         player2 : "玩家↑",
         aiPlayer: "AI↑",
-        easyAI: "简单AI",
-        normalAI: "普通AI",
-        hardAI: "困难AI",
-        madAI: "疯狂AI",
+        aiLevel:[ "简单AI","普通AI", "困难AI","疯狂AI"],
         deck: "使用的牌堆",
         token: "出现筹码",
         item: "出现道具",
@@ -149,7 +146,8 @@ var texts_locale = {
             selectDeck: "你可以决定游戏使用的牌堆\n是8～A共28张牌\n或是2～A共52张牌",
             selectToken: "你可以调整游戏中筹码的出现概率",
             selectItem: "你可以调整游戏中道具的出现概率",
-            selectEachItem: "你还可以单独控制每种道具是否出现"
+            selectEachItem: "你还可以单独控制每种道具是否出现",
+            changeAI: "点击这里调整AI的难度"
         },
 
         items: {
@@ -164,7 +162,7 @@ var texts_locale = {
             "ace":{
                 name:"A",
                 desc:"召唤一张无花色的A朝自己移动。",
-                unlock: "在公平竞赛中战胜AI "+ACE_UNLOCK_CONDITION+"次后解锁本道具。"
+                unlock: "在公平竞赛中战胜普通以上难度AI "+ACE_UNLOCK_CONDITION+"次后解锁本道具。"
             },
             bomb:{
                 name:"炸弹",
@@ -295,10 +293,7 @@ var texts_locale = {
         player1 : "player↓",
         player2 : "player↑",
         aiPlayer: "AI↑",
-        easyAI: "easy AI",
-        normalAI: "normal AI",
-        hardAI: "hard AI",
-        madAI: "mad AI",
+        aiLevel: ["easy AI","normal AI","hard AI","mad AI"],
         deck: "Using Deck",
         token: "Flying Token",
         item: "Flying Item",
@@ -341,7 +336,8 @@ var texts_locale = {
             selectDeck: "You can decide which deck\nwill be use in game:\neither 8～A(28 cards totally)\nor 2～A(52 cards totally).",
             selectToken: "You can adjust tokens' rate of appearance.",
             selectItem: "You can adjust items' rate of appearance.",
-            selectEachItem: "You can switch each item on or off."
+            selectEachItem: "You can switch each item on or off.",
+            changeAI: "You can change AI difficulty here."
         },
 
         items: {
@@ -356,7 +352,7 @@ var texts_locale = {
             "ace":{
                 name:"ACE",
                 desc:"Send an ace card which has no suit move toward you.",
-                unlock: "Defeat AI "+ACE_UNLOCK_CONDITION+" times in fair game to unlock this item."
+                unlock: "Defeat AI(normal or above) "+ACE_UNLOCK_CONDITION+" times in fair game to unlock this item."
             },
             bomb:{
                 name:"BOMB",
