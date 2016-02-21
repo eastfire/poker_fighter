@@ -38,7 +38,7 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
         this._super({disableRotate:isVsAI});
 
         this.addChild(this.player2Label = this.makeLabel(isVsAI ? texts.aiLevel[setting.aiDifficulty] : texts.player2, dimens.player2NamePosition.x, dimens.player2NamePosition.y,isVsAI ? 20: 28));
-        this.addChild(this.player1Label = this.makeLabel(texts.player1, dimens.player1NamePosition.x, dimens.player1NamePosition.y, 28));
+        this.addChild(this.player1Label = this.makeLabel(isVsAI ? texts.player : texts.player1, dimens.player1NamePosition.x, dimens.player1NamePosition.y, 28));
 
         var tokenSprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("token-green.png"));
         tokenSprite.attr({
