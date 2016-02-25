@@ -6,8 +6,6 @@ var MAIN_ACTION_TAG = 1;
 
 var NATURE_SPEED = 180;
 
-var MAX_ITEM_TYPE_PER_GAME = 10;
-
 var MainLayer = cc.LayerColor.extend({
     sprite:null,
     ctor:function (options) {
@@ -271,10 +269,9 @@ var MainLayer = cc.LayerColor.extend({
                 var touchId = cc.sys.isNative ? touch.getID() : touch.__instanceId;
                 _.each( target.getChildren(), function(sprite) {
                     if (sprite instanceof NormalCardSprite && sprite.canBeTouch(locationInNode) && (!target._touchInstanceUsed[touchId] || sprite.touchingInstanceId === touchId )) {
-                        var rect = cc.rect(sprite.x - sprite.contentSprite.width*sprite.contentSprite.scaleX / 2,
-                                sprite.y - sprite.contentSprite.height*sprite.contentSprite.scaleY / 2,
-                            sprite.contentSprite.width*sprite.contentSprite.scaleX,
-                            sprite.contentSprite.height*sprite.contentSprite.scaleY);
+                        var realWidth = sprite.contentSprite.width*sprite.contentSprite.scaleX;
+                        var realHeight = sprite.contentSprite.height*sprite.contentSprite.scaleY;
+                        var rect = cc.rect(sprite.x - realWidth / 2, sprite.y - realHeight / 2, realWidth, realHeight);
                         if (cc.rectContainsPoint(rect, locationInNode)){
                             sprite.touchingInstanceId = touchId;
                             if (locationInNode.y >= cc.winSize.height / 2) {
@@ -298,10 +295,10 @@ var MainLayer = cc.LayerColor.extend({
                 _.each( target.getChildren(), function(sprite){
                     if ( sprite instanceof NormalCardSprite && !this.alreadyTaken && (!target._touchInstanceUsed[touchId] || sprite.touchingInstanceId === touchId ) ) {
                         var padding = 0;
-                        var rect = cc.rect(sprite.x-sprite.contentSprite.width/2*sprite.contentSprite.scaleX+padding,
-                                sprite.y-sprite.contentSprite.height/2*sprite.contentSprite.scaleY+padding,
-                                sprite.contentSprite.width*sprite.contentSprite.scaleX-2*padding,
-                                sprite.contentSprite.height*sprite.contentSprite.scaleY-2*padding);
+                        var realWidth = sprite.contentSprite.width*sprite.contentSprite.scaleX;
+                        var realHeight = sprite.contentSprite.height*sprite.contentSprite.scaleY;
+                        var rect = cc.rect(sprite.x-realWidth/2+padding, sprite.y-realHeight/2+padding,
+                                realWidth-2*padding, realHeight-2*padding);
 
                         //Check the click area
                         if (cc.rectContainsPoint(rect, locationInNode)){
@@ -1056,7 +1053,18 @@ var GameModel = Backbone.Model.extend({
             new ItemPattern4Model()
         ];
 
-        this.itemPool = _.sample(this.get("itemPool"), MAX_ITEM_TYPE_PER_GAME);
+        var totalTargetMoney = this.get("playerTargetMoney")[0]+this.get("playerTargetMoney")[1];
+        var totalInitMoney = this.get("playerInitMoney")[0]+this.get("playerInitMoney")[1];
+        var gap = totalTargetMoney - totalInitMoney;
+        var itemNumber = 10;
+        if ( gap >= 1400 ) {
+            itemNumber = 10;
+        } else if ( gap >= 600 ) {
+            itemNumber = 9;
+        } else {
+            itemNumber = 8;
+        }
+        this.itemPool = _.sample(this.get("itemPool"), itemNumber);
         if ( this.itemPool.length === 0 ) {
             this.set("itemAppearRate", 0 );
         }

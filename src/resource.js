@@ -25,6 +25,10 @@ var res = {
     shield_hit_mp3: "res/shield-hit.mp3",
     thief_mp3: "res/thief.mp3",
     vase_break_mp3: "res/vase-break.mp3",
+    firework1_mp3: "res/firework1.mp3",
+    firework2_mp3: "res/firework2.mp3",
+    firework3_mp3: "res/firework3.mp3",
+    slash_mp3: "res/slash.mp3",
 
     click_mp3: "res/click-button.mp3",
 
@@ -70,6 +74,7 @@ var DOWNWARD_UNLOCK_CONDITION = 15;
 var ENLARGE_UNLOCK_CONDITION = 5;
 var FORBID_UNLOCK_CONDITION = 100;
 var HAMMER_UNLOCK_CONDITION = 1;
+var KATANA_UNLOCK_CONDITION = 3;
 var KISS_UNLOCK_CONDITION = 10;
 var LEAF_UNLOCK_CONDITION = 1;
 var MAGNET_UNLOCK_CONDITION = 400;
@@ -204,6 +209,11 @@ var texts_locale = {
                 name:"雷神之锤",
                 desc:"召唤一个神锤击向对方区域。消灭任何打到的东西，吹飞敌方区域所有东西。",
                 unlock: "得到"+HAMMER_UNLOCK_CONDITION+"次五条的牌型后解锁本道具。"
+            },
+            "katana":{
+                name:"利剑",
+                desc:"斩击对手区域中部的牌或筹码。",
+                unlock: "在公平竞赛中战胜困难以上难度AI "+KATANA_UNLOCK_CONDITION+"次后解锁本道具。"
             },
             kiss:{
                 name:"热吻",
@@ -395,6 +405,11 @@ var texts_locale = {
                 name:"HAMMER OF GOD",
                 desc:"Summon a hammer toward opponent.It will destroy anything it hit and blow away everything in opponent's field.",
                 unlock: "Get five-of-a-kind "+HAMMER_UNLOCK_CONDITION+" time to unlock this item."
+            },
+            "katana":{
+                name:"SWORD",
+                desc:"Slash cards or tokens in opponent's middle area.",
+                unlock: "Defeat AI(hard or above) "+KATANA_UNLOCK_CONDITION+" times in fair game to unlock this item."
             },
             kiss:{
                 name:"KISS",

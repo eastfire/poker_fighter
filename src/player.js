@@ -650,22 +650,34 @@ var PlayerSprite = cc.Sprite.extend({
         this.model.off("change:shield",this.onShieldChange);
     },
     renderMoney:function(){
-        if ( this.model.get("money") >= this.model.get("targetMoney") && this.model.previous("money") < this.model.get("targetMoney") ) {
+        var prevMoney = this.model.previous("money");
+        var money = this.model.get("money");
+        if ( money >= this.model.get("targetMoney") && prevMoney < this.model.get("targetMoney") ) {
             this.moneyLabel.setColor(cc.color.RED);
             if ( !this.moneyLabelAction ) {
                 this.moneyLabelAction = cc.sequence(cc.scaleTo(0.4, 1.2, 1.2),cc.scaleTo(0.4, 1, 1)).repeatForever();
                 this.moneyLabel.runAction(this.moneyLabelAction);
             }
-        } else if ( this.model.get("money") < this.model.get("targetMoney") && this.model.previous("money") >= this.model.get("targetMoney") ) {
+        } else if ( money < this.model.get("targetMoney") && prevMoney >= this.model.get("targetMoney") ) {
             this.moneyLabel.setColor(cc.color.WHITE);
             if ( this.moneyLabelAction ) {
                 this.moneyLabel.stopAction(this.moneyLabelAction);
                 this.moneyLabelAction = null;
             }
         }
+        if ( prevMoney < money ) {
+            this.moneyLabel.runAction(cc.sequence(
+                cc.scaleTo(0.1,1.2,1.2),
+                cc.scaleTo(0.05,1,1)
+            ))
+        } else if ( prevMoney < money ) {
+            this.moneyLabel.runAction(cc.sequence(
+                cc.scaleTo(0.1,0.8,0.8),
+                cc.scaleTo(0.05,1,1)
+            ))
+        }
 
-
-        this.moneyLabel.setString(this.model.get("money"));
+        this.moneyLabel.setString(money);
     },
     onMoneyChange:function(){
         this.renderMoney();
@@ -808,7 +820,7 @@ var PlayerSprite = cc.Sprite.extend({
                 sprite.runAction(cc.sequence(
                     cc.delayTime( i*waitTime),
                     cc.fadeTo(fadeOutTime,0),
-                    cc.removeSelf()
+                    cc.removeSelf(true)
                 ))
                 i++;
             });

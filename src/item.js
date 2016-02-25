@@ -217,7 +217,7 @@ var HammerItemModel = ItemModel.extend({
                     }
                 }
             });
-        },this),cc.delayTime(0.2), cc.removeSelf()))
+        },this),cc.delayTime(0.2), cc.removeSelf(true)))
     }
 })
 
@@ -440,7 +440,7 @@ var SniperItemModel = ItemModel.extend({
         var currentSprite = null;
         var currentValue = 0;
         _.each( mainLayer.getChildren(), function(sprite) {
-            if (sprite instanceof NormalCardSprite ) {
+            if (sprite instanceof PokerCardSprite ) {
                 if ( !sprite.alreadyTaken && cc.rectContainsPoint(opponentPlayerSprite.getEffectRect(), {
                     x:sprite.x,
                     y:sprite.y
@@ -461,8 +461,8 @@ var SniperItemModel = ItemModel.extend({
             })
             currentSprite.addChild(sniperSprite);
             sniperSprite.runAction(cc.sequence(
-                cc.moveTo(0.4, currentSprite.width/2, currentSprite.height/2),
-                cc.delayTime(0.4),
+                cc.moveTo(0.3, currentSprite.width/2, currentSprite.height/2),
+                cc.delayTime(0.3),
                 cc.callFunc(function(){
                     if ( !currentSprite.alreadyTaken ) {
                         cc.audioEngine.playEffect(res.sniper_mp3, false);
@@ -477,6 +477,78 @@ var SniperItemModel = ItemModel.extend({
                 })
             ))
         }
+    }
+});
+
+var KatanaItemModel = ItemModel.extend({
+    defaults:function(){
+        return {
+            name:"katana",
+            maxCharge: 3,
+            maxCoolDown: 0.5,
+            showCharge: true
+        }
+    },
+    effect:function(playerSprite, opponentPlayerSprite){
+        var maskSprite = new cc.DrawNode();
+        var rect = opponentPlayerSprite.getEffectRect();
+        maskSprite.drawRect(new cc.Point(rect.x, rect.y), new cc.Point(rect.x+rect.width, rect.y+rect.height), cc.color.BLACK, 0);
+        var y = rect.y + 80 + Math.random()*(rect.height-160);
+        mainLayer.addChild(maskSprite,99);
+        var secPerFrame = 0.06;
+        var totalFrame = 7;
+
+        cc.audioEngine.playEffect(res.slash_mp3,false);
+        var frames = [];
+        for (var i = 0; i < totalFrame-1; i++) {
+            var frame = cc.spriteFrameCache.getSpriteFrame("slash-" + i + ".png");
+            frames.push(frame);
+        }
+        var offsetX = 80;
+        var x = _.sample([offsetX,cc.winSize.width-offsetX]);
+        var rotation = Math.random()*8 - 4;
+        var slashSprite = new cc.Sprite();
+        slashSprite.attr({
+            x: x,
+            y: y,
+            rotation: rotation
+        })
+        maskSprite.addChild(slashSprite);
+
+        var endY = y + ( x === offsetX ? -1 : 1) * Math.tan(rotation/360*3.1415926*2)*(cc.winSize.width-2*offsetX)
+        var midY = ( endY + y )/2;
+        slashSprite.runAction(cc.sequence(
+            cc.callFunc(function(){
+                _.each( mainLayer.getChildren(), function(sprite) {
+                    if (sprite instanceof NormalCardSprite ) {
+                        if ( !sprite.alreadyTaken ){
+                            var realHeight = sprite.contentSprite.height*sprite.contentSprite.scaleY;
+                            if ( midY >= sprite.y - realHeight/2 && midY <= sprite.y + realHeight ) {
+                                //hit
+                                sprite.stopAllActions();
+                                sprite.contentSprite.stopAllActions();
+                                sprite.alreadyTaken = true;
+                                sprite.contentSprite.runAction(cc.sequence(
+                                    cc.fadeOut(1),
+                                    cc.callFunc(function(){
+                                        gameModel.destroyCard(this.model);
+                                        statistic.destroyCard = statistic.destroyCard || 0;
+                                        statistic.destroyCard++;
+                                    }, sprite )
+                                ))
+                            }
+                        }
+                    }
+                });
+            },this),
+            cc.spawn(
+                cc.moveTo(totalFrame*secPerFrame, x === offsetX ? cc.winSize.width - offsetX: offsetX, endY),
+                new cc.Animate(new cc.Animation(frames, secPerFrame))
+            ),
+            cc.callFunc(function(){
+                maskSprite.removeFromParent(true);
+            },this)
+        ));
     }
 });
 
@@ -793,6 +865,57 @@ var LeafItemModel = ItemModel.extend({
                         sprite.removeFromParent(true);
                     })));
             })(leaf);
+        }
+    }
+});
+
+var FireworkItemModel = ItemModel.extend({
+    defaults:function(){
+        return {
+            name:"firework",
+            maxCharge: 1,
+            showCharge: false,
+            effectTime: 10
+        }
+    },
+    effect:function(playerSprite, opponentPlayerSprite){
+        var isDown = opponentPlayerSprite.model.get("position") === PLAYER_POSITION_DOWN;
+        var rect = opponentPlayerSprite.getEffectRect();
+
+        var effectTime = this.get("effectTime");
+
+        var fireworkFrames = [];
+        var actions  = []
+        for ( var fireworkType = 1; fireworkType <= 4; fireworkType++ ){
+            fireworkFrames[fireworkType] = [];
+            for (var i = 0; i < 5; i++) {
+                var frame = cc.spriteFrameCache.getSpriteFrame("firework" + fireworkType + "-"+i + ".png");
+                fireworkFrames[fireworkType].push(frame);
+            }
+            actions[fireworkType] = new cc.Animate(new cc.Animation(fireworkFrames[fireworkType], 0.2))
+        }
+        for ( var j = 0; j < 200; j++) {
+            var sprite = new cc.Sprite();
+            sprite.attr({
+                x: Math.random() * rect.width,
+                y: Math.random() * rect.height + rect.y,
+                scaleX: 2,
+                scaleY: 2,
+                rotation: isDown ? 0 : 180
+            })
+            var fireworkType = _.sample([1, 2, 3, 4]);
+
+            mainLayer.addChild(sprite,50)
+            sprite.runAction(cc.sequence(
+                cc.delayTime(Math.random()*effectTime),
+                cc.callFunc(function(){
+                    if ( Math.random() < 0.2 ) {
+                        cc.audioEngine.playEffect(_.sample([res.firework1_mp3, res.firework2_mp3, res.firework3_mp3]), false);
+                    }
+                },this),
+                actions[fireworkType],
+                cc.removeSelf(true)
+            ));
         }
     }
 });
@@ -1240,8 +1363,10 @@ var ITEM_MODEL_CLASS_MAP = {
     "downward":DownwardItemModel,
     "enlarge":EnlargeItemModel,
     "fast": FastItemModel,
+    "firework":FireworkItemModel,
     "forbid": ForbidItemModel,
     "hammer": HammerItemModel,
+    "katana": KatanaItemModel,
     "kiss": KissItemModel,
     "leaf": LeafItemModel,
     "magnet": MagnetItemModel,
@@ -1314,6 +1439,15 @@ var CHECK_UNLOCKED_FUNC_MAP = {
             return true
         } else
             return texts.items.hammer.unlock+"("+count+"/"+HAMMER_UNLOCK_CONDITION+")";
+    },
+    "katana": function(){
+        statistic.winAI2 = statistic.winAI2 || 0;
+        statistic.winAI3 = statistic.winAI3 || 0;
+        var allWinAI = statistic.winAI2 + statistic.winAI3;
+        if ( allWinAI >= KATANA_UNLOCK_CONDITION ) {
+            return true;
+        } else
+            return texts.items.katana.unlock+"("+allWinAI+"/"+KATANA_UNLOCK_CONDITION+")";
     },
     "kiss": function(){
         statistic.game = statistic.game || {};
