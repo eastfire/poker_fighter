@@ -61,6 +61,22 @@ var AIPlayerModel = PlayerModel.extend({
         return ( this.get("position") === PLAYER_POSITION_UP && sprite.y > midY+padding || this.get("position") === PLAYER_POSITION_DOWN && sprite.y < midY-padding ) &&
             ( sprite.x > dimens.card_size.width/2 && sprite.x < cc.winSize.width - dimens.card_size.width/2 ) ;
     },
+    countMidSprite:function(){
+        var isDown = this.get("position") === PLAYER_POSITION_DOWN;
+        var offsetY = 80;
+        return _.countBy( mainLayer.getChildren(), function(sprite) {
+            if (sprite.x < 0 || sprite.x > cc.winSize.width)
+                return "nothing";
+            if (sprite instanceof NormalCardSprite && 
+            ( ( isDown && sprite.y >= dimens.player1Y + offsetY && sprite.y <= cc.winSize.height/2 - offsetY ) ||
+            ( !isDown && sprite.y >= cc.winSize.height/2 + offsetY && sprite.y <= dimens.player2Y - offsetY )) ) {
+                if (!sprite.alreadyTaken) {
+                    return "count";
+                }
+            }
+            return "nothing";
+        });
+    },
     countSprite:function(){
         return _.countBy( mainLayer.getChildren(), function(sprite) {
             if (sprite.x < 0 || sprite.x > cc.winSize.width)
@@ -334,6 +350,11 @@ var HardAIPlayerModel = AIPlayerModel.extend({
                 } else {
                     return 0;
                 }
+                break;
+            case "katana":
+                var midCount = this.countMidSprite();
+                if ( midCount.count >= 2 ) return 30
+                else return 0;
                 break;
             case "magnet":
                 if ( counts.money >= 2 ) {
