@@ -11,6 +11,7 @@ var AIPlayerModel = PlayerModel.extend({
     initialize:function(options){
         options = options || {};
         this.scheduleLength = 1.5;
+        this.scheduleLengthRange = 0.5;
         this.difficulty = AI_DIFFICULTY_EASY;
         this.set({
             dizzyMistakeRate: 0.9,
@@ -67,7 +68,7 @@ var AIPlayerModel = PlayerModel.extend({
         return _.countBy( mainLayer.getChildren(), function(sprite) {
             if (sprite.x < 0 || sprite.x > cc.winSize.width)
                 return "nothing";
-            if (sprite instanceof NormalCardSprite && 
+            if (sprite instanceof NormalCardSprite &&
             ( ( isDown && sprite.y >= dimens.player1Y + offsetY && sprite.y <= cc.winSize.height/2 - offsetY ) ||
             ( !isDown && sprite.y >= cc.winSize.height/2 + offsetY && sprite.y <= dimens.player2Y - offsetY )) ) {
                 if (!sprite.alreadyTaken) {
@@ -237,7 +238,8 @@ var EasyAIPlayerModel = AIPlayerModel;
 var HardAIPlayerModel = AIPlayerModel.extend({
     initialize:function(options){
         options = options || {};
-        this.scheduleLength = 0.8;
+        this.scheduleLength = 0.75;
+        this.scheduleLengthRange = 0.3;
         this.difficulty = AI_DIFFICULTY_HARD;
         this.set({
             dizzyMistakeRate: 0.25,
@@ -289,10 +291,17 @@ var HardAIPlayerModel = AIPlayerModel.extend({
                     value:Math.abs(value)
                 };
             } else {
-                return {
-                    direction: DIRECTION_OPPONENT,
-                    value:Math.abs(value)
-                };
+                if ( opponent.canTakeCard() ) {
+                    return {
+                        direction: DIRECTION_OPPONENT,
+                        value: Math.abs(value)
+                    };
+                } else {
+                    return {
+                        direction: DIRECTION_OUT,
+                        value:Math.abs(value)
+                    };
+                }
             }
         } else {
             return {
@@ -387,6 +396,7 @@ var NormalAIPlayerModel = HardAIPlayerModel.extend({
     initialize: function (options) {
         options = options || {};
         this.scheduleLength = 1.2;
+        this.scheduleLengthRange = 0.4;
         this.difficulty = AI_DIFFICULTY_NORMAL;
         this.set({
             dizzyMistakeRate: 0.5,
@@ -400,8 +410,9 @@ var NormalAIPlayerModel = HardAIPlayerModel.extend({
 var MadAIPlayerModel = HardAIPlayerModel.extend({
     initialize: function (options) {
         options = options || {};
-        this.scheduleLength = 0.5;
-        this.difficulty = AI_DIFFICULTY_NORMAL;
+        this.scheduleLength = 0.4;
+        this.scheduleLengthRange = 0.15;
+        this.difficulty = AI_DIFFICULTY_MAD;
         this.set({
             dizzyMistakeRate: 0.1,
             blockSightMistakeRate: 0.1,

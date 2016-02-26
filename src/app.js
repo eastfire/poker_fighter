@@ -633,7 +633,7 @@ var MainLayer = cc.LayerColor.extend({
                     self.player2.onAskStrategy();
                 }
             }
-            this.schedule(this.aiSchedule2, this.player2.scheduleLength+Math.random()*0.3);
+            this.schedule(this.aiSchedule2, this.player2.scheduleLength+Math.random()*this.player2.scheduleLengthRange);
         }
         if ( this.player1.get("type") === PLAYER_TYPE_AI ) {
             this.player1.onStartNewRound();
@@ -643,7 +643,7 @@ var MainLayer = cc.LayerColor.extend({
                     self.player1.onAskStrategy();
                 }
             }
-            this.schedule(this.aiSchedule1, this.player1.scheduleLength+Math.random()*0.3);
+            this.schedule(this.aiSchedule1, this.player1.scheduleLength+Math.random()*this.player2.scheduleLengthRange);
         }
     },
     generateItems:function(){

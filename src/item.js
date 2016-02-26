@@ -523,7 +523,7 @@ var KatanaItemModel = ItemModel.extend({
                     if (sprite instanceof NormalCardSprite ) {
                         if ( !sprite.alreadyTaken ){
                             var realHeight = sprite.contentSprite.height*sprite.contentSprite.scaleY;
-                            if ( midY >= sprite.y - realHeight/2 && midY <= sprite.y + realHeight ) {
+                            if ( midY >= sprite.y - realHeight/2 - 10 && midY <= sprite.y + realHeight/2 + 10) {
                                 //hit
                                 sprite.stopAllActions();
                                 sprite.contentSprite.stopAllActions();

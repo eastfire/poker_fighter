@@ -20,8 +20,8 @@ var setting = {};
 
 var ITEM_PER_LINE = 5;
 
-var INIT_ITEMS = ["bomb","cloud","diamond", "dizzy","fast","shrink","spy","slow","sniper", "tornado"];
-var UNLOCKABLE_ITEMS = ["two","enlarge","kiss","ace","katana","leaf","forbid","vase","shield","magnet","thief","upward","downward","hammer","nuke" ];
+var INIT_ITEMS = ["bomb","cloud","diamond", "dizzy","fast","shrink","spy","slow","sniper","katana", "tornado"];
+var UNLOCKABLE_ITEMS = ["two","enlarge","kiss","ace","leaf","forbid","vase","shield","magnet","thief","upward","downward","hammer","nuke" ];
 
 var ModeSelectLayer = PlayerRotateLayer.extend({
     ctor:function(options){
@@ -37,8 +37,10 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
         window.isVsAI = this.options.mode == "vs-ai"
         this._super({disableRotate:isVsAI});
 
-        this.addChild(this.player2Label = this.makeLabel(isVsAI ? texts.aiLevel[setting.aiDifficulty] : texts.player2, dimens.player2NamePosition.x, dimens.player2NamePosition.y,isVsAI ? 20: 28));
+        this.addChild(this.player2Label = this.makeLabel("", dimens.player2NamePosition.x, dimens.player2NamePosition.y,isVsAI ? 20: 28));
         this.addChild(this.player1Label = this.makeLabel(isVsAI ? texts.player : texts.player1, dimens.player1NamePosition.x, dimens.player1NamePosition.y, 28));
+
+        this.renderAIDifficulty();
 
         var tokenSprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("token-green.png"));
         tokenSprite.attr({
@@ -106,6 +108,7 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
         }
     },
     render:function(){
+        this.renderAIDifficulty();
         this.renderPlayerInitMoney(0);
         this.renderPlayerInitMoney(1);
         this.renderPlayerTargetMoney(0);
@@ -115,7 +118,9 @@ var ModeSelectLayer = PlayerRotateLayer.extend({
         this.renderItemAppear();
         this.renderItemMenus();
     },
-
+    renderAIDifficulty:function(){
+        this.player2Label.setString(isVsAI ? texts.aiLevel[setting.aiDifficulty] : texts.player2);
+    },
     initData:function(){
         this.defaultSetting = {
             playerInitMoney : [DEFAULT_INIT_MONEY,DEFAULT_INIT_MONEY],
