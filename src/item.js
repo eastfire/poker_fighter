@@ -491,10 +491,10 @@ var KatanaItemModel = ItemModel.extend({
     },
     effect:function(playerSprite, opponentPlayerSprite){
         var maskSprite = new cc.DrawNode();
-        var rect = opponentPlayerSprite.getEffectRect();
-        maskSprite.drawRect(new cc.Point(rect.x, rect.y), new cc.Point(rect.x+rect.width, rect.y+rect.height), cc.color.BLACK, 0);
-        var y = rect.y + 80 + Math.random()*(rect.height-160);
         mainLayer.addChild(maskSprite,99);
+        var rect = opponentPlayerSprite.getEffectRect();
+        maskSprite.drawRect(cc.p(rect.x, rect.y), cc.p(rect.x+rect.width, rect.y+rect.height), cc.color.BLACK, 0, cc.color.BLACK);
+        var y = rect.y + 80 + Math.random()*(rect.height-160);
         var secPerFrame = 0.06;
         var totalFrame = 7;
 
@@ -546,7 +546,7 @@ var KatanaItemModel = ItemModel.extend({
                 new cc.Animate(new cc.Animation(frames, secPerFrame))
             ),
             cc.callFunc(function(){
-                maskSprite.removeFromParent(true);
+                maskSprite.removeFromParent();
             },this)
         ));
     }
