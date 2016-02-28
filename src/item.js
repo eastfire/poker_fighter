@@ -532,8 +532,10 @@ var KatanaItemModel = ItemModel.extend({
                                     cc.fadeOut(1),
                                     cc.callFunc(function(){
                                         gameModel.destroyCard(this.model);
-                                        statistic.destroyCard = statistic.destroyCard || 0;
-                                        statistic.destroyCard++;
+                                        if ( this instanceof PokerCardSprite ) {
+                                            statistic.destroyCard = statistic.destroyCard || 0;
+                                            statistic.destroyCard++;
+                                        }
                                     }, sprite )
                                 ))
                             }
